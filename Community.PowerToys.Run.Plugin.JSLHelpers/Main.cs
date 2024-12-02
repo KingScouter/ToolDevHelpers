@@ -1,3 +1,4 @@
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,6 +15,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         MT,
         MRCCT,
         HMI
+    }
+
+    enum OperationMode
+    {
+        Branch,
+        Tool
     }
 
     /// <summary>
@@ -36,19 +43,89 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         public string Description => "Helpers for JSL developers";
 
+        private Dictionary<string, JSLTools> toolNames = new()
+        {
+            { "MT", JSLTools.MT },
+            { "MRCCT", JSLTools.MRCCT},
+            { "HMI", JSLTools.HMI },
+        };
+
         /// <summary>
         /// Additional options for the plugin.
         /// </summary>
         public IEnumerable<PluginAdditionalOption> AdditionalOptions => [
             new()
             {
-                Key = nameof(CountSpaces),
-                DisplayLabel = "Count spaces",
-                DisplayDescription = "Count spaces as characters",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Checkbox,
-                Value = CountSpaces,
+                Key = nameof(GitRepoUrl),
+                DisplayLabel = "GIT Repository URL",
+                DisplayDescription = "URL for the GIT repository",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = GitRepoUrl
+            },
+            new()
+            {
+                Key = nameof(JenkinsUrl),
+                DisplayLabel = "Jenkins Multibranch-Pipeline URL",
+                DisplayDescription = "URL of the Multibranch-Pipeline on Jenkins",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = JenkinsUrl
+            },
+            new()
+            {
+                Key = nameof(FolderPath),
+                DisplayLabel = "Tool folder",
+                DisplayDescription = "Folder to store the tools",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = FolderPath
+            },
+            new()
+            {
+                Key = nameof(ToolsPorts),
+                DisplayLabel = "Tools and Ports",
+                DisplayDescription = "List of tools and their productive ports",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.CheckboxAndMultilineTextbox,
+                TextValueAsMultilineList = ToolsPorts
             }
         ];
+
+        private string GitRepoUrl { get; set; }
+        private string JenkinsUrl { get; set; }
+        private string FolderPath { get; set; }
+        private List<string> ToolsPorts { 
+            get 
+            {
+                List<string> val = new List<string>();
+                foreach (var tool in toolsPorts)
+                {
+                    string toolName = toolNames.First(elem => elem.Value == tool.Key).Key;
+                    val.Add($"{toolName} {tool.Value}");
+                }
+
+                return val;
+            }
+            set
+            {
+                toolsPorts.Clear();
+                foreach (var tool in value)
+                {
+                    string[] splitted = tool.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                    if (splitted.Length != 2)
+                        continue;
+
+                    int port;
+                    if (!int.TryParse(splitted[1], out port))
+                        continue;
+
+                    JSLTools toolName;
+                    if (!toolNames.TryGetValue(splitted[0].ToUpper(), out toolName))
+                        continue;
+
+                    toolsPorts.Add(toolName, port);
+                }
+            }
+        }
+        private Dictionary<JSLTools, int> toolsPorts { get; set; } = [];
+
 
         private bool CountSpaces { get; set; }
 
@@ -65,34 +142,135 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>A filtered list, can be empty when nothing was found.</returns>
         public List<Result> Query(Query query)
         {
-            var selectedToolQuery = query.Terms.First();
-            JSLTools selectedTool = JSLTools.None;
-            string selectedToolName = "";
-            if (selectedToolQuery != null)
+            var modeQuery = query.Terms.First();
+
+            if (modeQuery == null)
+                return [];
+
+            switch (modeQuery)
             {
-                switch (selectedToolQuery)
-                {
-                    case "mt":
-                        {
-                            selectedTool = JSLTools.MT;
-                            selectedToolName = "Modelling Tool";
-                            break;
-                        }
-                    case "mrcct":
-                        {
-                            selectedTool = JSLTools.MRCCT;
-                            selectedToolName = "MRC Commissioning Tool";
-                            break;
-                        }
-                    case "hmi":
-                        {
-                            selectedTool = JSLTools.HMI;
-                            selectedToolName = "HMI";
-                            break;
-                        }
-                }
+                case "b":
+                    {
+                        return HandleBranchQuery(query.Terms.Skip(1));
+                    }
+                case "t":
+                    {
+                        return HandleToolQuery(query.Terms.Skip(1));
+                    }
             }
 
+            return [];
+
+
+            //var selectedToolQuery = query.Terms.First();
+            //JSLTools selectedTool = JSLTools.None;
+            //string selectedToolName = "";
+            //if (selectedToolQuery != null)
+            //{
+            //    switch (selectedToolQuery)
+            //    {
+            //        case "mt":
+            //            {
+            //                selectedTool = JSLTools.MT;
+            //                selectedToolName = "Modelling Tool";
+            //                break;
+            //            }
+            //        case "mrcct":
+            //            {
+            //                selectedTool = JSLTools.MRCCT;
+            //                selectedToolName = "MRC Commissioning Tool";
+            //                break;
+            //            }
+            //        case "hmi":
+            //            {
+            //                selectedTool = JSLTools.HMI;
+            //                selectedToolName = "HMI";
+            //                break;
+            //            }
+            //    }
+            //}
+
+
+
+            //Log.Info("Selected Tool: " + selectedTool.ToString(), GetType());
+
+            ////var words = query.Terms.Count;
+            ////// Average rate for transcription: 32.5 words per minute
+            ////// https://en.wikipedia.org/wiki/Words_per_minute
+            ////var transcription = TimeSpan.FromMinutes(words / 32.5);
+            ////var minutes = $"{(int)transcription.TotalMinutes}:{transcription.Seconds:00}";
+
+            ////var charactersWithSpaces = query.Search.Length;
+            ////var charactersWithoutSpaces = query.Terms.Sum(x => x.Length);
+
+            //return [
+            //    new()
+            //    {
+            //        QueryTextDisplay = $"query: {selectedToolName}",
+            //        IcoPath = IconPath,
+            //        Title = $"Tool: {selectedToolName}",
+            //        SubTitle = "",
+            //        ToolTipData = new ToolTipData("Tool", selectedToolName),
+            //        ContextData = (selectedToolName),
+            //    },
+            //    //new()
+            //    //{
+            //    //    QueryTextDisplay = query.Search,
+            //    //    IcoPath = IconPath,
+            //    //    Title = $"Words: {words}",
+            //    //    SubTitle = $"Transcription: {minutes} minutes",
+            //    //    ToolTipData = new ToolTipData("Words", $"{words} words\n{minutes} minutes for transcription\nAverage rate for transcription: 32.5 words per minute"),
+            //    //    ContextData = (words, transcription),
+            //    //},
+            //    //new()
+            //    //{
+            //    //    QueryTextDisplay = query.Search,
+            //    //    IcoPath = IconPath,
+            //    //    Title = $"Characters: {(CountSpaces ? charactersWithSpaces : charactersWithoutSpaces)}",
+            //    //    SubTitle = CountSpaces ? "With spaces" : "Without spaces",
+            //    //    ToolTipData = new ToolTipData("Characters", $"{charactersWithSpaces} characters (with spaces)\n{charactersWithoutSpaces} characters (without spaces)"),
+            //    //    ContextData = CountSpaces ? charactersWithSpaces : charactersWithoutSpaces,
+            //    //},
+            //];
+        }
+
+        private List<Result> HandleBranchQuery(IEnumerable<string> query)
+        {
+            return [];
+        }
+
+        private List<Result> HandleToolQuery(IEnumerable<string> query)
+        {
+            var selectedToolQuery = query.First();
+
+            if (selectedToolQuery == null)
+                return [];
+
+            JSLTools selectedTool = JSLTools.None;
+            string selectedToolName = "";
+            switch (selectedToolQuery)
+            {
+                case "mt":
+                    {
+                        selectedTool = JSLTools.MT;
+                        selectedToolName = "Modelling Tool";
+                        break;
+                    }
+                case "mrcct":
+                    {
+                        selectedTool = JSLTools.MRCCT;
+                        selectedToolName = "MRC Commissioning Tool";
+                        break;
+                    }
+                case "hmi":
+                    {
+                        selectedTool = JSLTools.HMI;
+                        selectedToolName = "HMI";
+                        break;
+                    }
+            }
+
+            int port = toolsPorts[selectedTool];
 
 
             Log.Info("Selected Tool: " + selectedTool.ToString(), GetType());
@@ -111,8 +289,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 {
                     QueryTextDisplay = $"query: {selectedToolName}",
                     IcoPath = IconPath,
-                    Title = $"Tool: ${selectedToolName}",
-                    SubTitle = "",
+                    Title = $"Tool: {selectedToolName}",
+                    SubTitle = $"Port: {port}",
                     ToolTipData = new ToolTipData("Tool", selectedToolName),
                     ContextData = (selectedToolName),
                 },
@@ -219,7 +397,10 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         {
             Log.Info("UpdateSettings", GetType());
 
-            CountSpaces = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(CountSpaces))?.Value ?? false;
+            GitRepoUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(GitRepoUrl))?.TextValue ?? "";
+            JenkinsUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(JenkinsUrl))?.TextValue ?? "";
+            FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(FolderPath))?.TextValue ?? "";
+            ToolsPorts = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(ToolsPorts))?.TextValueAsMultilineList ?? [];
         }
 
         /// <inheritdoc/>
