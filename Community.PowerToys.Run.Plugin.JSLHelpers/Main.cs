@@ -72,6 +72,14 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             },
             new()
             {
+                Key = nameof(TestServerUrl),
+                DisplayLabel = "Testserver URL",
+                DisplayDescription = "URL of the testserver where the tools are running",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = TestServerUrl
+            },
+            new()
+            {
                 Key = nameof(FolderPath),
                 DisplayLabel = "Tool folder",
                 DisplayDescription = "Folder to store the tools",
@@ -80,10 +88,18 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             },
             new()
             {
+                Key = nameof (DownloadScriptPath),
+                DisplayLabel = "Download Script",
+                DisplayDescription = "Path to the download script",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = DownloadScriptPath
+            },
+            new()
+            {
                 Key = nameof(ToolsPorts),
                 DisplayLabel = "Tools and Ports",
                 DisplayDescription = "List of tools and their productive ports",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.CheckboxAndMultilineTextbox,
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.MultilineTextbox,
                 TextValueAsMultilineList = ToolsPorts
             }
         ];
@@ -91,6 +107,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         private string GitRepoUrl { get; set; }
         private string JenkinsUrl { get; set; }
         private string FolderPath { get; set; }
+        private string TestServerUrl { get; set; }
+        private string DownloadScriptPath { get; set; }
         private List<string> ToolsPorts { 
             get 
             {
@@ -142,6 +160,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>A filtered list, can be empty when nothing was found.</returns>
         public List<Result> Query(Query query)
         {
+            if (query.Terms.Count < 2)
+                return [];
+
             var modeQuery = query.Terms.First();
 
             if (modeQuery == null)
@@ -160,35 +181,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             }
 
             return [];
-
-
-            //var selectedToolQuery = query.Terms.First();
-            //JSLTools selectedTool = JSLTools.None;
-            //string selectedToolName = "";
-            //if (selectedToolQuery != null)
-            //{
-            //    switch (selectedToolQuery)
-            //    {
-            //        case "mt":
-            //            {
-            //                selectedTool = JSLTools.MT;
-            //                selectedToolName = "Modelling Tool";
-            //                break;
-            //            }
-            //        case "mrcct":
-            //            {
-            //                selectedTool = JSLTools.MRCCT;
-            //                selectedToolName = "MRC Commissioning Tool";
-            //                break;
-            //            }
-            //        case "hmi":
-            //            {
-            //                selectedTool = JSLTools.HMI;
-            //                selectedToolName = "HMI";
-            //                break;
-            //            }
-            //    }
-            //}
 
 
 
@@ -275,15 +267,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
             Log.Info("Selected Tool: " + selectedTool.ToString(), GetType());
 
-            //var words = query.Terms.Count;
-            //// Average rate for transcription: 32.5 words per minute
-            //// https://en.wikipedia.org/wiki/Words_per_minute
-            //var transcription = TimeSpan.FromMinutes(words / 32.5);
-            //var minutes = $"{(int)transcription.TotalMinutes}:{transcription.Seconds:00}";
-
-            //var charactersWithSpaces = query.Search.Length;
-            //var charactersWithoutSpaces = query.Terms.Sum(x => x.Length);
-
             return [
                 new()
                 {
@@ -292,26 +275,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     Title = $"Tool: {selectedToolName}",
                     SubTitle = $"Port: {port}",
                     ToolTipData = new ToolTipData("Tool", selectedToolName),
-                    ContextData = (selectedToolName),
-                },
-                //new()
-                //{
-                //    QueryTextDisplay = query.Search,
-                //    IcoPath = IconPath,
-                //    Title = $"Words: {words}",
-                //    SubTitle = $"Transcription: {minutes} minutes",
-                //    ToolTipData = new ToolTipData("Words", $"{words} words\n{minutes} minutes for transcription\nAverage rate for transcription: 32.5 words per minute"),
-                //    ContextData = (words, transcription),
-                //},
-                //new()
-                //{
-                //    QueryTextDisplay = query.Search,
-                //    IcoPath = IconPath,
-                //    Title = $"Characters: {(CountSpaces ? charactersWithSpaces : charactersWithoutSpaces)}",
-                //    SubTitle = CountSpaces ? "With spaces" : "Without spaces",
-                //    ToolTipData = new ToolTipData("Characters", $"{charactersWithSpaces} characters (with spaces)\n{charactersWithoutSpaces} characters (without spaces)"),
-                //    ContextData = CountSpaces ? charactersWithSpaces : charactersWithoutSpaces,
-                //},
+                    ContextData = (selectedTool, OperationMode.Tool),
+                }
             ];
         }
 
@@ -337,46 +302,49 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         {
             Log.Info("LoadContextMenus", GetType());
 
-            if (selectedResult?.ContextData is (int words, TimeSpan transcription))
+            if (selectedResult?.ContextData is (JSLTools data, OperationMode mode))
             {
-                return
-                [
-                    new ContextMenuResult
-                    {
-                        PluginName = Name,
-                        Title = "Copy (Enter)",
-                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                        Glyph = "\xE8C8", // Copy
-                        AcceleratorKey = Key.Enter,
-                        Action = _ => CopyToClipboard(words.ToString()),
-                    },
-                    new ContextMenuResult
-                    {
-                        PluginName = Name,
-                        Title = "Copy time (Ctrl+Enter)",
-                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                        Glyph = "\xE916", // Stopwatch
-                        AcceleratorKey = Key.Enter,
-                        AcceleratorModifiers = ModifierKeys.Control,
-                        Action = _ => CopyToClipboard(transcription.ToString()),
-                    },
-                ];
-            }
-
-            if (selectedResult?.ContextData is int characters)
-            {
-                return
-                [
-                    new ContextMenuResult
-                    {
-                        PluginName = Name,
-                        Title = "Copy (Enter)",
-                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                        Glyph = "\xE8C8", // Copy
-                        AcceleratorKey = Key.Enter,
-                        Action = _ => CopyToClipboard(characters.ToString()),
-                    },
-                ];
+                switch (mode)
+                {
+                    case OperationMode.Tool:
+                        {
+                            return [
+                                new ContextMenuResult
+                                {
+                                    PluginName = Name,
+                                    Title = "Start locally",
+                                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                                    Glyph = "\xe756",
+                                    AcceleratorKey = Key.Enter,
+                                    Action = _ => StartTool(data)
+                                },
+                                new ContextMenuResult
+                                {
+                                    PluginName = Name,
+                                    Title = "Open locally",
+                                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                                    Glyph = "\xe774",
+                                    AcceleratorKey = Key.Enter,
+                                    AcceleratorModifiers = ModifierKeys.Control,
+                                    Action = _ => OpenTool(data, true)
+                                },
+                                new ContextMenuResult
+                                {
+                                    PluginName = Name,
+                                    Title = "Open on Testserver",
+                                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                                    Glyph = "\xe753",
+                                    AcceleratorKey = Key.Enter,
+                                    AcceleratorModifiers = ModifierKeys.Shift,
+                                    Action = _ => OpenTool(data, false)
+                                }
+                            ];
+                        }
+                    case OperationMode.Branch:
+                        {
+                            return [];
+                        }
+                }
             }
 
             return [];
@@ -400,6 +368,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             GitRepoUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(GitRepoUrl))?.TextValue ?? "";
             JenkinsUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(JenkinsUrl))?.TextValue ?? "";
             FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(FolderPath))?.TextValue ?? "";
+            TestServerUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(TestServerUrl))?.TextValue ?? "";
+            DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(DownloadScriptPath))?.TextValue ?? "";
             ToolsPorts = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(ToolsPorts))?.TextValueAsMultilineList ?? [];
         }
 
@@ -435,12 +405,24 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         private void OnThemeChanged(Theme currentTheme, Theme newTheme) => UpdateIconPath(newTheme);
 
-        private static bool CopyToClipboard(string? value)
+        private bool StartTool(JSLTools tool)
         {
-            if (value != null)
-            {
-                Clipboard.SetText(value);
-            }
+            Log.Info($"Start tool: {tool}", GetType());
+            return false;
+        }
+
+        private bool OpenTool(JSLTools tool, bool isLocal)
+        {
+            string url = "";
+            int port = toolsPorts[tool];
+            if (isLocal)
+                url = "https://localhost";
+            else
+                url = TestServerUrl;
+
+            url += $":{port}";
+
+            Log.Info($"Open tool {url}", GetType());
 
             return true;
         }
