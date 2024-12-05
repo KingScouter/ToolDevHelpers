@@ -109,6 +109,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         private string FolderPath { get; set; }
         private string TestServerUrl { get; set; }
         private string DownloadScriptPath { get; set; }
+
+        private List<string> branches { get; set; } = [];
         private List<string> ToolsPorts { 
             get 
             {
@@ -228,6 +230,34 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         private List<Result> HandleBranchQuery(IEnumerable<string> query)
         {
+            Log.Info("Gort - HandleBranchQuery", GetType());
+            if (query.Count() == 0 && this.branches.Count() == 0)
+            {
+                branches = GetBranches().ToList();
+            return [];
+        }
+            if (query.Count() != 1 || branches.Count() == 0)
+                return [];
+
+            //var branches = GetBranches();
+
+            List<Result> results = [];
+            foreach ( var branch in branches )
+            {
+                Log.Info($"Found branch: {branch}", GetType());
+                results.Add(
+                    new()
+                    {
+                        //QueryTextDisplay = $"query: {selectedToolName}",
+                        IcoPath = IconPath,
+                        Title = branch,
+                        //SubTitle = $"Port: {port}",
+                        ToolTipData = new ToolTipData("Branch", branch),
+                        ContextData = (branch, OperationMode.Branch),
+                    }
+                );
+            }
+
             return [];
         }
 
@@ -278,6 +308,89 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     ContextData = (selectedTool, OperationMode.Tool),
                 }
             ];
+        }
+
+        public IEnumerable<string> GetBranches()
+        {
+            string getBranchesCmd = $"git ls-remote {GitRepoUrl}";
+            IEnumerable<string> branchesOutput = ExecuteCmdCommand(getBranchesCmd);
+            List<string> branchNames = [];
+            foreach (string branch in branchesOutput)
+            {
+                var branchName = ParseBranchOutput(branch);
+                if (branchName != null)
+                    branchNames.Add(branchName);
+            }
+
+            return branchNames;
+        }
+
+        private string? ParseBranchOutput(string branchOutput)
+        {
+            string refStart = "refs/heads/";
+            var splitted = branchOutput.Split('\t', StringSplitOptions.RemoveEmptyEntries);
+            if (splitted.Length == 2)
+            {
+                var branchRef = splitted[1];
+                if (branchRef.StartsWith(refStart))
+                {
+                    var simpleBranch = branchRef.Substring(refStart.Length);
+                    return simpleBranch;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Execute a command in the windows command-line
+        /// </summary>
+        /// <param name="cmd">Command template</param>
+        /// <param name="waitForResult">Flag to determine if the CLI should remain open after the execution finished</param>
+        /// <param name="workingDir">Working directory</param>
+        /// <returns>Standard output</returns>
+        private static IEnumerable<string> ExecuteCmdCommand(string cmd)
+        {
+            System.Diagnostics.ProcessStartInfo startInfo = new()
+            {
+                FileName = "cmd.exe",
+                RedirectStandardOutput = true,
+                WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
+                //CreateNoWindow = true,
+            };
+
+            startInfo.Arguments = $"/C {cmd}";
+
+            return ExecuteProcess(startInfo);
+        }
+
+        /// <summary>
+        /// Internal method to startup and execute a process for the command
+        /// </summary>
+        /// <param name="startInfo">Process info for startup</param>
+        /// <returns>Standard output</returns>
+        private static IEnumerable<string> ExecuteProcess(System.Diagnostics.ProcessStartInfo startInfo)
+        {
+            List<string> result = [];
+
+            System.Diagnostics.Process process = new System.Diagnostics.Process();
+            process.StartInfo = startInfo;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.Start();
+
+            StreamReader reader = process.StandardOutput;
+
+            while (true)
+            {
+                string? line = reader.ReadLine();
+                if (line == null)
+                    break;
+
+                result.Add(line);
+            }
+            process.WaitForExit();
+
+            return result;
         }
 
         /// <summary>
