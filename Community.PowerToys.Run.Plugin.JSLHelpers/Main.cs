@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -6,6 +7,8 @@ using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Wox.Plugin;
 using Wox.Plugin.Logger;
+using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
+using LazyCache;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
@@ -26,7 +29,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
     /// <summary>
     /// Main class of this plugin that implement all used interfaces.
     /// </summary>
-    public class Main : IPlugin, IContextMenu, ISettingProvider, IDisposable
+    public class Main : IContextMenu, ISettingProvider, IDisposable, IPlugin, IDelayedExecutionPlugin, IReloadable
     {
         /// <summary>
         /// ID of the plugin.
@@ -109,8 +112,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         private string FolderPath { get; set; }
         private string TestServerUrl { get; set; }
         private string DownloadScriptPath { get; set; }
-
-        private List<string> branches { get; set; } = [];
         private List<string> ToolsPorts { 
             get 
             {
@@ -155,11 +156,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         private bool Disposed { get; set; }
 
-        /// <summary>
-        /// Return a filtered list, based on the given query.
-        /// </summary>
-        /// <param name="query">The query to filter the list.</param>
-        /// <returns>A filtered list, can be empty when nothing was found.</returns>
+
+        private CachingService? _cache;
+
+
+
         public List<Result> Query(Query query)
         {
             if (query.Terms.Count < 2)
@@ -181,6 +182,36 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         return HandleToolQuery(query.Terms.Skip(1));
                     }
             }
+
+            return [];
+        }
+
+        /// <summary>
+        /// Return a filtered list, based on the given query.
+        /// </summary>
+        /// <param name="query">The query to filter the list.</param>
+        /// <returns>A filtered list, can be empty when nothing was found.</returns>
+        public List<Result> Query(Query query, bool delayedExecution)
+        {
+            if (!delayedExecution || query.Terms.Count < 2)
+                return [];
+
+            var modeQuery = query.Terms.First();
+
+            if (modeQuery == null)
+                return [];
+
+            //switch (modeQuery)
+            //{
+            //    case "b":
+            //        {
+            //            return HandleBranchQuery(query.Terms.Skip(1));
+            //        }
+            //        //case "t":
+            //        //    {
+            //        //        return HandleToolQuery(query.Terms.Skip(1));
+            //        //    }
+            //}
 
             return [];
 
@@ -230,35 +261,59 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         private List<Result> HandleBranchQuery(IEnumerable<string> query)
         {
-            Log.Info("Gort - HandleBranchQuery", GetType());
-            if (query.Count() == 0 && this.branches.Count() == 0)
-            {
-                branches = GetBranches().ToList();
-            return [];
-        }
-            if (query.Count() != 1 || branches.Count() == 0)
+            Log.Info("HandleBranchQuery", GetType());
+            //if (query.Count() == 0)
+            //{
+            //    return [];
+            //}
+            if (query.Count() != 1)
                 return [];
+
+            string searchString = query.First();
+            Log.Info($"HandleBranchQuery - Searchstring: {searchString}", GetType());
+
+            //List<string> branches = GetBranchesQuery(GitRepoUrl, searchString);
+            List<string> branches;
+            branches = _cache.GetOrAdd("foo", () => GetBranchesQuery(GitRepoUrl, searchString));
 
             //var branches = GetBranches();
 
-            List<Result> results = [];
-            foreach ( var branch in branches )
-            {
-                Log.Info($"Found branch: {branch}", GetType());
-                results.Add(
-                    new()
-                    {
-                        //QueryTextDisplay = $"query: {selectedToolName}",
-                        IcoPath = IconPath,
-                        Title = branch,
-                        //SubTitle = $"Port: {port}",
-                        ToolTipData = new ToolTipData("Branch", branch),
-                        ContextData = (branch, OperationMode.Branch),
-                    }
-                );
-            }
+            Log.Info($"HandleBranchQuery - Branches: {branches.Count()}", GetType());
 
-            return [];
+            List<Result> results = branches.FindAll(x => x.Contains(searchString)).ConvertAll(branch =>
+            {
+                return new Result
+                {
+                    //QueryTextDisplay = $"query: {selectedToolName}",
+                    IcoPath = IconPath,
+                    Title = branch,
+                    //SubTitle = $"Port: {port}",
+                    ToolTipData = new ToolTipData("Branch", branch),
+                    ContextData = (branch, OperationMode.Branch),
+                };
+            });
+            //foreach ( var branch in branches )
+            //{
+            //    Log.Info($"Found branch: {branch}", GetType());
+            //    results.Add(
+            //        new()
+            //        {
+            //            //QueryTextDisplay = $"query: {selectedToolName}",
+            //            IcoPath = IconPath,
+            //            Title = branch,
+            //            //SubTitle = $"Port: {port}",
+            //            ToolTipData = new ToolTipData("Branch", branch),
+            //            ContextData = (branch, OperationMode.Branch),
+            //        }
+            //    );
+            //}
+
+            return results;
+
+            //static List<string> GetBranchesQuery(string repoUrl, string searchString) => GetBranches(repoUrl, searchString).Result!.Match(
+            //    ok: r => r,
+            //    err: e => [new(e.GetType().Name, string.Empty, e.Message, false)]);
+            static List<string> GetBranchesQuery(string repoUrl, string searchString) => GetBranches(repoUrl, searchString).Result!.ToList();
         }
 
         private List<Result> HandleToolQuery(IEnumerable<string> query)
@@ -310,10 +365,10 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             ];
         }
 
-        public IEnumerable<string> GetBranches()
+        public static async Task<IEnumerable<string>> GetBranches(string repoUrl, string searchValue)
         {
-            string getBranchesCmd = $"git ls-remote {GitRepoUrl}";
-            IEnumerable<string> branchesOutput = ExecuteCmdCommand(getBranchesCmd);
+            string getBranchesCmd = $"git ls-remote {repoUrl}";
+            IEnumerable<string> branchesOutput = await ExecuteCmdCommand(getBranchesCmd);
             List<string> branchNames = [];
             foreach (string branch in branchesOutput)
             {
@@ -325,7 +380,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             return branchNames;
         }
 
-        private string? ParseBranchOutput(string branchOutput)
+        private static string? ParseBranchOutput(string branchOutput)
         {
             string refStart = "refs/heads/";
             var splitted = branchOutput.Split('\t', StringSplitOptions.RemoveEmptyEntries);
@@ -349,7 +404,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <param name="waitForResult">Flag to determine if the CLI should remain open after the execution finished</param>
         /// <param name="workingDir">Working directory</param>
         /// <returns>Standard output</returns>
-        private static IEnumerable<string> ExecuteCmdCommand(string cmd)
+        private static Task<IEnumerable<string>> ExecuteCmdCommand(string cmd)
         {
             System.Diagnostics.ProcessStartInfo startInfo = new()
             {
@@ -369,7 +424,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         /// <param name="startInfo">Process info for startup</param>
         /// <returns>Standard output</returns>
-        private static IEnumerable<string> ExecuteProcess(System.Diagnostics.ProcessStartInfo startInfo)
+        private static async Task<IEnumerable<string>> ExecuteProcess(System.Diagnostics.ProcessStartInfo startInfo)
         {
             List<string> result = [];
 
@@ -388,7 +443,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
                 result.Add(line);
             }
-            process.WaitForExit();
+            await process.WaitForExitAsync();
 
             return result;
         }
@@ -403,6 +458,10 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Context.API.ThemeChanged += OnThemeChanged;
+
+            _cache = new CachingService();
+            _cache.DefaultCachePolicy.DefaultCacheDurationSeconds = (int)TimeSpan.FromMinutes(1).TotalSeconds;
+
             UpdateIconPath(Context.API.GetCurrentTheme());
         }
 
@@ -455,7 +514,17 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         }
                     case OperationMode.Branch:
                         {
-                            return [];
+                            return [
+                                new ContextMenuResult
+                                {
+                                    PluginName = Name,
+                                    Title = "Start locally",
+                                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                                    Glyph = "\xe756",
+                                    AcceleratorKey = Key.Enter,
+                                    Action = _ => StartTool(data)
+                                }
+                            ];
                         }
                 }
             }
@@ -484,6 +553,17 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             TestServerUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(TestServerUrl))?.TextValue ?? "";
             DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(DownloadScriptPath))?.TextValue ?? "";
             ToolsPorts = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(ToolsPorts))?.TextValueAsMultilineList ?? [];
+        }
+
+        public void ReloadData()
+        {
+            if (Context is null)
+            {
+                return;
+            }
+
+            UpdateIconPath(Context.API.GetCurrentTheme());
+            BrowserInfo.UpdateIfTimePassed();
         }
 
         /// <inheritdoc/>
