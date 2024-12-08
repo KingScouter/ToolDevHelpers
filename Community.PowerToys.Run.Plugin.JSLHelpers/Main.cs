@@ -29,8 +29,63 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
     /// <summary>
     /// Main class of this plugin that implement all used interfaces.
     /// </summary>
-    public class Main : IContextMenu, ISettingProvider, IDisposable, IPlugin, IDelayedExecutionPlugin, IReloadable
+    public class Main : IContextMenu, ISettingProvider, IDisposable, IPlugin, IReloadable
     {
+        private Dictionary<string, JSLTools> toolNames = new()
+        {
+            { "MT", JSLTools.MT },
+            { "MRCCT", JSLTools.MRCCT},
+            { "HMI", JSLTools.HMI },
+        };
+
+        // Settings values
+        private string GitRepoUrl { get; set; }
+        private string JenkinsUrl { get; set; }
+        private string FolderPath { get; set; }
+        private string TestServerUrl { get; set; }
+        private string DownloadScriptPath { get; set; }
+        private List<string> ToolsPorts { 
+            get 
+            {
+                List<string> val = new List<string>();
+                foreach (var tool in toolsPorts)
+                {
+                    string toolName = toolNames.First(elem => elem.Value == tool.Key).Key;
+                    val.Add($"{toolName} {tool.Value}");
+                }
+
+                return val;
+            }
+            set
+            {
+                toolsPorts.Clear();
+                foreach (var tool in value)
+                {
+                    string[] splitted = tool.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                    if (splitted.Length != 2)
+                        continue;
+
+                    int port;
+                    if (!int.TryParse(splitted[1], out port))
+                        continue;
+
+                    JSLTools toolName;
+                    if (!toolNames.TryGetValue(splitted[0].ToUpper(), out toolName))
+                        continue;
+
+                    toolsPorts.Add(toolName, port);
+                }
+            }
+        }
+
+
+        private Dictionary<JSLTools, int> toolsPorts { get; set; } = [];
+        private CachingService? _cache;
+
+        // General plugin members
+        private PluginInitContext? Context { get; set; }
+        private string? IconPath { get; set; }
+        private bool Disposed { get; set; }
         /// <summary>
         /// ID of the plugin.
         /// </summary>
@@ -45,13 +100,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// Description of the plugin.
         /// </summary>
         public string Description => "Helpers for JSL developers";
-
-        private Dictionary<string, JSLTools> toolNames = new()
-        {
-            { "MT", JSLTools.MT },
-            { "MRCCT", JSLTools.MRCCT},
-            { "HMI", JSLTools.HMI },
-        };
 
         /// <summary>
         /// Additional options for the plugin.
@@ -107,59 +155,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             }
         ];
 
-        private string GitRepoUrl { get; set; }
-        private string JenkinsUrl { get; set; }
-        private string FolderPath { get; set; }
-        private string TestServerUrl { get; set; }
-        private string DownloadScriptPath { get; set; }
-        private List<string> ToolsPorts { 
-            get 
-            {
-                List<string> val = new List<string>();
-                foreach (var tool in toolsPorts)
-                {
-                    string toolName = toolNames.First(elem => elem.Value == tool.Key).Key;
-                    val.Add($"{toolName} {tool.Value}");
-                }
-
-                return val;
-            }
-            set
-            {
-                toolsPorts.Clear();
-                foreach (var tool in value)
-                {
-                    string[] splitted = tool.Split(" ", StringSplitOptions.RemoveEmptyEntries);
-                    if (splitted.Length != 2)
-                        continue;
-
-                    int port;
-                    if (!int.TryParse(splitted[1], out port))
-                        continue;
-
-                    JSLTools toolName;
-                    if (!toolNames.TryGetValue(splitted[0].ToUpper(), out toolName))
-                        continue;
-
-                    toolsPorts.Add(toolName, port);
-                }
-            }
-        }
-        private Dictionary<JSLTools, int> toolsPorts { get; set; } = [];
-
-
-        private bool CountSpaces { get; set; }
-
-        private PluginInitContext? Context { get; set; }
-
-        private string? IconPath { get; set; }
-
-        private bool Disposed { get; set; }
-
-
-        private CachingService? _cache;
-
-
 
         public List<Result> Query(Query query)
         {
@@ -186,101 +181,20 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             return [];
         }
 
-        /// <summary>
-        /// Return a filtered list, based on the given query.
-        /// </summary>
-        /// <param name="query">The query to filter the list.</param>
-        /// <returns>A filtered list, can be empty when nothing was found.</returns>
-        public List<Result> Query(Query query, bool delayedExecution)
-        {
-            if (!delayedExecution || query.Terms.Count < 2)
-                return [];
-
-            var modeQuery = query.Terms.First();
-
-            if (modeQuery == null)
-                return [];
-
-            //switch (modeQuery)
-            //{
-            //    case "b":
-            //        {
-            //            return HandleBranchQuery(query.Terms.Skip(1));
-            //        }
-            //        //case "t":
-            //        //    {
-            //        //        return HandleToolQuery(query.Terms.Skip(1));
-            //        //    }
-            //}
-
-            return [];
-
-
-
-            //Log.Info("Selected Tool: " + selectedTool.ToString(), GetType());
-
-            ////var words = query.Terms.Count;
-            ////// Average rate for transcription: 32.5 words per minute
-            ////// https://en.wikipedia.org/wiki/Words_per_minute
-            ////var transcription = TimeSpan.FromMinutes(words / 32.5);
-            ////var minutes = $"{(int)transcription.TotalMinutes}:{transcription.Seconds:00}";
-
-            ////var charactersWithSpaces = query.Search.Length;
-            ////var charactersWithoutSpaces = query.Terms.Sum(x => x.Length);
-
-            //return [
-            //    new()
-            //    {
-            //        QueryTextDisplay = $"query: {selectedToolName}",
-            //        IcoPath = IconPath,
-            //        Title = $"Tool: {selectedToolName}",
-            //        SubTitle = "",
-            //        ToolTipData = new ToolTipData("Tool", selectedToolName),
-            //        ContextData = (selectedToolName),
-            //    },
-            //    //new()
-            //    //{
-            //    //    QueryTextDisplay = query.Search,
-            //    //    IcoPath = IconPath,
-            //    //    Title = $"Words: {words}",
-            //    //    SubTitle = $"Transcription: {minutes} minutes",
-            //    //    ToolTipData = new ToolTipData("Words", $"{words} words\n{minutes} minutes for transcription\nAverage rate for transcription: 32.5 words per minute"),
-            //    //    ContextData = (words, transcription),
-            //    //},
-            //    //new()
-            //    //{
-            //    //    QueryTextDisplay = query.Search,
-            //    //    IcoPath = IconPath,
-            //    //    Title = $"Characters: {(CountSpaces ? charactersWithSpaces : charactersWithoutSpaces)}",
-            //    //    SubTitle = CountSpaces ? "With spaces" : "Without spaces",
-            //    //    ToolTipData = new ToolTipData("Characters", $"{charactersWithSpaces} characters (with spaces)\n{charactersWithoutSpaces} characters (without spaces)"),
-            //    //    ContextData = CountSpaces ? charactersWithSpaces : charactersWithoutSpaces,
-            //    //},
-            //];
-        }
+        
 
         private List<Result> HandleBranchQuery(IEnumerable<string> query)
         {
-            Log.Info("HandleBranchQuery", GetType());
-            //if (query.Count() == 0)
-            //{
-            //    return [];
-            //}
             if (query.Count() != 1)
                 return [];
 
             string searchString = query.First();
-            Log.Info($"HandleBranchQuery - Searchstring: {searchString}", GetType());
 
             //List<string> branches = GetBranchesQuery(GitRepoUrl, searchString);
             List<string> branches;
             branches = _cache.GetOrAdd("foo", () => GetBranchesQuery(GitRepoUrl, searchString));
 
-            //var branches = GetBranches();
-
-            Log.Info($"HandleBranchQuery - Branches: {branches.Count()}", GetType());
-
-            List<Result> results = branches.FindAll(x => x.Contains(searchString)).ConvertAll(branch =>
+            List<Result> results = branches.ConvertAll(branch =>
             {
                 return new Result
                 {
@@ -365,6 +279,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             ];
         }
 
+        /// <summary>
+        /// Get a list of all branches for a given repostiory, filtered by a search value.
+        /// </summary>
+        /// <param name="repoUrl">URL of the GIT repository</param>
+        /// <param name="searchValue">Search value to filter the branches</param>
+        /// <returns>List of branches</returns>
         public static async Task<IEnumerable<string>> GetBranches(string repoUrl, string searchValue)
         {
             string getBranchesCmd = $"git ls-remote {repoUrl}";
@@ -377,9 +297,17 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     branchNames.Add(branchName);
             }
 
+            if (!string.IsNullOrWhiteSpace(searchValue))
+                return branchNames.FindAll(x => x.Contains(searchValue));
+                
             return branchNames;
         }
 
+        /// <summary>
+        /// Parse a branch output (HEAD commit and branch-ref) to retrieve only the branch-name
+        /// </summary>
+        /// <param name="branchOutput">Branch output from the cmd (HEAD commit and branch-ref)</param>
+        /// <returns>Branch-name</returns>
         private static string? ParseBranchOutput(string branchOutput)
         {
             string refStart = "refs/heads/";
@@ -518,11 +446,33 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                                 new ContextMenuResult
                                 {
                                     PluginName = Name,
-                                    Title = "Start locally",
+                                    Title = "Checkout branch",
                                     FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
                                     Glyph = "\xe756",
                                     AcceleratorKey = Key.Enter,
                                     Action = _ => StartTool(data)
+                                }
+                            ];
+                        }
+                }
+            } else if (selectedResult?.ContextData is (string branch, OperationMode branchMode))
+            {
+                switch (branchMode)
+                {
+                    case OperationMode.Branch:
+                        {
+                            return [
+                                new ContextMenuResult
+                                {
+                                    PluginName = Name,
+                                    Title = "Checkout branch",
+                                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                                    Glyph = "\xe756",
+                                    AcceleratorKey = Key.Enter,
+                                    Action = _ => {
+                                        Log.Info($"Checkout branch: {branch}", GetType());
+                                        return true;
+                                    }
                                 }
                             ];
                         }
@@ -555,6 +505,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             ToolsPorts = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(ToolsPorts))?.TextValueAsMultilineList ?? [];
         }
 
+        /// <inheritdoc/>
         public void ReloadData()
         {
             if (Context is null)
