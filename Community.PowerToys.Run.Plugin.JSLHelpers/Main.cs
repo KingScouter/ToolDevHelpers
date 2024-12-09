@@ -9,6 +9,8 @@ using Wox.Plugin;
 using Wox.Plugin.Logger;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 using LazyCache;
+using System.Web;
+using Wox.Infrastructure;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
@@ -158,12 +160,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         public List<Result> Query(Query query)
         {
-            if (query.Terms.Count < 2)
+            if (query.Terms.Count == 0 || query.Terms.Count > 2)
                 return [];
 
-            var modeQuery = query.Terms.First();
+            var modeQuery = query.Terms.FirstOrDefault("");
 
-            if (modeQuery == null)
+            if (string.IsNullOrWhiteSpace(modeQuery))
                 return [];
 
             switch (modeQuery)
@@ -185,14 +187,16 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         private List<Result> HandleBranchQuery(IEnumerable<string> query)
         {
-            if (query.Count() != 1)
+            if (query.Count() > 1)
                 return [];
 
-            string searchString = query.First();
+            string searchString = query.FirstOrDefault("");
 
-            //List<string> branches = GetBranchesQuery(GitRepoUrl, searchString);
             List<string> branches;
-            branches = _cache.GetOrAdd("foo", () => GetBranchesQuery(GitRepoUrl, searchString));
+            branches = _cache.GetOrAdd("foo", () => GetBranchesQuery(GitRepoUrl));
+
+            if (!string.IsNullOrWhiteSpace(searchString))
+                branches = branches.FindAll(x => x.Contains(searchString));
 
             List<Result> results = branches.ConvertAll(branch =>
             {
@@ -206,35 +210,17 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     ContextData = (branch, OperationMode.Branch),
                 };
             });
-            //foreach ( var branch in branches )
-            //{
-            //    Log.Info($"Found branch: {branch}", GetType());
-            //    results.Add(
-            //        new()
-            //        {
-            //            //QueryTextDisplay = $"query: {selectedToolName}",
-            //            IcoPath = IconPath,
-            //            Title = branch,
-            //            //SubTitle = $"Port: {port}",
-            //            ToolTipData = new ToolTipData("Branch", branch),
-            //            ContextData = (branch, OperationMode.Branch),
-            //        }
-            //    );
-            //}
 
             return results;
 
-            //static List<string> GetBranchesQuery(string repoUrl, string searchString) => GetBranches(repoUrl, searchString).Result!.Match(
-            //    ok: r => r,
-            //    err: e => [new(e.GetType().Name, string.Empty, e.Message, false)]);
-            static List<string> GetBranchesQuery(string repoUrl, string searchString) => GetBranches(repoUrl, searchString).Result!.ToList();
+            static List<string> GetBranchesQuery(string repoUrl) => GetBranches(repoUrl).Result!.ToList();
         }
 
         private List<Result> HandleToolQuery(IEnumerable<string> query)
         {
-            var selectedToolQuery = query.First();
+            var selectedToolQuery = query.FirstOrDefault("");
 
-            if (selectedToolQuery == null)
+            if (string.IsNullOrWhiteSpace(selectedToolQuery))
                 return [];
 
             JSLTools selectedTool = JSLTools.None;
@@ -259,6 +245,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         selectedToolName = "HMI";
                         break;
                     }
+                default:
+                    return [];
             }
 
             int port = toolsPorts[selectedTool];
@@ -283,9 +271,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// Get a list of all branches for a given repostiory, filtered by a search value.
         /// </summary>
         /// <param name="repoUrl">URL of the GIT repository</param>
-        /// <param name="searchValue">Search value to filter the branches</param>
         /// <returns>List of branches</returns>
-        public static async Task<IEnumerable<string>> GetBranches(string repoUrl, string searchValue)
+        public static async Task<IEnumerable<string>> GetBranches(string repoUrl)
         {
             string getBranchesCmd = $"git ls-remote {repoUrl}";
             IEnumerable<string> branchesOutput = await ExecuteCmdCommand(getBranchesCmd);
@@ -296,9 +283,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 if (branchName != null)
                     branchNames.Add(branchName);
             }
-
-            if (!string.IsNullOrWhiteSpace(searchValue))
-                return branchNames.FindAll(x => x.Contains(searchValue));
                 
             return branchNames;
         }
@@ -440,20 +424,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                                 }
                             ];
                         }
-                    case OperationMode.Branch:
-                        {
-                            return [
-                                new ContextMenuResult
-                                {
-                                    PluginName = Name,
-                                    Title = "Checkout branch",
-                                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                                    Glyph = "\xe756",
-                                    AcceleratorKey = Key.Enter,
-                                    Action = _ => StartTool(data)
-                                }
-                            ];
-                        }
                 }
             } else if (selectedResult?.ContextData is (string branch, OperationMode branchMode))
             {
@@ -470,7 +440,20 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                                     Glyph = "\xe756",
                                     AcceleratorKey = Key.Enter,
                                     Action = _ => {
-                                        Log.Info($"Checkout branch: {branch}", GetType());
+                                        CheckoutBranch(branch);
+                                        return true;
+                                    }
+                                },
+                                new ContextMenuResult
+                                {
+                                    PluginName = Name,
+                                    Title = "Open Jenkins",
+                                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                                    Glyph = "\xE774",
+                                    AcceleratorKey = Key.Enter,
+                                    AcceleratorModifiers = ModifierKeys.Shift,
+                                    Action = _ => {
+                                        OpenJenkins(branch);
                                         return true;
                                     }
                                 }
@@ -480,6 +463,30 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             }
 
             return [];
+        }
+
+        private void CheckoutBranch(string branch)
+        {
+            Log.Info($"Checkout branch: {branch}", GetType());
+
+        }
+
+        private void OpenJenkins(string branch)
+        {
+            Log.Info($"Open Jenkins: {branch}", GetType());
+            StringBuilder sb = new();
+            sb.Append(JenkinsUrl);
+
+            if (!JenkinsUrl.EndsWith("job/") && !JenkinsUrl.EndsWith("job"))
+            {
+                if (!JenkinsUrl.EndsWith('/'))
+                    sb.Append('/');
+                sb.Append("job/");
+            }
+
+            sb.Append(HttpUtility.UrlEncode(branch));
+
+            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, sb.ToString());
         }
 
         /// <summary>
