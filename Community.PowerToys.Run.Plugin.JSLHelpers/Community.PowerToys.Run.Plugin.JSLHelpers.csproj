@@ -14,19 +14,39 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(Platform)' == 'x64'">
-    <Reference Include="..\libs\x64\PowerToys.Common.UI.dll" />
-    <Reference Include="..\libs\x64\PowerToys.ManagedCommon.dll" />
-    <Reference Include="..\libs\x64\PowerToys.Settings.UI.Lib.dll" />
-    <Reference Include="..\libs\x64\Wox.Infrastructure.dll" />
-    <Reference Include="..\libs\x64\Wox.Plugin.dll" />
+	<Reference Include="PowerToys.Common.UI">
+		<HintPath>../libs/x64/PowerToys.Common.UI.dll</HintPath>
+	</Reference>
+	<Reference Include="PowerToys.ManagedCommon">
+		<HintPath>../libs/x64/PowerToys.ManagedCommon.dll</HintPath>
+	</Reference>
+    <Reference Include="PowerToys.Settings.UI.Lib">
+		<HintPath>../libs/x64/PowerToys.Settings.UI.Lib.dll</HintPath>
+	</Reference>
+	<Reference Include="Wox.Infrastructure">
+		<HintPath>../libs/x64/Wox.Infrastructure.dll</HintPath>
+	</Reference>
+	<Reference Include="Wox.Plugin">
+		<HintPath>../libs/x64/Wox.Plugin.dll</HintPath>
+	</Reference>
   </ItemGroup>
 
   <ItemGroup Condition="'$(Platform)' == 'ARM64'">
-    <Reference Include="..\libs\ARM64\PowerToys.Common.UI.dll" />
-    <Reference Include="..\libs\ARM64\PowerToys.ManagedCommon.dll" />
-    <Reference Include="..\libs\ARM64\PowerToys.Settings.UI.Lib.dll" />
-    <Reference Include="..\libs\ARM64\Wox.Infrastructure.dll" />
-    <Reference Include="..\libs\ARM64\Wox.Plugin.dll" />
+	  <Reference Include="PowerToys.Common.UI">
+		  <HintPath>../libs/ARM64/PowerToys.Common.UI.dll</HintPath>
+	  </Reference>
+	  <Reference Include="PowerToys.ManagedCommon">
+		  <HintPath>../libs/ARM64/PowerToys.ManagedCommon.dll</HintPath>
+	  </Reference>
+	  <Reference Include="PowerToys.Settings.UI.Lib">
+		  <HintPath>../libs/ARM64/PowerToys.Settings.UI.Lib.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Wox.Infrastructure">
+		  <HintPath>../libs/ARM64/Wox.Infrastructure.dll</HintPath>
+	  </Reference>
+	  <Reference Include="Wox.Plugin">
+		  <HintPath>../libs/ARM64/Wox.Plugin.dll</HintPath>
+	  </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -39,7 +59,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Community.PowerToys.Run.Plugin.Dependencies" Version="0.86.0" />
     <PackageReference Include="LazyCache" Version="2.4.0" />
   </ItemGroup>
 
