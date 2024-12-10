@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wox.Plugin.Logger;
 using Wox.Plugin;
 using System.Windows.Input;
-using System.Xml.Linq;
+using Wox.Infrastructure;
+using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
@@ -106,7 +102,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         private bool OpenTool(JSLTools tool, bool isLocal, AppConfig config)
         {
-            string url = "";
+            string url;
             int port = config.toolsPorts[tool];
             if (isLocal)
                 url = "https://localhost";
@@ -115,7 +111,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
             url += $":{port}";
 
-            Log.Info($"Open tool {url}", GetType());
+            Log.Info($"Open tool {url}, {BrowserInfo.Path}, {BrowserInfo.ArgumentsPattern}", GetType());
+
+            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, url);
 
             return true;
         }
