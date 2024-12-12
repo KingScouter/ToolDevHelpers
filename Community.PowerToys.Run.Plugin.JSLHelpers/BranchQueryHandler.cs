@@ -39,7 +39,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     //QueryTextDisplay = $"query: {selectedToolName}",
                     //IcoPath = IconPath,
                     Title = branch,
-                    //SubTitle = $"Port: {port}",
                     ToolTipData = new ToolTipData("Branch", branch),
                     ContextData = (branch, OperationMode.Branch),
                 };
@@ -58,7 +57,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         public static async Task<IEnumerable<string>> GetBranches(string repoUrl)
         {
             string getBranchesCmd = $"git ls-remote {repoUrl}";
-            IEnumerable<string> branchesOutput = await Utils.ExecuteCmdCommand(getBranchesCmd);
+            IEnumerable<string> branchesOutput = await Utils.ExecuteCmdCommandAsync(getBranchesCmd);
             List<string> branchNames = [];
             foreach (string branch in branchesOutput)
             {
@@ -119,8 +118,30 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         OpenJenkins(branch, config.JenkinsUrl);
                         return true;
                     }
+                },
+                new ContextMenuResult
+                {
+                    PluginName = name,
+                    Title = "Download Tools",
+                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                    Glyph = "\xE774",
+                    AcceleratorKey = Key.Enter,
+                    AcceleratorModifiers = ModifierKeys.Control,
+                    Action = _ => {
+                        DownloadTools(branch, config.DownloadScriptPath);
+                        return true;
+                    }
                 }
             ];
+        }
+
+        private void DownloadTools(string branch, string scriptPath)
+        {
+            Log.Info($"Download Tools: {scriptPath} {branch}", GetType());
+            if (string.IsNullOrEmpty(scriptPath))
+                return;
+
+            Utils.ExecutePowershellCommand($"{scriptPath} {branch}");
         }
 
         private void CheckoutBranch(string branch)

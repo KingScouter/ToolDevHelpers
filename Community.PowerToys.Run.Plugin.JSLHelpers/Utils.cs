@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
@@ -16,17 +11,42 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <param name="waitForResult">Flag to determine if the CLI should remain open after the execution finished</param>
         /// <param name="workingDir">Working directory</param>
         /// <returns>Standard output</returns>
-        public static Task<IEnumerable<string>> ExecuteCmdCommand(string cmd)
+        public static Task<IEnumerable<string>> ExecuteCmdCommandAsync(string cmd, string? workingDir = null)
         {
             System.Diagnostics.ProcessStartInfo startInfo = new()
             {
                 FileName = "cmd.exe",
                 RedirectStandardOutput = true,
                 WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden,
-                Arguments = $"/C {cmd}"
+                Arguments = $"/C {cmd}",
             };
 
-            return ExecuteProcess(startInfo);
+            if (!string.IsNullOrWhiteSpace(workingDir))
+                startInfo.WorkingDirectory = workingDir;
+
+            return ExecuteProcessAsync(startInfo);
+        }
+
+        /// <summary>
+        /// Execute a command in the windows PowerShell
+        /// </summary>
+        /// <param name="commandTemplate">Command template</param>
+        /// <param name="waitForResult">Flag to determine if the CLI should remain open after the execution finished</param>
+        /// <param name="workingDir">Working directory</param>
+        public static void ExecutePowershellCommand(string commandTemplate, string? workingDir = null)
+        {
+            System.Diagnostics.ProcessStartInfo startInfo = new()
+            {
+                FileName = "powershell.exe",
+                Arguments = $"-ExecutionPolicy Bypass \"{commandTemplate}\""
+            };
+
+            if (!string.IsNullOrWhiteSpace(workingDir))
+                startInfo.WorkingDirectory = workingDir;
+
+            startInfo.UseShellExecute = false;
+
+            ExecuteProcess(startInfo);
         }
 
         /// <summary>
@@ -34,12 +54,14 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         /// <param name="startInfo">Process info for startup</param>
         /// <returns>Standard output</returns>
-        private static async Task<IEnumerable<string>> ExecuteProcess(System.Diagnostics.ProcessStartInfo startInfo)
+        private static async Task<IEnumerable<string>> ExecuteProcessAsync(System.Diagnostics.ProcessStartInfo startInfo)
         {
             List<string> result = [];
 
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            process.StartInfo = startInfo;
+            System.Diagnostics.Process process = new()
+            {
+                StartInfo = startInfo,
+            };
             process.StartInfo.RedirectStandardOutput = true;
             process.Start();
 
@@ -56,6 +78,22 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             await process.WaitForExitAsync();
 
             return result;
+        }
+
+        /// <summary>
+        /// Internal method to startup and execute a process for the command
+        /// </summary>
+        /// <param name="startInfo">Process info for startup</param>
+        /// <returns>Standard output</returns>
+        private static void ExecuteProcess(System.Diagnostics.ProcessStartInfo startInfo)
+        {
+            System.Diagnostics.Process process = new()
+            {
+                StartInfo = startInfo
+            };
+            process.Start();
+
+            process.WaitForExit();
         }
     }
 }
