@@ -7,13 +7,6 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
-    enum JSLTools
-    {
-        None,
-        MT,
-        MRCCT,
-        HMI
-    }
 
     enum OperationMode
     {
@@ -93,14 +86,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 DisplayDescription = "Path to the download script",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
                 TextValue = appConfig.DownloadScriptPath
-            },
-            new()
-            {
-                Key = nameof(appConfig.ToolsPorts),
-                DisplayLabel = "Tools and Ports",
-                DisplayDescription = "List of tools and their productive ports",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.MultilineTextbox,
-                TextValueAsMultilineList = appConfig.ToolsPorts
             }
         ];
 
@@ -184,7 +169,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             appConfig.FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.FolderPath))?.TextValue ?? "";
             appConfig.TestServerUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.TestServerUrl))?.TextValue ?? "";
             appConfig.DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.DownloadScriptPath))?.TextValue ?? "";
-            appConfig.ToolsPorts = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ToolsPorts))?.TextValueAsMultilineList ?? [];
         }
 
         /// <inheritdoc/>

@@ -24,13 +24,13 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             if (query.Count() > 1)
                 return [];
 
-            string searchString = query.FirstOrDefault("");
+            string searchString = query.FirstOrDefault("").ToLower();
 
             List<string> branches;
             branches = _cache.GetOrAdd("foo", () => GetBranchesQuery(config.GitRepoUrl));
 
             if (!string.IsNullOrWhiteSpace(searchString))
-                branches = branches.FindAll(x => x.Contains(searchString));
+                branches = branches.FindAll(x => x.ToLower().Contains(searchString));
 
             List<Result> results = branches.ConvertAll(branch =>
             {
