@@ -57,7 +57,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         PluginName = name,
                         Title = "Open locally",
                         FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                        Glyph = "\xe774",
+                        Glyph = "\xEC27",
                         AcceleratorKey = Key.Enter,
                         AcceleratorModifiers = ModifierKeys.Control,
                         Action = _ => OpenTool(data, true, config)

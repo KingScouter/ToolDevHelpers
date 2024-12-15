@@ -97,23 +97,10 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 new ContextMenuResult
                 {
                     PluginName = name,
-                    Title = "Checkout branch",
-                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                    Glyph = "\xe756",
-                    AcceleratorKey = Key.Enter,
-                    Action = _ => {
-                        CheckoutBranch(branch);
-                        return true;
-                    }
-                },
-                new ContextMenuResult
-                {
-                    PluginName = name,
                     Title = "Open Jenkins",
                     FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
                     Glyph = "\xE774",
                     AcceleratorKey = Key.Enter,
-                    AcceleratorModifiers = ModifierKeys.Shift,
                     Action = _ => {
                         OpenJenkins(branch, config.JenkinsUrl);
                         return true;
@@ -124,9 +111,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     PluginName = name,
                     Title = "Download Tools",
                     FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                    Glyph = "\xE774",
+                    Glyph = "\xE896",
                     AcceleratorKey = Key.Enter,
-                    AcceleratorModifiers = ModifierKeys.Control,
+                    AcceleratorModifiers = ModifierKeys.Shift,
                     Action = _ => {
                         DownloadTools(branch, config.DownloadScriptPath);
                         return true;
