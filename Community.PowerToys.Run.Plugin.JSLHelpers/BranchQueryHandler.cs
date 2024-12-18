@@ -131,12 +131,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             Utils.ExecutePowershellCommand($"{scriptPath} {branch}");
         }
 
-        private void CheckoutBranch(string branch)
-        {
-            Log.Info($"Checkout branch: {branch}", GetType());
-
-        }
-
         private void OpenJenkins(string branch, string jenkinsUrl)
         {
             Log.Info($"Open Jenkins: {branch}", GetType());

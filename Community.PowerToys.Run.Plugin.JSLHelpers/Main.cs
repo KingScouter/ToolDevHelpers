@@ -1,3 +1,5 @@
+using System.IO;
+using System.Text.Json;
 using System.Windows.Controls;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
@@ -65,11 +67,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             },
             new()
             {
-                Key = nameof(appConfig.TestServerUrl),
+                Key = nameof(appConfig.RemoteServerUrl),
                 DisplayLabel = "Testserver URL",
                 DisplayDescription = "URL of the testserver where the tools are running",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = appConfig.TestServerUrl
+                TextValue = appConfig.RemoteServerUrl
             },
             new()
             {
@@ -86,6 +88,14 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 DisplayDescription = "Path to the download script",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
                 TextValue = appConfig.DownloadScriptPath
+            },
+            new()
+            {
+                Key = nameof (appConfig.ToolConfigFile),
+                DisplayLabel = "Tool config file",
+                DisplayDescription = "Config file with the configuration of all tools. If the file doesn't exist, a sample project will be added at that path.",
+                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                TextValue = appConfig.ToolConfigFile
             }
         ];
 
@@ -103,7 +113,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             switch (modeQuery)
             {
                 case "b": return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig);
-                case "t": return toolQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig);
+                case "t": return toolQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig.ToolConfigProject);
             }
 
             return [];
@@ -136,12 +146,19 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         {
             Log.Info("LoadContextMenus", GetType());
 
-            if (selectedResult?.ContextData is (JSLTools data, OperationMode mode) && mode == OperationMode.Tool)
+            if (selectedResult?.ContextData is (string data, OperationMode mode))
             {
-                return toolQueryHandler.LoadContextMenus(data, Name, appConfig);
-            } else if (selectedResult?.ContextData is (string branch, OperationMode branchMode) && branchMode == OperationMode.Branch)
-            {
-                return branchQueryHandler.LoadContextMenus(branch, Name, appConfig);
+                switch (mode)
+                {
+                    case OperationMode.Branch:
+                        {
+                            return branchQueryHandler.LoadContextMenus(data, Name, appConfig);
+                        }
+                    case OperationMode.Tool:
+                        {
+                            return toolQueryHandler.LoadContextMenus(data, Name, appConfig);
+                        }
+                }
             }
 
             return [];
@@ -167,8 +184,63 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             appConfig.GitRepoUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.GitRepoUrl))?.TextValue ?? "";
             appConfig.JenkinsUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.JenkinsUrl))?.TextValue ?? "";
             appConfig.FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.FolderPath))?.TextValue ?? "";
-            appConfig.TestServerUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.TestServerUrl))?.TextValue ?? "";
+            appConfig.RemoteServerUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.RemoteServerUrl))?.TextValue ?? "";
             appConfig.DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.DownloadScriptPath))?.TextValue ?? "";
+            string newConfigFile = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ToolConfigFile))?.TextValue ?? "";
+
+            if (newConfigFile != appConfig.ToolConfigFile)
+            {
+                appConfig.ToolConfigFile = newConfigFile;
+                HandleConfigFile(appConfig);
+            }
+        }
+
+        private void HandleConfigFile(AppConfig appConfig)
+        {
+            if (string.IsNullOrWhiteSpace(appConfig.ToolConfigFile))
+            {
+                Log.Info("Project file not set => Skip tool configuration", GetType());
+                appConfig.ToolConfigProject = null;
+                return;
+            }
+
+            try
+            {
+                StreamReader sr = new(appConfig.ToolConfigFile);
+                string dataLine = sr.ReadToEnd();
+                sr.Close();
+                if (dataLine != null)
+                {
+                    appConfig.ToolConfigProject = JsonSerializer.Deserialize<ToolConfigProject>(dataLine);
+                    Log.Info($"Tool config project {appConfig.ToolConfigFile} loaded", GetType());
+                }
+            }
+            catch (FileNotFoundException)
+            {
+                Log.Info("Project file not found => Create sample project in place", GetType());
+                // Write sample project
+                ToolConfigProject sampleProject = new();
+                sampleProject.AddToolConfig(new ToolConfig()
+                {
+                    shortName = "test",
+                    name = "Test tool name",
+                    useHttps = true,
+                    port = 1234,
+                    exePath = "testTool/tool.exe"
+                });
+                
+                StreamWriter sw = new(appConfig.ToolConfigFile);
+                sw.Write(JsonSerializer.Serialize(sampleProject));
+                sw.Close();
+            }
+            catch (JsonException ex)
+            {
+                Log.Info($"Project file invalid: {ex.Message}", GetType());
+            }
+            catch (Exception ex)
+            {
+                Log.Info($"Unknown exception occured during loading of tool config project: {ex.Message}", GetType());
+            }
         }
 
         /// <inheritdoc/>

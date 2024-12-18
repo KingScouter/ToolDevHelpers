@@ -8,22 +8,21 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
     internal class ToolQueryHandler
     {
-        public List<Result> HandleQuery(IEnumerable<string> query, AppConfig config)
+        public List<Result> HandleQuery(IEnumerable<string> query, ToolConfigProject? configProject)
         {
+            // No project configured => Skip
+            if (configProject == null)
+                return [];
+
             var selectedToolQuery = query.FirstOrDefault("");
 
             if (string.IsNullOrWhiteSpace(selectedToolQuery))
                 return [];
 
-            ToolConfig toolConfig;
+            ToolConfig? toolConfig = configProject.GetToolConfig(selectedToolQuery);
 
-            try
-            {
-                toolConfig = ToolConfig.tools.First(x => x.Value.shortName.ToLower() == selectedToolQuery.ToLower()).Value;
-            } catch (InvalidOperationException)
-            {
+            if (toolConfig == null)
                 return [];
-            }
 
             Log.Info("Selected Tool: " + toolConfig.name, GetType());
 
@@ -35,13 +34,16 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     Title = $"Tool: {toolConfig.name}",
                     SubTitle = $"Port: {toolConfig.port}",
                     ToolTipData = new ToolTipData("Tool", toolConfig.name),
-                    ContextData = (toolConfig.id, OperationMode.Tool),
+                    ContextData = (toolConfig.shortName.ToLower(), OperationMode.Tool),
                 }
             ];
         }
 
-        public List<ContextMenuResult> LoadContextMenus(JSLTools data, string name, AppConfig config)
+        public List<ContextMenuResult> LoadContextMenus(string tool, string name, AppConfig config)
         {
+            if (config.ToolConfigProject == null)
+                return [];
+
             return [
                 new ContextMenuResult
                 {
@@ -50,7 +52,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
                         Glyph = "\xe756",
                         AcceleratorKey = Key.Enter,
-                        Action = _ => StartTool(data, config)
+                        Action = _ => StartTool(tool, config)
                     },
                     new ContextMenuResult
                     {
@@ -60,7 +62,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         Glyph = "\xEC27",
                         AcceleratorKey = Key.Enter,
                         AcceleratorModifiers = ModifierKeys.Control,
-                        Action = _ => OpenTool(data, true, config)
+                        Action = _ => OpenTool(tool, true, config.ToolConfigProject, config.RemoteServerUrl)
                     },
                     new ContextMenuResult
                     {
@@ -70,26 +72,29 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         Glyph = "\xe753",
                         AcceleratorKey = Key.Enter,
                         AcceleratorModifiers = ModifierKeys.Shift,
-                        Action = _ => OpenTool(data, false, config)
+                        Action = _ => OpenTool(tool, false, config.ToolConfigProject, config.RemoteServerUrl)
                     }
             ];
         }
 
-        private bool StartTool(JSLTools tool, AppConfig config)
+        private bool StartTool(string tool, AppConfig config)
         {
             Log.Info($"Start tool: {tool}, {config.FolderPath}/test.ps1", GetType());
             Utils.ExecutePowershellCommand($"{config.FolderPath}/test.ps1");
             return true;
         }
 
-        private bool OpenTool(JSLTools tool, bool isLocal, AppConfig config)
+        private bool OpenTool(string tool, bool isLocal, ToolConfigProject configProject, string remoteServerUrl)
         {
             string url;
-            ToolConfig toolConfig = ToolConfig.tools[tool];
+            ToolConfig? toolConfig = configProject.GetToolConfig(tool);
+            if (toolConfig == null)
+                return false;
+
             if (isLocal)
                 url = "https://localhost";
             else
-                url = config.TestServerUrl;
+                url = remoteServerUrl;
 
             url += $":{toolConfig.port}";
 
