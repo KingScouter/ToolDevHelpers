@@ -20,5 +20,13 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
             return null;
         }
+
+        internal List<ToolConfig> GetToolConfigs(string filterQuery)
+        {
+            if (string.IsNullOrWhiteSpace(filterQuery))
+                return [.. toolConfigs.Values];
+
+            return [.. toolConfigs.Values.Where(config => config.shortName.Contains(filterQuery))];
+        }
     }
 }

@@ -15,28 +15,20 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 return [];
 
             var selectedToolQuery = query.FirstOrDefault("");
+            List<ToolConfig> configs = configProject.GetToolConfigs(selectedToolQuery);
 
-            if (string.IsNullOrWhiteSpace(selectedToolQuery))
-                return [];
-
-            ToolConfig? toolConfig = configProject.GetToolConfig(selectedToolQuery);
-
-            if (toolConfig == null)
-                return [];
-
-            Log.Info("Selected Tool: " + toolConfig.name, GetType());
-
-            return [
-                new()
+            return [.. configs.Select(x =>
+            {
+                return new Result()
                 {
-                    QueryTextDisplay = $"query: {toolConfig.name}",
+                    QueryTextDisplay = $"query: {x.name}",
                     //IcoPath = IconPath,
-                    Title = $"Tool: {toolConfig.name}",
-                    SubTitle = $"Port: {toolConfig.port}",
-                    ToolTipData = new ToolTipData("Tool", toolConfig.name),
-                    ContextData = (toolConfig.shortName.ToLower(), OperationMode.Tool),
-                }
-            ];
+                    Title = $"{x.shortName}: {x.name}",
+                    SubTitle = $"Port: {x.port}",
+                    ToolTipData = new ToolTipData("Tool", x.name),
+                    ContextData = (x.shortName.ToLower(), OperationMode.Tool),
+                };
+            })];
         }
 
         public List<ContextMenuResult> LoadContextMenus(string tool, string name, AppConfig config)
