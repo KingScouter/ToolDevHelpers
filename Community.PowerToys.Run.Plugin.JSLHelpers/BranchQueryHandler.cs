@@ -13,12 +13,21 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
     {
         private CachingService? _cache;
 
+        /// <summary>
+        /// Initialize the caching-service
+        /// </summary>
         public void Init()
         {
             _cache = new CachingService();
             _cache.DefaultCachePolicy.DefaultCacheDurationSeconds = (int)TimeSpan.FromMinutes(1).TotalSeconds;
         }
 
+        /// <summary>
+        /// Handle the query to select a branch
+        /// </summary>
+        /// <param name="query">Search query</param>
+        /// <param name="config">App configuration</param>
+        /// <returns>List of query results (branches)</returns>
         public List<Result> HandleQuery(IEnumerable<string> query, AppConfig config)
         {
             if (query.Count() > 1)
@@ -36,7 +45,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             {
                 return new Result
                 {
-                    //QueryTextDisplay = $"query: {selectedToolName}",
+                    QueryTextDisplay = $"Branch: {branch}",
                     //IcoPath = IconPath,
                     Title = branch,
                     ToolTipData = new ToolTipData("Branch", branch),
@@ -91,6 +100,13 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             return null;
         }
 
+        /// <summary>
+        /// Load the context-menus for a selected branch (open Jenkins, download tools).
+        /// </summary>
+        /// <param name="branch">Branch name</param>
+        /// <param name="name">Plugin name</param>
+        /// <param name="config">App configuration</param>
+        /// <returns></returns>
         public List<ContextMenuResult> LoadContextMenus(string branch, string name, AppConfig config)
         {
             return [
@@ -122,6 +138,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             ];
         }
 
+        /// <summary>
+        /// Download the tools for a selected branch.
+        /// </summary>
+        /// <param name="branch">Branch name</param>
+        /// <param name="scriptPath">Path to the download-script</param>
         private void DownloadTools(string branch, string scriptPath)
         {
             Log.Info($"Download Tools: {scriptPath} {branch}", GetType());
@@ -131,6 +152,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             Utils.ExecutePowershellCommand($"{scriptPath} {branch}");
         }
 
+        /// <summary>
+        /// Open the page for the branch on Jenkins
+        /// </summary>
+        /// <param name="branch">Branch name</param>
+        /// <param name="jenkinsUrl">Base url for Jenkins</param>
         private void OpenJenkins(string branch, string jenkinsUrl)
         {
             Log.Info($"Open Jenkins: {branch}", GetType());

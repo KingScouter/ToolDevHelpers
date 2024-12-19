@@ -8,6 +8,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
     internal class ToolQueryHandler
     {
+        /// <summary>
+        /// Handle the query to select a tool
+        /// </summary>
+        /// <param name="query">Search query</param>
+        /// <param name="configProject">Configured tools</param>
+        /// <returns>List of query results (tools)</returns>
         public List<Result> HandleQuery(IEnumerable<string> query, ToolConfigProject? configProject)
         {
             // No project configured => Skip
@@ -26,16 +32,20 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     Title = $"{x.shortName}: {x.name}",
                     SubTitle = $"Port: {x.port}",
                     ToolTipData = new ToolTipData("Tool", x.name),
-                    ContextData = (x.shortName.ToLower(), OperationMode.Tool),
+                    ContextData = (x, OperationMode.Tool),
                 };
             })];
         }
 
-        public List<ContextMenuResult> LoadContextMenus(string tool, string name, AppConfig config)
+        /// <summary>
+        /// Load the context-menus for a selected tool (start locally, open locally, open remotely).
+        /// </summary>
+        /// <param name="toolConfig">Tool configuration</param>
+        /// <param name="name">Plugin name</param>
+        /// <param name="config">App configuration</param>
+        /// <returns>List of context-menu results</returns>
+        public List<ContextMenuResult> LoadContextMenus(ToolConfig toolConfig, string name, AppConfig config)
         {
-            if (config.ToolConfigProject == null)
-                return [];
-
             return [
                 new ContextMenuResult
                 {
@@ -44,7 +54,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
                         Glyph = "\xe756",
                         AcceleratorKey = Key.Enter,
-                        Action = _ => StartTool(tool, config)
+                        Action = _ => StartTool(toolConfig, config.FolderPath)
                     },
                     new ContextMenuResult
                     {
@@ -54,41 +64,53 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         Glyph = "\xEC27",
                         AcceleratorKey = Key.Enter,
                         AcceleratorModifiers = ModifierKeys.Control,
-                        Action = _ => OpenTool(tool, true, config.ToolConfigProject, config.RemoteServerUrl)
+                        Action = _ => OpenTool(toolConfig, true)
                     },
                     new ContextMenuResult
                     {
                         PluginName = name,
-                        Title = "Open on Testserver",
+                        Title = "Open on Remoteserver",
                         FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
                         Glyph = "\xe753",
                         AcceleratorKey = Key.Enter,
                         AcceleratorModifiers = ModifierKeys.Shift,
-                        Action = _ => OpenTool(tool, false, config.ToolConfigProject, config.RemoteServerUrl)
+                        Action = _ => OpenTool(toolConfig, false)
                     }
             ];
         }
 
-        private bool StartTool(string tool, AppConfig config)
+        /// <summary>
+        /// Start a given tool by its executable
+        /// </summary>
+        /// <param name="toolConfig">Tool configuration</param>
+        /// <param name="baseFolder">Base folder with the downloaded tools</param>
+        /// <returns>True</returns>
+        private bool StartTool(ToolConfig toolConfig, string baseFolder)
         {
-            Log.Info($"Start tool: {tool}, {config.FolderPath}/test.ps1", GetType());
-            Utils.ExecutePowershellCommand($"{config.FolderPath}/test.ps1");
+            Log.Info($"Start tool: {toolConfig.name}", GetType());
+
+            string pathToExe = $"{baseFolder}/{toolConfig.exePath}";
+            Helper.OpenInConsole(pathToExe);
+            
             return true;
         }
 
-        private bool OpenTool(string tool, bool isLocal, ToolConfigProject configProject, string remoteServerUrl)
+        /// <summary>
+        /// Open a tool in the browser (locally or on a remote server)
+        /// </summary>
+        /// <param name="toolConfig">Tool configuration</param>
+        /// <param name="isLocal">True if it should be opened locally, false to open it on a remote server</param>
+        /// <returns>True</returns>
+        private bool OpenTool(ToolConfig toolConfig, bool isLocal)
         {
-            string url;
-            ToolConfig? toolConfig = configProject.GetToolConfig(tool);
-            if (toolConfig == null)
-                return false;
-
-            if (isLocal)
-                url = "https://localhost";
+            string url = "";
+            string urlPrefix = toolConfig.useHttps ? "https" : "http";
+            if (!isLocal && !string.IsNullOrWhiteSpace(toolConfig.remoteServerUrl))
+                url = toolConfig.remoteServerUrl;
             else
-                url = remoteServerUrl;
+                url = "localhost";
 
-            url += $":{toolConfig.port}";
+            url = $"{urlPrefix}://{url}:{toolConfig.port}";
 
             Log.Info($"Open tool {url}, {BrowserInfo.Path}, {BrowserInfo.ArgumentsPattern}", GetType());
 

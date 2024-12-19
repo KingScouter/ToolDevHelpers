@@ -12,6 +12,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             toolConfigs.Add(config.shortName, config);
         }
 
+        /// <summary>
+        /// Get the configuration for a tool by its shortname
+        /// </summary>
+        /// <param name="shortName">Name of the tool to retrieve</param>
+        /// <returns>Tool configuration (or null if the tool could not be found)</returns>
         internal ToolConfig? GetToolConfig(string shortName)
         {
             ToolConfig? config = null;
@@ -21,6 +26,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             return null;
         }
 
+        /// <summary>
+        /// Get all tool configurations which names matchthe filter query
+        /// </summary>
+        /// <param name="filterQuery">Query to filter the tool names with</param>
+        /// <returns>List of tool configurations</returns>
         internal List<ToolConfig> GetToolConfigs(string filterQuery)
         {
             if (string.IsNullOrWhiteSpace(filterQuery))

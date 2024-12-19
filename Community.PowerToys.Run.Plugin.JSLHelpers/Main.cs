@@ -67,14 +67,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             },
             new()
             {
-                Key = nameof(appConfig.RemoteServerUrl),
-                DisplayLabel = "Remote Server URL",
-                DisplayDescription = "URL of the remote server where the tools are deployed and running",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = appConfig.RemoteServerUrl
-            },
-            new()
-            {
                 Key = nameof(appConfig.FolderPath),
                 DisplayLabel = "Tool folder",
                 DisplayDescription = "Folder to store the tools",
@@ -99,7 +91,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             }
         ];
 
-
+        /// <summary>
+        /// Process the user query
+        /// </summary>
+        /// <param name="query">Query</param>
+        /// <returns>List of query results</returns>
         public List<Result> Query(Query query)
         {
             if (query.Terms.Count == 0 || query.Terms.Count > 2)
@@ -146,19 +142,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         {
             Log.Info("LoadContextMenus", GetType());
 
-            if (selectedResult?.ContextData is (string data, OperationMode mode))
+            if (selectedResult?.ContextData is (string data, OperationMode mode) && mode == OperationMode.Branch)
             {
-                switch (mode)
-                {
-                    case OperationMode.Branch:
-                        {
-                            return branchQueryHandler.LoadContextMenus(data, Name, appConfig);
-                        }
-                    case OperationMode.Tool:
-                        {
-                            return toolQueryHandler.LoadContextMenus(data, Name, appConfig);
-                        }
-                }
+                return branchQueryHandler.LoadContextMenus(data, Name, appConfig);
+            } else if (selectedResult?.ContextData is (ToolConfig config, OperationMode toolMode) && toolMode == OperationMode.Tool)
+            {
+                return toolQueryHandler.LoadContextMenus(config, Name, appConfig);
             }
 
             return [];
@@ -184,7 +173,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             appConfig.GitRepoUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.GitRepoUrl))?.TextValue ?? "";
             appConfig.JenkinsUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.JenkinsUrl))?.TextValue ?? "";
             appConfig.FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.FolderPath))?.TextValue ?? "";
-            appConfig.RemoteServerUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.RemoteServerUrl))?.TextValue ?? "";
             appConfig.DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.DownloadScriptPath))?.TextValue ?? "";
             string newConfigFile = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ToolConfigFile))?.TextValue ?? "";
 
@@ -195,6 +183,10 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             }
         }
 
+        /// <summary>
+        /// Handle a new tool config-file
+        /// </summary>
+        /// <param name="appConfig">App configuration</param>
         private void HandleConfigFile(AppConfig appConfig)
         {
             if (string.IsNullOrWhiteSpace(appConfig.ToolConfigFile))
@@ -226,6 +218,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     name = "Test tool name",
                     useHttps = true,
                     port = 1234,
+                    remoteServerUrl = "www.google.at",
                     exePath = "testTool/tool.exe"
                 });
                 

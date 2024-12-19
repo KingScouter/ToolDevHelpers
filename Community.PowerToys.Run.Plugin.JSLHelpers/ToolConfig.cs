@@ -20,6 +20,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         [JsonInclude]
         internal required uint port;
         [JsonInclude]
+        internal required string remoteServerUrl;
+        [JsonInclude]
         internal required string exePath;
 
         private string shortNameInternal = "";
