@@ -12,6 +12,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -30,7 +32,7 @@ jobs:
           dotnet build /p:Platform=x64 -c Release --no-restore
 
       - name: Upload build artifact
-        if: ${{ github.event.action }} == "workflow_dispatch"
+        if: ${{ github.event.action == "workflow_dispatch" }}
         uses: actions/upload-artifact@v4.4.3
         with:
           # Artifact name
@@ -44,7 +46,7 @@ jobs:
           overwrite: true # optional, default is false
 
       - name: Add release asset
-        if: ${{ github.event.action }} == "release"
+        if: ${{ github.event.action == "release" }}
         uses: softprops/action-gh-release@v2
         with:
           files: |
