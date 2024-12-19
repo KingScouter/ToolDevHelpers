@@ -15,6 +15,9 @@ jobs:
     permissions:
       contents: write
 
+    env:
+      RELEASE_FOLDER: Community.PowerToys.Run.Plugin.JSLHelpers/bin/x64/Release/net8.0-windows
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -39,15 +42,26 @@ jobs:
           name: tool-dev-helpers-plugin # optional, default is artifact
           # A file, directory or wildcard pattern that describes what to upload
           path: |
-            Community.PowerToys.Run.Plugin.JSLHelpers/bin/x64/Release/net8.0-windows
+            $env:RELEASE_FOLDER
             install_plugin.ps1
           # The desired behavior if no files are found using the provided path.
           retention-days: 3 # optional
           overwrite: true # optional, default is false
+
+      - name: Create Release ZIP
+        if: ${{ github.event_name == 'release' }}
+        shell: pwsh
+        run: |
+          $compress = @{
+            Path = $env:RELEASE_FOLDER/*,"install_plugin.ps1"
+            CompressionLevel = "Fastest"
+            DestinationPath = "ToolDevHelpers_x64.zip"
+          }
+          Compress-Archive @compress
 
       - name: Add release asset
         if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            install_plugin.ps1
+            ToolDevHelpers_x64.zip
