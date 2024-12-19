@@ -38,7 +38,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <summary>
         /// Name of the plugin.
         /// </summary>
-        public string Name => "JSL Helpers";
+        public string Name => "Tool Dev Helpers";
 
         /// <summary>
         /// Description of the plugin.
@@ -68,8 +68,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             new()
             {
                 Key = nameof(appConfig.RemoteServerUrl),
-                DisplayLabel = "Testserver URL",
-                DisplayDescription = "URL of the testserver where the tools are running",
+                DisplayLabel = "Remote Server URL",
+                DisplayDescription = "URL of the remote server where the tools are deployed and running",
                 PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
                 TextValue = appConfig.RemoteServerUrl
             },

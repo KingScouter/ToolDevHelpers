@@ -1,8 +1,8 @@
 {
   "ID": "AE953C974C2241878F282EA18A7769E4",
-  "ActionKeyword": "jsl",
+  "ActionKeyword": "tdh",
   "IsGlobal": false,
-  "Name": "JSL Helpers",
+  "Name": "Tool Dev Helpers",
   "Author": "dreiaugenfloh",
   "Version": "1.0.0",
   "Language": "csharp",
