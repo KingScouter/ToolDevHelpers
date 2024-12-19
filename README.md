@@ -8,11 +8,19 @@ The plugin is developed and tested with `PowerToys` `v0.87.0`.
 
 0. [Install PowerToys](https://docs.microsoft.com/en-us/windows/powertoys/install)
 1. Exit PowerToys
-2. Download the `.zip` file applicable for your platform from the lastest run of the Github-Action "Create Plugin Build":
-   - [tool-dev-helpers-plugin.zip](tool-dev-helpers-plugin.zip)
+2. Download the `.zip` file applicable for your platform from the releases:
+   - [ToolDevHelpers_x64.zip](ToolDevHelpers_x64.zip)
 3. Extract it to:
    - `%LocalAppData%\Microsoft\PowerToys\PowerToys Run\Plugins\ToolDevHelpers`
 4. Start PowerToys
+
+Alternatively you can use the provided Powershell-Script to install the Plugin:
+
+1. Download the `.zip` file applicable for your platform from the releases:
+   - [ToolDevHelpers_x64.zip](ToolDevHelpers_x64.zip)
+2. Extract it
+3. Execute the install-script using the following command:
+   - `powershell.exe -ExecutionPolicy Bypass .\install_plugin.ps1`
 
 ## Usage
 
@@ -24,8 +32,8 @@ The plugin is developed and tested with `PowerToys` `v0.87.0`.
 4. All branches with matching names will be listed below
 5. Use ⬆️ and ⬇️ keys to select a result
 6. Select the desired operation from the context-menu buttons
-6.1 Press `Enter` to open the branch on Jenkins
-6.2 Press `Shift+Enter` to trigger the download of the build-artifacts for that tool
+   6.1 Press `Enter` to open the branch on Jenkins
+   6.2 Press `Shift+Enter` to trigger the download of the build-artifacts for that tool
 
 ### Tool Helpers
 
@@ -35,9 +43,9 @@ The plugin is developed and tested with `PowerToys` `v0.87.0`.
 4. All tools with matching short-names will be listed below
 5. Use ⬆️ and ⬇️ keys to select a result
 6. Select the desired operation from the context-menu buttons
-6.1 Press `Enter` to start the tool locally
-6.2 Press `Shift+Enter` to open the locally started tool in the browser
-6.3 Press `Ctr+Enter` to open the tool on the remote-server in the browser
+   - Press `Enter` to start the tool locally
+   - Press `Shift+Enter` to open the locally started tool in the browser
+   - Press `Ctr+Enter` to open the tool on the remote-server in the browser
 
 ## Settings
 
@@ -52,7 +60,6 @@ Open settings:
 
 - Git Repository URL: URL of the GIT repository to use for the branch-helpers
 - Jenkins Multibranch-Pipeline URL: URL to the base Jenkins-Multibranch-Pipeline to open the branches for
-- Remoteserver URL: URL of the remote-server where the tools are deployed and available
 - Tool folder: Folder where the tools get downloaded to
 - Download Script: Powershell-Script to download the tools with (accepts the branch-name as parameter)
 - Tool config file: Configuration of all tools available for the Tool-Helpers. If the file doesn't exist yet, a sample project will be created at that location that can be adjusted.
