@@ -43,7 +43,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <summary>
         /// Description of the plugin.
         /// </summary>
-        public string Description => "Helpers for JSL developers";
+        public string Description => "Helpers for (web) tool developers";
 
         /// <summary>
         /// Additional options for the plugin.

@@ -1,6 +1,6 @@
 # PowerToys Run Tool-Dev-Helpers Plugin
 
-> A simple plugin to ease 
+> A simple plugin to ease developing (web) tools
 
 The plugin is developed and tested with `PowerToys` `v0.87.0`.
 
