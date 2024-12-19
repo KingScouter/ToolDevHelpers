@@ -6,6 +6,9 @@ name: Create Plugin Build
 on:
   workflow_dispatch:
 
+  release:
+    types: [published]
+
 jobs:
   build:
     runs-on: windows-latest
@@ -27,13 +30,22 @@ jobs:
           dotnet build /p:Platform=x64 -c Release --no-restore
 
       - name: Upload build artifact
+        if: ${{ github.event.action }} == "workflow_dispatch"
         uses: actions/upload-artifact@v4.4.3
         with:
           # Artifact name
           name: tool-dev-helpers-plugin # optional, default is artifact
           # A file, directory or wildcard pattern that describes what to upload
-          path: Community.PowerToys.Run.Plugin.JSLHelpers/bin/x64/Release/net8.0-windows
+          path: |
+            Community.PowerToys.Run.Plugin.JSLHelpers/bin/x64/Release/net8.0-windows
+            install_plugin.ps1
           # The desired behavior if no files are found using the provided path.
           retention-days: 3 # optional
           overwrite: true # optional, default is false
 
+      - name: Add release asset
+        if: ${{ github.event.action }} == "release"
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            install_plugin.ps1
