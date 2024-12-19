@@ -53,7 +53,7 @@ jobs:
         shell: pwsh
         run: |
           $compress = @{
-            Path = $env:RELEASE_FOLDER/*,"install_plugin.ps1"
+            Path = "$env:RELEASE_FOLDER/*","install_plugin.ps1"
             CompressionLevel = "Fastest"
             DestinationPath = "ToolDevHelpers_x64.zip"
           }
