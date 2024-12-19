@@ -92,8 +92,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 StartInfo = startInfo
             };
             process.Start();
-
-            process.WaitForExit();
         }
     }
 }
