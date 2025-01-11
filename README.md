@@ -95,7 +95,7 @@ For every tool you have the following settings available:
 
 ### Example config
 
-````json
+```json
 {
   "toolConfigs": {
     "ta": {
@@ -106,7 +106,7 @@ For every tool you have the following settings available:
       "port": 8080,
       "exePath": "testApp/start.exe",
       "additionalPages": ["#BASE#api"]
-    },
+    }
   }
-}```
-````
+}
+```
