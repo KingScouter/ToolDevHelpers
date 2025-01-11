@@ -1,9 +1,7 @@
 using Wox.Plugin.Logger;
 using Wox.Plugin;
 using System.Windows.Input;
-using Wox.Infrastructure;
 using System.IO;
-using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
@@ -101,7 +99,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         }
 
         /// <summary>
-        /// Open a tool in the browser (locally or on a remote server)
+        /// Open a tool in the browser (locally or on a remote server).
+        /// If configured, open additional pages as well.
         /// </summary>
         /// <param name="toolConfig">Tool configuration</param>
         /// <param name="isLocal">True if it should be opened locally, false to open it on a remote server</param>
@@ -117,9 +116,16 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
             url = new UriBuilder(urlPrefix, url, (int)toolConfig.port, "").ToString();
 
-            Log.Info($"Open tool {url}, {BrowserInfo.Path}, {BrowserInfo.ArgumentsPattern}", GetType());
+            Log.Info($"Open tool {url}", GetType());
+            Utils.OpenPageInBrowser(url);
 
-            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, url);
+            // Open any additional page as well
+            foreach (var page in toolConfig.additionalPages)
+            {
+                var pageUrl = page.Replace("#BASE#", url);
+                Log.Info($"Open additional page {pageUrl}", GetType());
+                Utils.OpenPageInBrowser(pageUrl);
+            }
 
             return true;
         }

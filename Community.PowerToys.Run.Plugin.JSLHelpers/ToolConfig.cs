@@ -23,6 +23,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         internal required string remoteServerUrl;
         [JsonInclude]
         internal required string exePath;
+        [JsonInclude]
+        internal required string[] additionalPages;
 
         private string shortNameInternal = "";
     }
