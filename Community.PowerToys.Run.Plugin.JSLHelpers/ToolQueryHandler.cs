@@ -2,6 +2,7 @@ using Wox.Plugin.Logger;
 using Wox.Plugin;
 using System.Windows.Input;
 using Wox.Infrastructure;
+using System.IO;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
@@ -89,7 +90,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         {
             Log.Info($"Start tool: {toolConfig.name}", GetType());
 
-            string pathToExe = $"{baseFolder}/{toolConfig.exePath}";
+            string pathToExe = Path.Combine(baseFolder, toolConfig.exePath);
+
+            if (!Path.Exists(pathToExe))
+                return false;
+
             Utils.ExecutePowershellCommand(pathToExe);
 
             return true;
@@ -110,7 +115,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             else
                 url = "localhost";
 
-            url = $"{urlPrefix}://{url}:{toolConfig.port}";
+            url = new UriBuilder(urlPrefix, url, (int)toolConfig.port, "").ToString();
 
             Log.Info($"Open tool {url}, {BrowserInfo.Path}, {BrowserInfo.ArgumentsPattern}", GetType());
 

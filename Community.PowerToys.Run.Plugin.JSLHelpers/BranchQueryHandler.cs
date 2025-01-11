@@ -146,7 +146,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         private void DownloadTools(string branch, string scriptPath)
         {
             Log.Info($"Download Tools: {scriptPath} {branch}", GetType());
-            if (string.IsNullOrEmpty(scriptPath))
+            if (string.IsNullOrEmpty(scriptPath) || !System.IO.Path.Exists(scriptPath))
                 return;
 
             Utils.ExecutePowershellCommand($"{scriptPath} {branch}");
