@@ -90,8 +90,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             Log.Info($"Start tool: {toolConfig.name}", GetType());
 
             string pathToExe = $"{baseFolder}/{toolConfig.exePath}";
-            Helper.OpenInConsole(pathToExe);
-            
+            Utils.ExecutePowershellCommand(pathToExe);
+
             return true;
         }
 
