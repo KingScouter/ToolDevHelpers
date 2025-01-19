@@ -221,7 +221,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             // Parse HTTPS URL
             if (gitUrl.StartsWith("https"))
             {
-                return gitUrl.Substring(0, gitUrl.Length - ".git".Length);
+                return gitUrl[..^".git".Length];
             }
 
             // Parse SSH URL
@@ -237,7 +237,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 {
                     Scheme = "https",
                     Host = "github.com",
-                    Path = repoUrl.Substring(0, repoUrl.Length - ".git".Length)
+                    Path = repoUrl[..^".git".Length]
                 }.ToString();
 
                 return url;
