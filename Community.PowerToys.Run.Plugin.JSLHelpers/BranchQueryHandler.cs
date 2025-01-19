@@ -127,11 +127,24 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     PluginName = name,
                     Title = "Download Tools",
                     FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                    Glyph = "\xE896",
+                    Glyph = "\xebd3",
                     AcceleratorKey = Key.Enter,
                     AcceleratorModifiers = ModifierKeys.Shift,
                     Action = _ => {
                         DownloadTools(branch, config.DownloadScriptPath);
+                        return true;
+                    }
+                },
+                new ContextMenuResult
+                {
+                    PluginName = name,
+                    Title = "Open Github",
+                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                    Glyph = "\xE753",
+                    AcceleratorKey = Key.Enter,
+                    AcceleratorModifiers = ModifierKeys.Control,
+                    Action = _ => {
+                        OpenGithub(branch, config.GitRepoUrl);
                         return true;
                     }
                 }
@@ -173,6 +186,64 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             sb.Append(HttpUtility.UrlEncode(branch));
 
             Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, sb.ToString());
+        }
+
+        /// <summary>
+        /// Open the selected branch on Github
+        /// </summary>
+        /// <param name="branch">Branch to open</param>
+        /// <param name="gitRepoUrl">Base URL of the Github-Repository</param>
+        private void OpenGithub(string branch, string gitRepoUrl)
+        {
+            Log.Info($"Open Github: {branch}", GetType());
+            string repoBaseUrl = ParseGitUrl(gitRepoUrl);
+            if (string.IsNullOrEmpty(repoBaseUrl))
+                return;
+
+            string url = $"{repoBaseUrl}/tree/{branch}";
+
+            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, url);
+        }
+
+        /// <summary>
+        /// Parse the GIT remote URL to the base Github-URL.
+        /// Example: 
+        ///   git@github.com:User/Repo.git => https://github.com/User/Repo
+        ///   https://github.com/User/Repo.git => https://github.com/User/Repo
+        /// </summary>
+        /// <param name="gitUrl"></param>
+        /// <returns></returns>
+        private string ParseGitUrl(string gitUrl)
+        {
+            if (string.IsNullOrEmpty(gitUrl))
+                return "";
+
+            // Parse HTTPS URL
+            if (gitUrl.StartsWith("https"))
+            {
+                return gitUrl.Substring(0, gitUrl.Length - ".git".Length);
+            }
+
+            // Parse SSH URL
+            if (gitUrl.StartsWith("git"))
+            {
+                string[] urlParts = gitUrl.Split(':');
+                if (urlParts.Length != 2)
+                    return "";
+
+                string repoUrl = urlParts[1];
+
+                string url = new UriBuilder
+                {
+                    Scheme = "https",
+                    Host = "github.com",
+                    Path = repoUrl.Substring(0, repoUrl.Length - ".git".Length)
+                }.ToString();
+
+                return url;
+            }
+
+            return "";
         }
     }
 }

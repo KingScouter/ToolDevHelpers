@@ -32,8 +32,9 @@ Alternatively you can use the provided Powershell-Script to install the Plugin:
 4. All branches with matching names will be listed below
 5. Use ⬆️ and ⬇️ keys to select a result
 6. Select the desired operation from the context-menu buttons
-   6.1 Press `Enter` to open the branch on Jenkins
-   6.2 Press `Shift+Enter` to trigger the download of the build-artifacts for that tool
+   - Press `Enter` to open the branch on Jenkins
+   - Press `Ctrl+Enter` to open the branch on Github
+   - Press `Shift+Enter` to trigger the download of the build-artifacts for that tool
 
 ### Tool Helpers
 
