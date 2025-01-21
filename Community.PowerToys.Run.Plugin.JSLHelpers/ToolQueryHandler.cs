@@ -53,7 +53,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
                         Glyph = "\xe756",
                         AcceleratorKey = Key.Enter,
-                        Action = _ => StartTool(toolConfig, config.FolderPath)
+                        Action = _ => StartTool(toolConfig, config.FolderPath, config.ShellType)
                     },
                     new ContextMenuResult
                     {
@@ -83,8 +83,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         /// <param name="toolConfig">Tool configuration</param>
         /// <param name="baseFolder">Base folder with the downloaded tools</param>
+        /// <param name="version">Version of the Powershell to use</param>"
         /// <returns>True</returns>
-        private bool StartTool(ToolConfig toolConfig, string baseFolder)
+        private bool StartTool(ToolConfig toolConfig, string baseFolder, PowershellVersion version)
         {
             Log.Info($"Start tool: {toolConfig.name}", GetType());
 
@@ -93,7 +94,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             if (!Path.Exists(pathToExe))
                 return false;
 
-            Utils.ExecutePowershellCommand(pathToExe);
+            Utils.ExecutePowershellCommand(pathToExe, version);
 
             return true;
         }

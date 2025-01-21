@@ -42,14 +42,23 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// Execute a command in the windows PowerShell
         /// </summary>
         /// <param name="commandTemplate">Command template</param>
+        /// <param name="version">Version of the Powershell to use</param>"
         /// <param name="waitForResult">Flag to determine if the CLI should remain open after the execution finished</param>
         /// <param name="workingDir">Working directory</param>
-        public static void ExecutePowershellCommand(string commandTemplate, string? workingDir = null)
+        public static void ExecutePowershellCommand(string commandTemplate, PowershellVersion version, string? workingDir = null)
         {
+            string extraArgs = "";
+            string fileName = "powershell.exe";
+
+            if (version == PowershellVersion.LTS)
+            {
+                extraArgs = "-command ";
+                fileName = "pwsh.exe";
+            }
             System.Diagnostics.ProcessStartInfo startInfo = new()
             {
-                FileName = "powershell.exe",
-                Arguments = $"-ExecutionPolicy Bypass \"{commandTemplate}\""
+                FileName = fileName,
+                Arguments = $"-ExecutionPolicy Bypass {extraArgs}\"{commandTemplate}\""
             };
 
             if (!string.IsNullOrWhiteSpace(workingDir))

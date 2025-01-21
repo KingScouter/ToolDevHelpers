@@ -69,6 +69,11 @@ Open settings:
   Powershell-Script to download the tools with (accepts the branch-name as parameter)
 - <strong>Tool config file:</strong><br>
   Configuration of all tools available for the Tool-Helpers. If the file doesn't exist yet, a sample project will be created at that location that can be adjusted.
+- <strong>Powershell Version</strong><br>
+  The version of Powershell to use when executing scripts (e.g. to download tools).<br>
+  Available options are:
+  - Powershell 5 (legacy)
+  - Powershell 7 (LTS)
 
 ## Tool config
 

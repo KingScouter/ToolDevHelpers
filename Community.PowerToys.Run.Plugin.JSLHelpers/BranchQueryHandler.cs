@@ -131,7 +131,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     AcceleratorKey = Key.Enter,
                     AcceleratorModifiers = ModifierKeys.Shift,
                     Action = _ => {
-                        DownloadTools(branch, config.DownloadScriptPath);
+                        DownloadTools(branch, config.DownloadScriptPath, config.ShellType);
                         return true;
                     }
                 },
@@ -156,13 +156,14 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         /// <param name="branch">Branch name</param>
         /// <param name="scriptPath">Path to the download-script</param>
-        private void DownloadTools(string branch, string scriptPath)
+        /// <param name="version">Version of the Powershell to use</param>"
+        private void DownloadTools(string branch, string scriptPath, PowershellVersion version)
         {
             Log.Info($"Download Tools: {scriptPath} {branch}", GetType());
             if (string.IsNullOrEmpty(scriptPath) || !System.IO.Path.Exists(scriptPath))
                 return;
 
-            Utils.ExecutePowershellCommand($"{scriptPath} {branch}");
+            Utils.ExecutePowershellCommand($"{scriptPath} {branch}", version);
         }
 
         /// <summary>

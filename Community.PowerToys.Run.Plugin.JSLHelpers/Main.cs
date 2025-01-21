@@ -48,48 +48,66 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <summary>
         /// Additional options for the plugin.
         /// </summary>
-        public IEnumerable<PluginAdditionalOption> AdditionalOptions => [
-            new()
+        public IEnumerable<PluginAdditionalOption> AdditionalOptions
+        {
+            get
             {
-                Key = nameof(appConfig.GitRepoUrl),
-                DisplayLabel = "GIT Repository URL",
-                DisplayDescription = "URL for the GIT repository",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = appConfig.GitRepoUrl
-            },
-            new()
-            {
-                Key = nameof(appConfig.JenkinsUrl),
-                DisplayLabel = "Jenkins Multibranch-Pipeline URL",
-                DisplayDescription = "URL of the Multibranch-Pipeline on Jenkins",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = appConfig.JenkinsUrl
-            },
-            new()
-            {
-                Key = nameof(appConfig.FolderPath),
-                DisplayLabel = "Tool folder",
-                DisplayDescription = "Folder to store the tools",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = appConfig.FolderPath
-            },
-            new()
-            {
-                Key = nameof (appConfig.DownloadScriptPath),
-                DisplayLabel = "Download Script",
-                DisplayDescription = "Path to the download script",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = appConfig.DownloadScriptPath
-            },
-            new()
-            {
-                Key = nameof (appConfig.ToolConfigFile),
-                DisplayLabel = "Tool config file",
-                DisplayDescription = "Config file with the configuration of all tools. If the file doesn't exist, a sample project will be added at that path.",
-                PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                TextValue = appConfig.ToolConfigFile
+                return [
+                    new()
+                    {
+                        Key = nameof(appConfig.GitRepoUrl),
+                        DisplayLabel = "GIT Repository URL",
+                        DisplayDescription = "URL for the GIT repository",
+                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                        TextValue = appConfig.GitRepoUrl
+                    },
+                    new()
+                    {
+                        Key = nameof(appConfig.JenkinsUrl),
+                        DisplayLabel = "Jenkins Multibranch-Pipeline URL",
+                        DisplayDescription = "URL of the Multibranch-Pipeline on Jenkins",
+                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                        TextValue = appConfig.JenkinsUrl
+                    },
+                    new()
+                    {
+                        Key = nameof(appConfig.FolderPath),
+                        DisplayLabel = "Tool folder",
+                        DisplayDescription = "Folder to store the tools",
+                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                        TextValue = appConfig.FolderPath
+                    },
+                    new()
+                    {
+                        Key = nameof (appConfig.DownloadScriptPath),
+                        DisplayLabel = "Download Script",
+                        DisplayDescription = "Path to the download script",
+                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                        TextValue = appConfig.DownloadScriptPath
+                    },
+                    new()
+                    {
+                        Key = nameof (appConfig.ToolConfigFile),
+                        DisplayLabel = "Tool config file",
+                        DisplayDescription = "Config file with the configuration of all tools. If the file doesn't exist, a sample project will be added at that path.",
+                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                        TextValue = appConfig.ToolConfigFile
+                    },
+                    new()
+                    {
+                        Key = nameof (appConfig.ShellType),
+                        DisplayLabel = "Powershell Version",
+                        DisplayDescription = "Which Powershell Version do you want to use?",
+                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Combobox,
+                        ComboBoxItems = [
+                            new("Legacy (powershell)", "0"),
+                            new("Powershell 7 (pwsh)", "1")
+                        ],
+                        ComboBoxValue = -1
+                    }
+                ];
             }
-        ];
+        }
 
         /// <summary>
         /// Process the user query
@@ -174,6 +192,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             appConfig.JenkinsUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.JenkinsUrl))?.TextValue ?? "";
             appConfig.FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.FolderPath))?.TextValue ?? "";
             appConfig.DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.DownloadScriptPath))?.TextValue ?? "";
+            appConfig.ShellType = (PowershellVersion)GetEnumSettingOrDefault(settings, nameof(appConfig.ShellType));
             string newConfigFile = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ToolConfigFile))?.TextValue ?? "";
 
             if (newConfigFile != appConfig.ToolConfigFile)
@@ -181,6 +200,21 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 appConfig.ToolConfigFile = newConfigFile;
                 HandleConfigFile(appConfig);
             }
+        }
+
+        /// <summary>
+        /// Get the enum-setting from the additional-options.
+        /// </summary>
+        /// <param name="settings">Settings</param>
+        /// <param name="name">Name of the setting to retrieve</param>
+        /// <returns>The settings value</returns>
+        private int GetEnumSettingOrDefault(PowerLauncherPluginSettings settings, string name)
+        {
+            var option = settings?.AdditionalOptions?.FirstOrDefault(x => x.Key == name);
+
+            // If a setting isn't available, we use the value defined in the method GetAdditionalOptions() as fallback.
+            // We can use First() instead of FirstOrDefault() because the values must exist. Otherwise, we made a mistake when defining the settings.
+            return option?.ComboBoxValue ?? AdditionalOptions.First(x => x.Key == name).ComboBoxValue;
         }
 
         /// <summary>
