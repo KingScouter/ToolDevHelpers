@@ -63,6 +63,14 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     },
                     new()
                     {
+                        Key = nameof(appConfig.SourceFolder),
+                        DisplayLabel = "Local source folder",
+                        DisplayDescription = "Local cloned source folder",
+                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
+                        TextValue = appConfig.SourceFolder
+                    },
+                    new()
+                    {
                         Key = nameof(appConfig.JenkinsUrl),
                         DisplayLabel = "Jenkins Multibranch-Pipeline URL",
                         DisplayDescription = "URL of the Multibranch-Pipeline on Jenkins",
@@ -124,11 +132,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             if (string.IsNullOrWhiteSpace(modeQuery))
                 return [];
 
-            switch (modeQuery)
-            {
-                case "b": return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig);
-                case "t": return toolQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig.ToolConfigProject);
-            }
+            if (string.Equals(modeQuery, "b", StringComparison.CurrentCultureIgnoreCase))
+                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, true);
+            else if (string.Equals(modeQuery, "br", StringComparison.CurrentCultureIgnoreCase))
+                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, false);
+            else if (string.Equals(modeQuery, "t", StringComparison.CurrentCultureIgnoreCase))
+                return toolQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig.ToolConfigProject);
 
             return [];
         }
@@ -189,6 +198,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             Log.Info("UpdateSettings", GetType());
 
             appConfig.GitRepoUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.GitRepoUrl))?.TextValue ?? "";
+            appConfig.SourceFolder = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.SourceFolder))?.TextValue ?? "";
             appConfig.JenkinsUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.JenkinsUrl))?.TextValue ?? "";
             appConfig.FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.FolderPath))?.TextValue ?? "";
             appConfig.DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.DownloadScriptPath))?.TextValue ?? "";
