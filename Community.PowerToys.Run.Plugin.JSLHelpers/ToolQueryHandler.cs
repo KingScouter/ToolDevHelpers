@@ -97,10 +97,15 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         {
             Log.Info($"Start tool: {toolConfig.name}", GetType());
 
-            string pathToExe = Path.Combine(baseFolder, toolConfig.exePath);
+            string pathToExe = toolConfig.exePath;
+            if (!Path.IsPathRooted(pathToExe))
+                pathToExe = Path.Combine(baseFolder, toolConfig.exePath);
 
             if (!Path.Exists(pathToExe))
+            {
+                Log.Info($"Path to tool {pathToExe} does not exist", GetType());
                 return false;
+            }
 
             Utils.ExecutePowershellCommand(pathToExe, version);
 
