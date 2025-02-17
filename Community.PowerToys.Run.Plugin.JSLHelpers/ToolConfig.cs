@@ -24,7 +24,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         [JsonInclude]
         internal required string exePath;
         [JsonInclude]
-        internal required string[] additionalPages = [];
+        internal string[] additionalPages = [];
 
         private string shortNameInternal = "";
     }
