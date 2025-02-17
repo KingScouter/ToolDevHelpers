@@ -16,15 +16,15 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         [JsonInclude]
         internal required string name;
         [JsonInclude]
-        internal required bool useHttps;
+        internal bool useHttps = false;
         [JsonInclude]
-        internal required uint port;
+        internal uint port = 0;
         [JsonInclude]
-        internal required string remoteServerUrl;
+        internal string? remoteServerUrl = null;
         [JsonInclude]
         internal required string exePath;
         [JsonInclude]
-        internal required string[] additionalPages;
+        internal required string[] additionalPages = [];
 
         private string shortNameInternal = "";
     }

@@ -45,37 +45,45 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>List of context-menu results</returns>
         public List<ContextMenuResult> LoadContextMenus(ToolConfig toolConfig, string name, AppConfig config)
         {
-            return [
-                new ContextMenuResult
-                {
-                        PluginName = name,
-                        Title = "Start locally",
-                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                        Glyph = "\xe756",
-                        AcceleratorKey = Key.Enter,
-                        Action = _ => StartTool(toolConfig, config.FolderPath, config.ShellType)
-                    },
-                    new ContextMenuResult
-                    {
-                        PluginName = name,
-                        Title = "Open locally",
-                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                        Glyph = "\xEC27",
-                        AcceleratorKey = Key.Enter,
-                        AcceleratorModifiers = ModifierKeys.Control,
-                        Action = _ => OpenTool(toolConfig, true)
-                    },
-                    new ContextMenuResult
-                    {
-                        PluginName = name,
-                        Title = "Open on Remoteserver",
-                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                        Glyph = "\xe753",
-                        AcceleratorKey = Key.Enter,
-                        AcceleratorModifiers = ModifierKeys.Shift,
-                        Action = _ => OpenTool(toolConfig, false)
-                    }
-            ];
+            ContextMenuResult startLocallyOption = new ContextMenuResult
+            {
+                PluginName = name,
+                Title = "Start locally",
+                FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                Glyph = "\xe756",
+                AcceleratorKey = Key.Enter,
+                Action = _ => StartTool(toolConfig, config.FolderPath, config.ShellType)
+            };
+
+            ContextMenuResult openLocallyOption = new ContextMenuResult
+            {
+                PluginName = name,
+                Title = "Open locally",
+                FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                Glyph = "\xEC27",
+                AcceleratorKey = Key.Enter,
+                AcceleratorModifiers = ModifierKeys.Control,
+                Action = _ => OpenTool(toolConfig, true)
+            };
+            ContextMenuResult openRemotelyOption = new ContextMenuResult
+            {
+                PluginName = name,
+                Title = "Open on Remoteserver",
+                FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                Glyph = "\xe753",
+                AcceleratorKey = Key.Enter,
+                AcceleratorModifiers = ModifierKeys.Shift,
+                Action = _ => OpenTool(toolConfig, false)
+            };
+
+            List<ContextMenuResult> options = [startLocallyOption];
+            if (toolConfig.port != 0) 
+                options.Add(openLocallyOption);
+
+            if (!string.IsNullOrWhiteSpace(toolConfig.remoteServerUrl))
+                options.Add(openRemotelyOption);
+
+            return options;
         }
 
         /// <summary>
