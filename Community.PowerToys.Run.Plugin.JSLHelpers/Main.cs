@@ -21,10 +21,17 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
     /// </summary>
     public class Main : IContextMenu, ISettingProvider, IDisposable, IPlugin, IReloadable
     {
-        private readonly AppConfig appConfig = new();
-
+        private readonly AppConfigManager appConfigManager = new();
         private readonly BranchQueryHandler branchQueryHandler = new();
         private readonly ToolQueryHandler toolQueryHandler = new();
+        private readonly MiscQueryHandler miscQueryHandler;
+
+        public Main()
+        {
+            miscQueryHandler = new(appConfigManager);
+        }
+
+        private AppConfig appConfig => appConfigManager.Config;
 
         // General plugin members
         private PluginInitContext? Context { get; set; }
@@ -124,7 +131,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>List of query results</returns>
         public List<Result> Query(Query query)
         {
-            if (query.Terms.Count == 0 || query.Terms.Count > 2)
+            if (query.Terms.Count == 0)
                 return [];
 
             var modeQuery = query.Terms.FirstOrDefault("");
@@ -139,7 +146,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             else if (string.Equals(modeQuery, "t", StringComparison.CurrentCultureIgnoreCase))
                 return toolQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig.ToolConfigProject);
 
-            return [];
+            return miscQueryHandler.HandleQuery(query.Terms);
         }
 
         
@@ -208,7 +215,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             if (newConfigFile != appConfig.ToolConfigFile)
             {
                 appConfig.ToolConfigFile = newConfigFile;
-                HandleConfigFile(appConfig);
+                appConfigManager.HandleConfigFile();
             }
         }
 
@@ -225,60 +232,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             // If a setting isn't available, we use the value defined in the method GetAdditionalOptions() as fallback.
             // We can use First() instead of FirstOrDefault() because the values must exist. Otherwise, we made a mistake when defining the settings.
             return option?.ComboBoxValue ?? AdditionalOptions.First(x => x.Key == name).ComboBoxValue;
-        }
-
-        /// <summary>
-        /// Handle a new tool config-file
-        /// </summary>
-        /// <param name="appConfig">App configuration</param>
-        private void HandleConfigFile(AppConfig appConfig)
-        {
-            if (string.IsNullOrWhiteSpace(appConfig.ToolConfigFile))
-            {
-                Log.Info("Project file not set => Skip tool configuration", GetType());
-                appConfig.ToolConfigProject = null;
-                return;
-            }
-
-            try
-            {
-                StreamReader sr = new(appConfig.ToolConfigFile);
-                string dataLine = sr.ReadToEnd();
-                sr.Close();
-                if (dataLine != null)
-                {
-                    appConfig.ToolConfigProject = JsonSerializer.Deserialize<ToolConfigProject>(dataLine);
-                    Log.Info($"Tool config project {appConfig.ToolConfigFile} loaded", GetType());
-                }
-            }
-            catch (FileNotFoundException)
-            {
-                Log.Info("Project file not found => Create sample project in place", GetType());
-                // Write sample project
-                ToolConfigProject sampleProject = new();
-                sampleProject.AddToolConfig(new ToolConfig()
-                {
-                    shortName = "test",
-                    name = "Test tool name",
-                    useHttps = true,
-                    port = 1234,
-                    remoteServerUrl = "www.google.at",
-                    exePath = "testTool/tool.exe",
-                    additionalPages = ["#BASE#api"]
-                });
-                
-                StreamWriter sw = new(appConfig.ToolConfigFile);
-                sw.Write(JsonSerializer.Serialize(sampleProject));
-                sw.Close();
-            }
-            catch (JsonException ex)
-            {
-                Log.Info($"Project file invalid: {ex.Message}", GetType());
-            }
-            catch (Exception ex)
-            {
-                Log.Info($"Unknown exception occured during loading of tool config project: {ex.Message}", GetType());
-            }
         }
 
         /// <inheritdoc/>
