@@ -42,7 +42,7 @@ jobs:
           name: tool-dev-helpers-plugin # optional, default is artifact
           # A file, directory or wildcard pattern that describes what to upload
           path: |
-            ${{ env.RELEASE_FOLDER }}
+            ${{ env.RELEASE_FOLDER }}/*
             install_plugin.ps1
           # The desired behavior if no files are found using the provided path.
           retention-days: 3 # optional
