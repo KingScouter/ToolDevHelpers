@@ -132,8 +132,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>List of local branches</returns>
         private static async Task<IEnumerable<string>> GetLocalBranches(string sourceFolder)
         {
-            string getBranchesCmd = "git branch --list";
+            string getBranchesCmd = "git branch --list -r";
             IEnumerable<string> branchesOutput = await Utils.ExecuteCmdCommandAsync(getBranchesCmd, sourceFolder);
+
             List<string> branchNames = [];
             foreach (string branch in branchesOutput)
             {
@@ -174,14 +175,15 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>Branch-name</returns>
         private static string? ParseBranchOutput(string branchOutput)
         {
-            var splitted = branchOutput.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            // Skip potential mapping from HEAD to the tracking branch if it is out of date (e.g. origin/HEAD -> origin/main)
+            if (branchOutput.Contains(" -> "))
+                return null;
+
+            var splitted = branchOutput.Split('/', 2, StringSplitOptions.RemoveEmptyEntries);
             if (splitted.Length == 1)
                 return splitted[0];
 
-            if (splitted.Length == 2 && splitted[0] == "*")
-                return splitted[1];
-
-            return null;
+            return splitted[1];
         }
 
         /// <summary>
