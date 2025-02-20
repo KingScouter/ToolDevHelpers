@@ -140,9 +140,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 return [];
 
             if (string.Equals(modeQuery, "bl", StringComparison.CurrentCultureIgnoreCase))
-                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, true, query);
+                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, true);
             if (string.Equals(modeQuery, "br", StringComparison.CurrentCultureIgnoreCase))
-                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, false, query);
+                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, false);
             else if (string.Equals(modeQuery, "t", StringComparison.CurrentCultureIgnoreCase))
                 return toolQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig.ToolConfigProject);
 
