@@ -56,7 +56,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             string searchString = query.FirstOrDefault("").ToLower();
 
             List<string> branches;
-            branches = _cache.GetOrAdd("foo", () => GetBranchesQuery(config.GitRepoUrl, config.SourceFolder, checkLocal));
+            string cacheKey = checkLocal ? "cacheLocal" : "cacheRemote";
+            branches = _cache.GetOrAdd(cacheKey, () => GetBranchesQuery(config.GitRepoUrl, config.SourceFolder, checkLocal));
 
             if (!string.IsNullOrWhiteSpace(searchString))
                 branches = branches.FindAll(x => x.ToLower().Contains(searchString));
