@@ -13,6 +13,15 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
     {
         private CachingService? _cache;
 
+        private static readonly string remoteCacheKey = "remoteCache";
+        private static readonly string localCacheKey = "localCache";
+
+        private Dictionary<string, bool> cacheLoading = new()
+        {
+            {remoteCacheKey, false},
+            {localCacheKey, false}
+        };
+
         /// <summary>
         /// Initialize the caching-service
         /// </summary>
@@ -29,8 +38,15 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <param name="config">App configuration</param>
         /// <param name="checkLocal">Flag if the local branches from the source-folder should be checked (=true) or the remote branches (=false)</param>
         /// <returns>List of query results (branches)</returns>
-        public List<Result> HandleQuery(IEnumerable<string> query, AppConfig config, bool checkLocal)
+        public List<Result> HandleQuery(IEnumerable<string> query, AppConfig config, bool checkLocal, Query origQuery)
         {
+            int randomId = Random.Shared.Next();
+
+            if (!checkLocal)
+            {
+                Log.Info($"Branch remote test: rawQuery: <{origQuery.RawQuery}> <{origQuery.RawUserQuery}>", GetType());
+            }
+
             if (query.Count() > 1)
                 return [];
 
@@ -56,11 +72,58 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             string searchString = query.FirstOrDefault("").ToLower();
 
             List<string> branches;
-            string cacheKey = checkLocal ? "cacheLocal" : "cacheRemote";
-            branches = _cache.GetOrAdd(cacheKey, () => GetBranchesQuery(config.GitRepoUrl, config.SourceFolder, checkLocal));
+            string cacheKey = checkLocal ? localCacheKey : remoteCacheKey;
+
+            if (!checkLocal)
+                Log.Info($"Branch remote test {randomId} 1", GetType());
+            branches = _cache.Get<List<string>>(cacheKey);
+            if (branches == null)
+            {
+                if (!checkLocal)
+                    Log.Info($"Branch remote test {randomId}: Cache not available", GetType());
+                if (!cacheLoading.GetValueOrDefault(cacheKey, false))
+                {
+                    if (!checkLocal)
+                        Log.Info($"Branch remote test {randomId}: Load cache", GetType());
+                    cacheLoading[cacheKey] = true;
+
+                    //_cache.Add(cacheKey, () => GetBranchesQuery(config.GitRepoUrl, config.SourceFolder, checkLocal));
+                    return [
+                        new Result {
+                            QueryTextDisplay = "Loading branches",
+                            Title = "Loading"
+                        }
+                    ];
+                }
+
+
+                if (!checkLocal)
+                    Log.Info($"Branch remote test {randomId}: Getoradd cache", GetType());
+                branches = _cache.GetOrAdd(cacheKey, () => GetBranchesQuery(config.GitRepoUrl, config.SourceFolder, checkLocal));
+                if (!checkLocal)
+                    Log.Info($"Branch remote test {randomId}: After Getoradd cache: {branches?.Count}", GetType());
+            }
+            cacheLoading[cacheKey] = false;
+            //branches = cacheData;
+
+            //branches = _cache.GetOrAdd(cacheKey, () => GetBranchesQuery(config.GitRepoUrl, config.SourceFolder, checkLocal));
+            if (!checkLocal)
+                Log.Info($"Branch remote test {randomId} 2", GetType());
 
             if (!string.IsNullOrWhiteSpace(searchString))
                 branches = branches.FindAll(x => x.ToLower().Contains(searchString));
+
+            if (branches == null)
+            {
+                if (!checkLocal)
+                    Log.Info($"Branch remote test {randomId}: Branches null {checkLocal}", GetType());
+                return [
+                new Result {
+                        QueryTextDisplay = $"Branches null {checkLocal}",
+                        Title = $"Branches null {checkLocal}"
+                    }
+                ];
+            }
 
             List<Result> results = branches.ConvertAll(branch =>
             {
@@ -73,6 +136,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     ContextData = (branch, OperationMode.Branch),
                 };
             });
+
+            if (!checkLocal)
+                Log.Info($"Branch remote test {randomId} 3", GetType());
 
             return results;
 
@@ -88,6 +154,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>List of branches</returns>
         public static Task<IEnumerable<string>> GetBranches(string repoUrl, string sourceFolder, bool checkLocal)
         {
+            if (!checkLocal)
+                Log.Info($"Branch remote test 4", new BranchQueryHandler().GetType());
             if (checkLocal)
                 return GetLocalBranches(sourceFolder);
             else
