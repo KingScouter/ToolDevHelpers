@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
+using Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Wox.Plugin;
@@ -22,13 +23,16 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
     public class Main : IContextMenu, ISettingProvider, IDisposable, IPlugin, IReloadable
     {
         private readonly AppConfigManager appConfigManager = new();
-        private readonly BranchQueryHandler branchQueryHandler = new();
-        private readonly ToolQueryHandler toolQueryHandler = new();
-        private readonly MiscQueryHandler miscQueryHandler;
+
+        private readonly BaseQueryHandler[] queryHandlers;
 
         public Main()
         {
-            miscQueryHandler = new(appConfigManager);
+            queryHandlers = [
+                new BranchQueryHandler(),
+                new ToolQueryHandler(),
+                new MiscQueryHandler(appConfigManager)
+            ];
         }
 
         private AppConfig appConfig => appConfigManager.Config;
@@ -131,22 +135,14 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <returns>List of query results</returns>
         public List<Result> Query(Query query)
         {
-            if (query.Terms.Count == 0)
-                return [];
+            foreach (var queryHandler in queryHandlers)
+            {
+                var results = queryHandler.HandleQuery(query.Terms, appConfig);
+                if (results != null)
+                    return results;
+            }
 
-            var modeQuery = query.Terms.FirstOrDefault("");
-
-            if (string.IsNullOrWhiteSpace(modeQuery))
-                return [];
-
-            if (string.Equals(modeQuery, "bl", StringComparison.CurrentCultureIgnoreCase))
-                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, true);
-            if (string.Equals(modeQuery, "br", StringComparison.CurrentCultureIgnoreCase))
-                return branchQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig, false);
-            else if (string.Equals(modeQuery, "t", StringComparison.CurrentCultureIgnoreCase))
-                return toolQueryHandler.HandleQuery(query.Terms.Skip(1), appConfig.ToolConfigProject);
-
-            return miscQueryHandler.HandleQuery(query.Terms);
+            return [];
         }
 
         
@@ -162,8 +158,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             Context = context ?? throw new ArgumentNullException(nameof(context));
             Context.API.ThemeChanged += OnThemeChanged;
 
-            branchQueryHandler.Init();
-
             UpdateIconPath(Context.API.GetCurrentTheme());
         }
 
@@ -176,12 +170,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         {
             Log.Info("LoadContextMenus", GetType());
 
-            if (selectedResult?.ContextData is (string data, OperationMode mode) && mode == OperationMode.Branch)
+            foreach (var queryHandler in queryHandlers)
             {
-                return branchQueryHandler.LoadContextMenus(data, Name, appConfig);
-            } else if (selectedResult?.ContextData is (ToolConfig config, OperationMode toolMode) && toolMode == OperationMode.Tool)
-            {
-                return toolQueryHandler.LoadContextMenus(config, Name, appConfig);
+                var results = queryHandler.LoadContextMenus(selectedResult, appConfig, Name);
+                if (results != null)
+                    return results;
             }
 
             return [];

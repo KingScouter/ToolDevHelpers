@@ -7,11 +7,11 @@ using Wox.Plugin;
 using Wox.Plugin.Logger;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers
+namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {
-    internal class BranchQueryHandler
+    internal class BranchQueryHandler : BaseQueryHandler
     {
-        private CachingService? _cache;
+        private readonly CachingService? _cache;
 
         private static readonly string remoteCacheKey = "remoteCache";
         private static readonly string localCacheKey = "localCache";
@@ -22,10 +22,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             {localCacheKey, false}
         };
 
-        /// <summary>
-        /// Initialize the caching-service
-        /// </summary>
-        public void Init()
+        internal BranchQueryHandler()
         {
             _cache = new CachingService();
             _cache.DefaultCachePolicy.DefaultCacheDurationSeconds = (int)TimeSpan.FromMinutes(2).TotalSeconds;
@@ -36,13 +33,84 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         /// <param name="query">Search query</param>
         /// <param name="config">App configuration</param>
+        /// <returns>List of query results (branches). Null if the query wasn't handled</returns>
+        public List<Result>? HandleQuery(IEnumerable<string> query, AppConfig config)
+        {
+            var modeQuery = query.FirstOrDefault("");
+
+            if (string.Equals(modeQuery, "bl", StringComparison.CurrentCultureIgnoreCase))
+                return HandleQueryIntern(query.Skip(1), config, true);
+            if (string.Equals(modeQuery, "br", StringComparison.CurrentCultureIgnoreCase))
+                return HandleQueryIntern(query.Skip(1), config, false);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Load the context-menus for a selected branch.
+        /// </summary>
+        /// <param name="selectedResult">Query result</param>
+        /// <param name="config">App configuration</param>
+        /// <param name="pluginName">Plugin name</param>
+        /// <returns>Context menu results. Null if the context-menu wasn't handled</returns>
+        public List<ContextMenuResult>? LoadContextMenus(Result selectedResult, AppConfig config, string pluginName)
+        {
+            if (selectedResult?.ContextData is (string branch, OperationMode mode) && mode == OperationMode.Branch)
+            {
+                return [
+                    new ContextMenuResult
+                    {
+                        PluginName = pluginName,
+                        Title = "Open Jenkins",
+                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                        Glyph = "\xE774",
+                        AcceleratorKey = Key.Enter,
+                        Action = _ => {
+                            OpenJenkins(branch, config.JenkinsUrl);
+                            return true;
+                        }
+                    },
+                    new ContextMenuResult
+                    {
+                        PluginName = pluginName,
+                        Title = "Download Tools",
+                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                        Glyph = "\xebd3",
+                        AcceleratorKey = Key.Enter,
+                        AcceleratorModifiers = ModifierKeys.Shift,
+                        Action = _ => {
+                            DownloadTools(branch, config.DownloadScriptPath, config.ShellType);
+                            return true;
+                        }
+                    },
+                    new ContextMenuResult
+                    {
+                        PluginName = pluginName,
+                        Title = "Open Github",
+                        FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
+                        Glyph = "\xE753",
+                        AcceleratorKey = Key.Enter,
+                        AcceleratorModifiers = ModifierKeys.Control,
+                        Action = _ => {
+                            OpenGithub(branch, config.GitRepoUrl);
+                            return true;
+                        }
+                    }
+                ];
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Handle the query to select a branch
+        /// </summary>
+        /// <param name="query">Search query</param>
+        /// <param name="config">App configuration</param>
         /// <param name="checkLocal">Flag if the local branches from the source-folder should be checked (=true) or the remote branches (=false)</param>
         /// <returns>List of query results (branches)</returns>
-        public List<Result> HandleQuery(IEnumerable<string> query, AppConfig config, bool checkLocal)
+        private List<Result>? HandleQueryIntern(IEnumerable<string> query, AppConfig config, bool checkLocal)
         {
-            if (query.Count() > 1)
-                return [];
-
             if (checkLocal && string.IsNullOrWhiteSpace(config.SourceFolder))
             {
                 return [
@@ -52,7 +120,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                         SubTitle ="Local source folder not configured!"
                     }
                 ];
-            } else if (!checkLocal && string.IsNullOrWhiteSpace(config.SourceFolder) && string.IsNullOrWhiteSpace(config.GitRepoUrl)) {
+            }
+            else if (!checkLocal && string.IsNullOrWhiteSpace(config.SourceFolder) && string.IsNullOrWhiteSpace(config.GitRepoUrl))
+            {
                 return [
                     new Result
                     {
@@ -146,7 +216,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             {
                 string getBranchesCmd = $"git ls-remote {repoUrl}";
                 branchesOutput = await Utils.ExecuteCmdCommandAsync(getBranchesCmd);
-            } else
+            }
+            else
             {
                 string getBranchesCmd = $"git ls-remote";
                 branchesOutput = await Utils.ExecuteCmdCommandAsync(getBranchesCmd, sourceFolder);
@@ -222,57 +293,6 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                 return splitted[0];
 
             return splitted[1];
-        }
-
-        /// <summary>
-        /// Load the context-menus for a selected branch (open Jenkins, download tools).
-        /// </summary>
-        /// <param name="branch">Branch name</param>
-        /// <param name="name">Plugin name</param>
-        /// <param name="config">App configuration</param>
-        /// <returns></returns>
-        public List<ContextMenuResult> LoadContextMenus(string branch, string name, AppConfig config)
-        {
-            return [
-                new ContextMenuResult
-                {
-                    PluginName = name,
-                    Title = "Open Jenkins",
-                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                    Glyph = "\xE774",
-                    AcceleratorKey = Key.Enter,
-                    Action = _ => {
-                        OpenJenkins(branch, config.JenkinsUrl);
-                        return true;
-                    }
-                },
-                new ContextMenuResult
-                {
-                    PluginName = name,
-                    Title = "Download Tools",
-                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                    Glyph = "\xebd3",
-                    AcceleratorKey = Key.Enter,
-                    AcceleratorModifiers = ModifierKeys.Shift,
-                    Action = _ => {
-                        DownloadTools(branch, config.DownloadScriptPath, config.ShellType);
-                        return true;
-                    }
-                },
-                new ContextMenuResult
-                {
-                    PluginName = name,
-                    Title = "Open Github",
-                    FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
-                    Glyph = "\xE753",
-                    AcceleratorKey = Key.Enter,
-                    AcceleratorModifiers = ModifierKeys.Control,
-                    Action = _ => {
-                        OpenGithub(branch, config.GitRepoUrl);
-                        return true;
-                    }
-                }
-            ];
         }
 
         /// <summary>
