@@ -142,7 +142,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     return results;
             }
 
-            return [];
+            return queryHandlers.SelectMany(elem => elem.GetQueryOptions()).ToList();
         }
 
         

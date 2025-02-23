@@ -102,6 +102,24 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             return null;
         }
 
+        public List<Result> GetQueryOptions()
+        {
+            return [
+                new Result()
+                {
+                    Title = "<bl> Local branches",
+                    SubTitle = "Locally available branches",
+                    QueryTextDisplay = "bl"
+                },
+                new Result()
+                {
+                    Title = "<br> Remote branches",
+                    SubTitle = "Remotelly available branches",
+                    QueryTextDisplay = "br"
+                }
+            ];
+        }
+
         /// <summary>
         /// Handle the query to select a branch
         /// </summary>

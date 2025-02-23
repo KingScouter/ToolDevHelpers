@@ -45,5 +45,17 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         {
             return null;
         }
+
+        public List<Result> GetQueryOptions()
+        {
+            return [
+                new Result()
+                {
+                    Title = "<reload> Reload",
+                    SubTitle = "Reload the tool configuration project",
+                    QueryTextDisplay = "reload"
+                }
+            ];
+        }
     }
 }

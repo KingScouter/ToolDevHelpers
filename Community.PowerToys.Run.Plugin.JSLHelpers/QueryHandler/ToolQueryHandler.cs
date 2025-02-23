@@ -58,7 +58,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         {
             if (selectedResult?.ContextData is (ToolConfig toolConfig, OperationMode toolMode) && toolMode == OperationMode.Tool)
             {
-                ContextMenuResult startLocallyOption = new ContextMenuResult
+                ContextMenuResult startLocallyOption = new()
                 {
                     PluginName = pluginName,
                     Title = "Start locally",
@@ -100,6 +100,18 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             }
 
             return null;
+        }
+
+        public List<Result> GetQueryOptions()
+        {
+            return [
+                new Result()
+                {
+                    Title = "<t> Tools",
+                    SubTitle = "Select a tool configuration",
+                    QueryTextDisplay = "t",
+                }
+            ];
         }
 
         /// <summary>
