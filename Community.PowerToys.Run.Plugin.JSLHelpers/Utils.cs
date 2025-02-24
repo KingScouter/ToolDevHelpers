@@ -45,20 +45,26 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// <param name="version">Version of the Powershell to use</param>"
         /// <param name="waitForResult">Flag to determine if the CLI should remain open after the execution finished</param>
         /// <param name="workingDir">Working directory</param>
-        public static void ExecutePowershellCommand(string commandTemplate, PowershellVersion version, string? workingDir = null)
+        /// <param name="title">Optional title for the PowerShell window</param>
+        public static void ExecutePowershellCommand(string commandTemplate, PowershellVersion version, string? workingDir = null, string? title = null)
         {
             string extraArgs = "";
             string fileName = "powershell.exe";
+            string titleCmd = "";
 
             if (version == PowershellVersion.LTS)
             {
                 extraArgs = "-command ";
                 fileName = "pwsh.exe";
             }
+
+            if (!string.IsNullOrWhiteSpace(title))
+                titleCmd += $"$host.ui.RawUI.WindowTitle = '{title}'; ";
+
             System.Diagnostics.ProcessStartInfo startInfo = new()
             {
                 FileName = fileName,
-                Arguments = $"-ExecutionPolicy Bypass {extraArgs}\"{commandTemplate}\""
+                Arguments = $"-ExecutionPolicy Bypass {extraArgs}\"{titleCmd} {commandTemplate}\""
             };
 
             if (!string.IsNullOrWhiteSpace(workingDir))
