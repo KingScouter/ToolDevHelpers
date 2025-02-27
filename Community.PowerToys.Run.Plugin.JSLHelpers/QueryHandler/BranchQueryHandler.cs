@@ -1,4 +1,5 @@
-﻿using LazyCache;
+﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
+using LazyCache;
 using System.Text;
 using System.Web;
 using System.Windows.Input;

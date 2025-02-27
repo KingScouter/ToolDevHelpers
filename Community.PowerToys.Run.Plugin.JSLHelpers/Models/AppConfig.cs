@@ -1,4 +1,4 @@
-﻿namespace Community.PowerToys.Run.Plugin.JSLHelpers
+﻿namespace Community.PowerToys.Run.Plugin.JSLHelpers.Models
 {
     internal class AppConfig
     {

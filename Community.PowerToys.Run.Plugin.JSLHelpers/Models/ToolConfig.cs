@@ -1,17 +1,20 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers
+namespace Community.PowerToys.Run.Plugin.JSLHelpers.Models
 {
     internal class ToolConfig
     {
         [JsonInclude]
-        internal required string shortName { 
-            get {
+        internal required string shortName
+        {
+            get
+            {
                 return shortNameInternal;
-            } 
-            set {
+            }
+            set
+            {
                 shortNameInternal = value.ToLower();
-            } 
+            }
         }
         [JsonInclude]
         internal required string name;

@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Windows.Controls;
+using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
 using Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;

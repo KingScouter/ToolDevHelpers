@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
+using System.Text.Json.Serialization;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {

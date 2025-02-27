@@ -2,6 +2,7 @@ using Wox.Plugin.Logger;
 using Wox.Plugin;
 using System.Windows.Input;
 using System.IO;
+using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {
@@ -135,7 +136,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
                 return false;
             }
 
-            Utils.ExecutePowershellCommand(pathToExe, version, null, toolConfig.name);
+            Utils.ExecutePowershellCommand(pathToExe, version);
 
             return true;
         }
