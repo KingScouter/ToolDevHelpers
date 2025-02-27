@@ -325,7 +325,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             if (string.IsNullOrEmpty(scriptPath) || !System.IO.Path.Exists(scriptPath))
                 return;
 
-            Utils.ExecutePowershellCommand($"{scriptPath} {branch}", version);
+            Utils.ExecutePowershellCommand($"{scriptPath} {branch}", version, title: "Download Tools");
         }
 
         /// <summary>
