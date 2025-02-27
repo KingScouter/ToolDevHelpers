@@ -150,14 +150,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         /// <returns>True</returns>
         private bool OpenTool(ToolConfig toolConfig, bool isLocal)
         {
-            string url = "";
+            string toolHost = "localhost";
             string urlPrefix = toolConfig.useHttps ? "https" : "http";
             if (!isLocal && !string.IsNullOrWhiteSpace(toolConfig.remoteServerUrl))
-                url = toolConfig.remoteServerUrl;
-            else
-                url = "localhost";
+                toolHost = toolConfig.remoteServerUrl;
 
-            url = new UriBuilder(urlPrefix, url, (int)toolConfig.port, "").ToString();
+            string url = new UriBuilder(urlPrefix, toolHost, (int)toolConfig.port, "").ToString();
 
             Log.Info($"Open tool {url}", GetType());
             Utils.OpenPageInBrowser(url);
@@ -165,7 +163,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             // Open any additional page as well
             foreach (var page in toolConfig.additionalPages)
             {
-                var pageUrl = page.Replace("#BASE#", url);
+                var pageUrl = page
+                    .Replace("#BASE#", url)
+                    .Replace("#BASE_HOST#", toolHost)
+                    .Replace("#BASE_PORT#", toolConfig.port.ToString());
+                if (!pageUrl.StartsWith("http") || !pageUrl.StartsWith("https"))
+                    pageUrl = $"{urlPrefix}://{pageUrl}";
                 Log.Info($"Open additional page {pageUrl}", GetType());
                 Utils.OpenPageInBrowser(pageUrl);
             }

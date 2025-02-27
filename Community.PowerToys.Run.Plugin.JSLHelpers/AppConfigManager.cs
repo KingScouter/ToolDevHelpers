@@ -51,7 +51,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
                     port = 1234,
                     remoteServerUrl = "www.google.at",
                     exePath = "testTool/tool.exe",
-                    additionalPages = ["#BASE#api"]
+                    additionalPages = ["#BASE#api", "#BASE_HOST#:#BASE_PORT#/test"]
                 });
 
                 StreamWriter sw = new(Config.ToolConfigFile);
