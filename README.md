@@ -24,10 +24,16 @@ Alternatively you can use the provided Powershell-Script to install the Plugin:
 
 ## Usage
 
+### Available options
+
+1. Open PowerToys Run with `alt + space`
+2. Type `tdh`
+3. All available commands will be listed
+
 ### Branch Helpers
 
 1. Open PowerToys Run with `alt + space`
-2. Type `tdh b`
+2. Type `tdh bl` (local branches) or `tdh br` (remote branches)
 3. Type the name of a branch
 4. All branches with matching names will be listed below
 5. Use ⬆️ and ⬇️ keys to select a result
@@ -48,6 +54,12 @@ Alternatively you can use the provided Powershell-Script to install the Plugin:
    - Press `Ctrl+Enter` to open the locally started tool in the browser
    - Press `Shift+Enter` to open the tool on the remote-server in the browser
 
+### Misc Options
+
+#### Reload
+
+Execute `tdh reload` to reload the tool configuration from the configured project file.
+
 ## Settings
 
 Open settings:
@@ -60,7 +72,9 @@ Open settings:
 ### Settings available:
 
 - <strong>Git Repository URL:</strong><br>
-  URL of the GIT repository to use for the branch-helpers
+  URL of the GIT repository to use for the branch-helpers (remote branches)
+- <strong>Local source folder:</strong><br>
+  Path to a locally cloned source folder (for local branches)
 - <strong>Jenkins Multibranch-Pipeline URL:</strong><br>
   URL to the base Jenkins-Multibranch-Pipeline to open the branches for
 - <strong>Tool folder:</strong><br>
@@ -72,8 +86,8 @@ Open settings:
 - <strong>Powershell Version</strong><br>
   The version of Powershell to use when executing scripts (e.g. to download tools).<br>
   Available options are:
-  - Powershell 5 (legacy)
-  - Powershell 7 (LTS)
+  - Legacy (powershell)
+  - Powershell 7 (pwsh)
 
 ## Tool config
 
@@ -87,17 +101,20 @@ For every tool you have the following settings available:
 - `shortName`<br>
   A short abbreviation for the tool to quickly select it from the list
 - `name`<br>
-  The name of the tool (will be displayed in the list)
+  The name of the tool (will be displayed in the list and in the shell window title)
 - `useHttps`<br>
-  True if the tool uses secure HTTPS (false otherwise for HTTP)
+  True if the tool uses secure HTTPS (false or empty for HTTP) (optional)
 - `removeServerUrl`<br>
-  URL of the server where the tool is also deployed
+  URL of the server where the tool is also deployed (optional)
 - `port`<br>
-  Port of the tool
+  Port of the tool (optional)
 - `exePath`<br>
   Relative path to the file that starts up the app (e.g. an executable)
 - `additionalPages`<br>
-  List of additional pages that will be opened alongside the tool itself. You can use `#BASE#` as a placeholder, which will be replaced with the URL of the tool. This can be used to e.g. open a separate subpage for the API or an admin-panel.
+  List of additional pages that will be opened alongside the tool itself (optional). This can be used to e.g. open a separate subpage for the API or an admin-panel. You can use one or more placeholders for various values:
+  - `#BASE#`: Will be replaced with the fully formed tool URL (e.g. `https://production.local:8080/`) as a placeholder, which will be replaced with the URL of the tool.
+  - `#BASE_HOST#`: Will be replaced with the hostname of the tool (depending on if opened locally or remotely)
+  - `#BASE_PORT#`: Will be replaced with the configured tool port
 
 ### Example config
 
@@ -111,7 +128,7 @@ For every tool you have the following settings available:
       "remoteServerUrl": "production.local",
       "port": 8080,
       "exePath": "testApp/start.exe",
-      "additionalPages": ["#BASE#api"]
+      "additionalPages": ["#BASE#api", "#BASE_HOST#:#BASE_PORT#/test"]
     }
   }
 }
