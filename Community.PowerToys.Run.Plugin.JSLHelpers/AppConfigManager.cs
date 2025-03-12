@@ -1,11 +1,6 @@
-﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
-using System;
-using System.Collections.Generic;
+﻿using CommonLib.Models;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Wox.Plugin.Logger;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers

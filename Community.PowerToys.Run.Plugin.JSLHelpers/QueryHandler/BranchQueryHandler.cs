@@ -1,4 +1,4 @@
-﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
+﻿using CommonLib.Models;
 using LazyCache;
 using System.Text;
 using System.Web;

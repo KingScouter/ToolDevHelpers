@@ -1,14 +1,13 @@
-﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers
+namespace CommonLib.Models
 {
-    internal class ToolConfigProject
+    public class ToolConfigProject
     {
         [JsonInclude]
         internal Dictionary<string, ToolConfig> toolConfigs = [];
 
-        internal void AddToolConfig(ToolConfig config)
+        public void AddToolConfig(ToolConfig config)
         {
             toolConfigs.Add(config.shortName, config);
         }
@@ -18,7 +17,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         /// <param name="shortName">Name of the tool to retrieve</param>
         /// <returns>Tool configuration (or null if the tool could not be found)</returns>
-        internal ToolConfig? GetToolConfig(string shortName)
+        public ToolConfig? GetToolConfig(string shortName)
         {
             ToolConfig? config = null;
             if (toolConfigs.TryGetValue(shortName.ToLower(), out config))
@@ -32,7 +31,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
         /// </summary>
         /// <param name="filterQuery">Query to filter the tool names with</param>
         /// <returns>List of tool configurations</returns>
-        internal List<ToolConfig> GetToolConfigs(string filterQuery)
+        public List<ToolConfig> GetToolConfigs(string filterQuery)
         {
             if (string.IsNullOrWhiteSpace(filterQuery))
                 return [.. toolConfigs.Values];

@@ -1,6 +1,6 @@
-﻿namespace Community.PowerToys.Run.Plugin.JSLHelpers.Models
+﻿namespace CommonLib.Models
 {
-    internal class AppConfig
+    public class AppConfig
     {
         public string GitRepoUrl { get; set; } = "";
         public string SourceFolder { get; set; } = "";

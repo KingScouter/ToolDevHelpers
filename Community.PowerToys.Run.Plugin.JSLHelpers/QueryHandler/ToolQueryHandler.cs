@@ -2,7 +2,7 @@ using Wox.Plugin.Logger;
 using Wox.Plugin;
 using System.Windows.Input;
 using System.IO;
-using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
+using CommonLib.Models;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {

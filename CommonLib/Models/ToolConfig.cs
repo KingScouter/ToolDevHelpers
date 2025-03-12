@@ -1,11 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers.Models
+namespace CommonLib.Models
 {
-    internal class ToolConfig
+    public class ToolConfig
     {
         [JsonInclude]
-        internal required string shortName
+        public required string shortName
         {
             get
             {
@@ -17,17 +17,17 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.Models
             }
         }
         [JsonInclude]
-        internal required string name;
+        public required string name;
         [JsonInclude]
-        internal bool useHttps = false;
+        public bool useHttps = false;
         [JsonInclude]
-        internal uint port = 0;
+        public uint port = 0;
         [JsonInclude]
-        internal string? remoteServerUrl = null;
+        public string? remoteServerUrl = null;
         [JsonInclude]
-        internal required string exePath;
+        public required string exePath;
         [JsonInclude]
-        internal string[] additionalPages = [];
+        public string[] additionalPages = [];
 
         private string shortNameInternal = "";
     }

@@ -1,4 +1,4 @@
-﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
+﻿using CommonLib.Models;
 using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler

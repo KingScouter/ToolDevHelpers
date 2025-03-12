@@ -1,9 +1,4 @@
-﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommonLib.Models;
 using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
