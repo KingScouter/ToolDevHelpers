@@ -1,4 +1,4 @@
-$pluginFolder = ".\Community.PowerToys.Run.Plugin.JSLHelpers\bin\x64\Release\net8.0-windows\"
+$pluginFolder = ".\Community.PowerToys.Run.Plugin.JSLHelpers\bin\x64\Release\net9.0-windows10.0.22621.0\"
 $powerToysPluginFolder = "$($env:LOCALAPPDATA)\Microsoft\PowerToys\PowerToys Run\Plugins\JSLHelpers"
 
 Write-Output "Stop PowerToys"
