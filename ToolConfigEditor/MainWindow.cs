@@ -45,18 +45,43 @@ namespace ToolConfigEditor
             }
         }
 
+        /// <summary>
+        /// OnSelectedValueChanged handler for the ToolsListBox. Fills the form-fields
+        /// with the values of the selected tool.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ToolsListBoxOnSelectedValueChanged(object sender, EventArgs e)
         {
             int selectedItemIdx = toolsListBox.SelectedIndex;
-            if (selectedItemIdx < 0)
-                return;
+            bool isEnabled = selectedItemIdx >= 0;
 
-            ToolConfig selectedTool = project.GetToolConfigs("").ElementAt(selectedItemIdx);
-            keywordTextBox.Text = selectedTool.shortName;
-            nameTextBox.Text = selectedTool.name;
-            portTextBox.Text = selectedTool.port.ToString();
-            remoteServerUrlTextBox.Text = selectedTool.remoteServerUrl;
-            exePathTextBox.Text = selectedTool.exePath;
+            keywordTextBox.Enabled = isEnabled;
+            nameTextBox.Enabled = isEnabled;
+            portTextBox.Enabled = isEnabled;
+            remoteServerUrlTextBox.Enabled = isEnabled;
+            exePathTextBox.Enabled = isEnabled;
+
+            if (isEnabled)
+            {
+                ToolConfig selectedTool = project.GetToolConfigs("").ElementAt(selectedItemIdx);
+                keywordTextBox.Text = selectedTool.shortName;
+                nameTextBox.Text = selectedTool.name;
+                portTextBox.Text = selectedTool.port.ToString();
+                remoteServerUrlTextBox.Text = selectedTool.remoteServerUrl;
+                exePathTextBox.Text = selectedTool.exePath;
+            }
+            else
+            {
+                keywordTextBox.Text = "";
+                nameTextBox.Text = "";
+                portTextBox.Text = "";
+                remoteServerUrlTextBox.Text = "";
+                exePathTextBox.Text = "";
+            }
+
+
+
         }
     }
 }

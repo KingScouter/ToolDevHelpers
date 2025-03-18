@@ -240,13 +240,13 @@
             keywordTextBox.Size = new Size(315, 23);
             keywordTextBox.TabIndex = 1;
             // 
-            // Form1
+            // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(752, 652);
             Controls.Add(splitContainer1);
-            Name = "Form1";
+            Name = "MainWindow";
             Text = "Form1";
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
