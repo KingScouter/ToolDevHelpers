@@ -136,7 +136,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
                 return false;
             }
 
-            Utils.ExecutePowershellCommand(pathToExe, version);
+            Utils.ExecutePowershellCommand(pathToExe, version, null, toolConfig.name);
 
             return true;
         }
@@ -167,7 +167,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
                     .Replace("#BASE#", url)
                     .Replace("#BASE_HOST#", toolHost)
                     .Replace("#BASE_PORT#", toolConfig.port.ToString());
-                if (!pageUrl.StartsWith("http") || !pageUrl.StartsWith("https"))
+                if (!pageUrl.StartsWith("http") && !pageUrl.StartsWith("https"))
                     pageUrl = $"{urlPrefix}://{pageUrl}";
                 Log.Info($"Open additional page {pageUrl}", GetType());
                 Utils.OpenPageInBrowser(pageUrl);
