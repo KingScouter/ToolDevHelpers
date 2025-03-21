@@ -36,6 +36,7 @@ jobs:
         shell: pwsh
         run: |
           Copy-Item -Path install_plugin.ps1 -Destination $env:RELEASE_FOLDER
+          Copy-Item -Path install_plugin_link.ps1 -Destination $env:RELEASE_FOLDER
 
       - name: Upload build artifact
         if: ${{ github.event_name == 'workflow_dispatch' }}
