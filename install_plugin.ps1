@@ -1,4 +1,4 @@
-$powerToysPluginFolder = "$($env:LOCALAPPDATA)\Microsoft\PowerToys\PowerToys Run\Plugins\JSLHelpers"
+$powerToysPluginFolder = "$($env:LOCALAPPDATA)\Microsoft\PowerToys\PowerToys Run\Plugins\ToolDevHelpers"
 
 Write-Output "Stop PowerToys"
 # Stop PowerToys
