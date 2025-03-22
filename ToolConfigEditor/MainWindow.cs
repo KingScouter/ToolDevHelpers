@@ -11,8 +11,21 @@ namespace ToolConfigEditor
         {
             InitializeComponent();
 
-            project = new ToolConfigProject();
-            project.AddToolConfig(new()
+            ReadMockData();
+
+            foreach (var elem in project!.GetToolConfigs(""))
+            {
+                toolsListBox.Items.Add(elem.name);
+            }
+        }
+
+        private void ReadMockData()
+        {
+            var mockProject = ToolConfigProject.ReadToolConfigProject(mockProjectFile);
+            if (mockProject == null)
+            {
+                mockProject = new ToolConfigProject();
+                mockProject.AddToolConfig(new()
             {
                 name = "Tool 1",
                 shortName = "t1",
@@ -21,7 +34,7 @@ namespace ToolConfigEditor
                 port = 9090
             });
 
-            project.AddToolConfig(new()
+                mockProject.AddToolConfig(new()
             {
                 name = "What a tool",
                 shortName = "wat",
@@ -30,7 +43,7 @@ namespace ToolConfigEditor
                 port = 8080
             });
 
-            project.AddToolConfig(new()
+                mockProject.AddToolConfig(new()
             {
                 name = "Another tool",
                 shortName = "at",
@@ -38,11 +51,8 @@ namespace ToolConfigEditor
                 useHttps = false,
                 port = 7070
             });
-
-            foreach (var elem in project.GetToolConfigs(""))
-            {
-                toolsListBox.Items.Add(elem.name);
             }
+            project = mockProject;
         }
 
         /// <summary>

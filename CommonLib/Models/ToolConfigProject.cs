@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace CommonLib.Models
 {
@@ -6,6 +7,20 @@ namespace CommonLib.Models
     {
         [JsonInclude]
         internal Dictionary<string, ToolConfig> toolConfigs = [];
+
+        public static ToolConfigProject? ReadToolConfigProject(string filename)
+        {
+            StreamReader sr = new(filename);
+            string dataLine = sr.ReadToEnd();
+            sr.Close();
+            if (dataLine != null)
+            {
+                ToolConfigProject? project = JsonSerializer.Deserialize<ToolConfigProject>(dataLine);
+                return project;
+            }
+
+            return null;
+        }
 
         public void AddToolConfig(ToolConfig config)
         {

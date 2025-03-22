@@ -30,6 +30,7 @@
         {
             splitContainer1 = new SplitContainer();
             toolsListBox = new ListBox();
+            titleLabel = new Label();
             tableLayoutPanel2 = new TableLayoutPanel();
             additionalPagesLabel = new Label();
             additionalPagesTextBox = new TextBox();
@@ -65,7 +66,9 @@
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(titleLabel);
             splitContainer1.Panel2.Controls.Add(tableLayoutPanel2);
+            splitContainer1.Panel2.Padding = new Padding(20, 20, 20, 0);
             splitContainer1.Size = new Size(752, 652);
             splitContainer1.SplitterDistance = 255;
             splitContainer1.TabIndex = 1;
@@ -79,6 +82,16 @@
             toolsListBox.Size = new Size(255, 652);
             toolsListBox.TabIndex = 0;
             toolsListBox.SelectedValueChanged += ToolsListBoxOnSelectedValueChanged;
+            // 
+            // titleLabel
+            // 
+            titleLabel.AutoSize = true;
+            titleLabel.Font = new Font("Segoe UI", 27.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            titleLabel.Location = new Point(20, 20);
+            titleLabel.Name = "titleLabel";
+            titleLabel.Size = new Size(321, 50);
+            titleLabel.TabIndex = 1;
+            titleLabel.Text = "Tool configuration";
             // 
             // tableLayoutPanel2
             // 
@@ -101,125 +114,125 @@
             tableLayoutPanel2.Controls.Add(keywordLabel, 0, 0);
             tableLayoutPanel2.Controls.Add(keywordTextBox, 1, 0);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
-            tableLayoutPanel2.Location = new Point(0, 135);
+            tableLayoutPanel2.Location = new Point(20, 176);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 7;
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
-            tableLayoutPanel2.Size = new Size(493, 517);
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.Size = new Size(453, 476);
             tableLayoutPanel2.TabIndex = 0;
             // 
             // additionalPagesLabel
             // 
             additionalPagesLabel.AutoSize = true;
             additionalPagesLabel.Dock = DockStyle.Fill;
-            additionalPagesLabel.Location = new Point(3, 438);
+            additionalPagesLabel.Location = new Point(3, 300);
             additionalPagesLabel.Name = "additionalPagesLabel";
-            additionalPagesLabel.Size = new Size(166, 79);
+            additionalPagesLabel.Size = new Size(152, 176);
             additionalPagesLabel.TabIndex = 12;
             additionalPagesLabel.Text = "Additional Pages";
             // 
             // additionalPagesTextBox
             // 
             additionalPagesTextBox.Dock = DockStyle.Fill;
-            additionalPagesTextBox.Location = new Point(175, 441);
+            additionalPagesTextBox.Location = new Point(161, 303);
             additionalPagesTextBox.Name = "additionalPagesTextBox";
-            additionalPagesTextBox.Size = new Size(315, 23);
+            additionalPagesTextBox.Size = new Size(289, 23);
             additionalPagesTextBox.TabIndex = 13;
             // 
             // exePathLabel
             // 
             exePathLabel.AutoSize = true;
             exePathLabel.Dock = DockStyle.Fill;
-            exePathLabel.Location = new Point(3, 365);
+            exePathLabel.Location = new Point(3, 250);
             exePathLabel.Name = "exePathLabel";
-            exePathLabel.Size = new Size(166, 73);
+            exePathLabel.Size = new Size(152, 50);
             exePathLabel.TabIndex = 10;
             exePathLabel.Text = "Exe Path";
             // 
             // exePathTextBox
             // 
             exePathTextBox.Dock = DockStyle.Fill;
-            exePathTextBox.Location = new Point(175, 368);
+            exePathTextBox.Location = new Point(161, 253);
             exePathTextBox.Name = "exePathTextBox";
-            exePathTextBox.Size = new Size(315, 23);
+            exePathTextBox.Size = new Size(289, 23);
             exePathTextBox.TabIndex = 11;
             // 
             // remoteServerUrlLabel
             // 
             remoteServerUrlLabel.AutoSize = true;
             remoteServerUrlLabel.Dock = DockStyle.Fill;
-            remoteServerUrlLabel.Location = new Point(3, 292);
+            remoteServerUrlLabel.Location = new Point(3, 200);
             remoteServerUrlLabel.Name = "remoteServerUrlLabel";
-            remoteServerUrlLabel.Size = new Size(166, 73);
+            remoteServerUrlLabel.Size = new Size(152, 50);
             remoteServerUrlLabel.TabIndex = 8;
             remoteServerUrlLabel.Text = "Remote Server URL";
             // 
             // remoteServerUrlTextBox
             // 
             remoteServerUrlTextBox.Dock = DockStyle.Fill;
-            remoteServerUrlTextBox.Location = new Point(175, 295);
+            remoteServerUrlTextBox.Location = new Point(161, 203);
             remoteServerUrlTextBox.Name = "remoteServerUrlTextBox";
-            remoteServerUrlTextBox.Size = new Size(315, 23);
+            remoteServerUrlTextBox.Size = new Size(289, 23);
             remoteServerUrlTextBox.TabIndex = 9;
             // 
             // portLabel
             // 
             portLabel.AutoSize = true;
             portLabel.Dock = DockStyle.Fill;
-            portLabel.Location = new Point(3, 219);
+            portLabel.Location = new Point(3, 150);
             portLabel.Name = "portLabel";
-            portLabel.Size = new Size(166, 73);
+            portLabel.Size = new Size(152, 50);
             portLabel.TabIndex = 6;
             portLabel.Text = "Port";
             // 
             // portTextBox
             // 
             portTextBox.Dock = DockStyle.Fill;
-            portTextBox.Location = new Point(175, 222);
+            portTextBox.Location = new Point(161, 153);
             portTextBox.Name = "portTextBox";
-            portTextBox.Size = new Size(315, 23);
+            portTextBox.Size = new Size(289, 23);
             portTextBox.TabIndex = 7;
             // 
             // useHttpsLabel
             // 
             useHttpsLabel.AutoSize = true;
             useHttpsLabel.Dock = DockStyle.Fill;
-            useHttpsLabel.Location = new Point(3, 146);
+            useHttpsLabel.Location = new Point(3, 100);
             useHttpsLabel.Name = "useHttpsLabel";
-            useHttpsLabel.Size = new Size(166, 73);
+            useHttpsLabel.Size = new Size(152, 50);
             useHttpsLabel.TabIndex = 4;
             useHttpsLabel.Text = "Use HTTPS";
             // 
             // textBox12
             // 
             textBox12.Dock = DockStyle.Fill;
-            textBox12.Location = new Point(175, 149);
+            textBox12.Location = new Point(161, 103);
             textBox12.Name = "textBox12";
-            textBox12.Size = new Size(315, 23);
+            textBox12.Size = new Size(289, 23);
             textBox12.TabIndex = 5;
             // 
             // nameLabel
             // 
             nameLabel.AutoSize = true;
             nameLabel.Dock = DockStyle.Fill;
-            nameLabel.Location = new Point(3, 73);
+            nameLabel.Location = new Point(3, 50);
             nameLabel.Name = "nameLabel";
-            nameLabel.Size = new Size(166, 73);
+            nameLabel.Size = new Size(152, 50);
             nameLabel.TabIndex = 2;
             nameLabel.Text = "Name";
             // 
             // nameTextBox
             // 
             nameTextBox.Dock = DockStyle.Fill;
-            nameTextBox.Location = new Point(175, 76);
+            nameTextBox.Location = new Point(161, 53);
             nameTextBox.Name = "nameTextBox";
-            nameTextBox.Size = new Size(315, 23);
+            nameTextBox.Size = new Size(289, 23);
             nameTextBox.TabIndex = 3;
             // 
             // keywordLabel
@@ -228,16 +241,16 @@
             keywordLabel.Dock = DockStyle.Fill;
             keywordLabel.Location = new Point(3, 0);
             keywordLabel.Name = "keywordLabel";
-            keywordLabel.Size = new Size(166, 73);
+            keywordLabel.Size = new Size(152, 50);
             keywordLabel.TabIndex = 0;
             keywordLabel.Text = "Keyword";
             // 
             // keywordTextBox
             // 
             keywordTextBox.Dock = DockStyle.Fill;
-            keywordTextBox.Location = new Point(175, 3);
+            keywordTextBox.Location = new Point(161, 3);
             keywordTextBox.Name = "keywordTextBox";
-            keywordTextBox.Size = new Size(315, 23);
+            keywordTextBox.Size = new Size(289, 23);
             keywordTextBox.TabIndex = 1;
             // 
             // MainWindow
@@ -250,6 +263,7 @@
             Text = "Form1";
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
             splitContainer1.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
@@ -276,5 +290,6 @@
         private TextBox nameTextBox;
         private Label keywordLabel;
         private TextBox keywordTextBox;
+        private Label titleLabel;
     }
 }

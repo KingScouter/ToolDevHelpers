@@ -24,12 +24,10 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
             try
             {
-                StreamReader sr = new(Config.ToolConfigFile);
-                string dataLine = sr.ReadToEnd();
-                sr.Close();
-                if (dataLine != null)
+                ToolConfigProject? project = ToolConfigProject.ReadToolConfigProject(Config.ToolConfigFile);
+                if (project != null)
                 {
-                    Config.ToolConfigProject = JsonSerializer.Deserialize<ToolConfigProject>(dataLine);
+                    Config.ToolConfigProject = project;
                     Log.Info($"Tool config project {Config.ToolConfigFile} loaded", GetType());
                 }
             }
