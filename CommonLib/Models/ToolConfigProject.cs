@@ -46,7 +46,7 @@ namespace CommonLib.Models
         /// </summary>
         /// <param name="filterQuery">Query to filter the tool names with</param>
         /// <returns>List of tool configurations</returns>
-        public List<ToolConfig> GetToolConfigs(string filterQuery)
+        public List<ToolConfig> GetToolConfigs(string? filterQuery = null)
         {
             if (string.IsNullOrWhiteSpace(filterQuery))
                 return [.. toolConfigs.Values];

@@ -5,54 +5,25 @@ namespace ToolConfigEditor
 {
     public partial class MainWindow : Form
     {
-        private ToolConfigProject project;
+        private ToolConfigProject project = new();
+        private readonly BindingSource listBoxSource;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            ReadMockData();
+            listBoxSource = new()
+            {
+                DataSource = project.GetToolConfigs()
+            };
 
-            foreach (var elem in project!.GetToolConfigs(""))
-            {
-                toolsListBox.Items.Add(elem.name);
-            }
-        }
-
-        private void ReadMockData()
-        {
-            var mockProject = ToolConfigProject.ReadToolConfigProject(mockProjectFile);
-            if (mockProject == null)
-            {
-                mockProject = new ToolConfigProject();
-                mockProject.AddToolConfig(new()
-            {
-                name = "Tool 1",
-                shortName = "t1",
-                exePath = "path/to/exe",
-                useHttps = true,
-                port = 9090
-            });
-
-                mockProject.AddToolConfig(new()
-            {
-                name = "What a tool",
-                shortName = "wat",
-                exePath = "path/to/exe2",
-                useHttps = true,
-                port = 8080
-            });
-
-                mockProject.AddToolConfig(new()
-            {
-                name = "Another tool",
-                shortName = "at",
-                exePath = "path/to/exe3",
-                useHttps = false,
-                port = 7070
-            });
-            }
-            project = mockProject;
+            toolsListBox.DataSource = listBoxSource;
+            toolsListBox.DisplayMember = "Name";
+            keywordTextBox.DataBindings.Add("Text", listBoxSource, "ShortName", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            nameTextBox.DataBindings.Add("Text", listBoxSource, "Name", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            portTextBox.DataBindings.Add("Text", listBoxSource, "Port", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "RemoteServerUrl", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            exePathTextBox.DataBindings.Add("Text", listBoxSource, "ExePath", false, DataSourceUpdateMode.OnPropertyChanged, "");
         }
 
         /// <summary>
@@ -71,27 +42,29 @@ namespace ToolConfigEditor
             portTextBox.Enabled = isEnabled;
             remoteServerUrlTextBox.Enabled = isEnabled;
             exePathTextBox.Enabled = isEnabled;
+        }
 
-            if (isEnabled)
+        private void OpenMenuItemOnClick(object sender, EventArgs e)
+        {
+            try
             {
-                ToolConfig selectedTool = project.GetToolConfigs("").ElementAt(selectedItemIdx);
-                keywordTextBox.Text = selectedTool.shortName;
-                nameTextBox.Text = selectedTool.name;
-                portTextBox.Text = selectedTool.port.ToString();
-                remoteServerUrlTextBox.Text = selectedTool.remoteServerUrl;
-                exePathTextBox.Text = selectedTool.exePath;
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Tool Configuration (*.json)|*.json";
+                var dialogResult = openFileDialog.ShowDialog();
+                if (dialogResult == DialogResult.OK)
+                {
+                    var loadedProject = ToolConfigProject.ReadToolConfigProject(openFileDialog.FileName);
+                    if (loadedProject != null)
+                    {
+                        project = loadedProject;
+                        listBoxSource.DataSource = project.GetToolConfigs();
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
-                keywordTextBox.Text = "";
-                nameTextBox.Text = "";
-                portTextBox.Text = "";
-                remoteServerUrlTextBox.Text = "";
-                exePathTextBox.Text = "";
+                Debug.WriteLine("Error while loading project: ", ex);
             }
-
-
-
         }
     }
 }

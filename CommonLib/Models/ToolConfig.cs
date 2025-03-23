@@ -29,6 +29,31 @@ namespace CommonLib.Models
         [JsonInclude]
         public string[] additionalPages = [];
 
+        public string Name
+        {
+            get { return name; }
+        }
+
+        public bool UseHttps
+        {
+            get { return useHttps; }
+        }
+
+        public uint Port
+        {
+            get { return port; }
+        }
+
+        public string? RemoteServerUrl
+        {
+            get { return remoteServerUrl; }
+        }
+
+        public string ExePath
+        {
+            get { return exePath; }
+        }
+
         private string shortNameInternal = "";
     }
 }
