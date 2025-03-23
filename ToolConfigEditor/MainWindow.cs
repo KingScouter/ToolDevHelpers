@@ -1,11 +1,12 @@
 using CommonLib.Models;
 using System.Diagnostics;
-using System.Windows.Forms;
+using System.Text.Json;
 
 namespace ToolConfigEditor
 {
     public partial class MainWindow : Form
     {
+        private string filename = "";
         private ToolConfigProject project = new();
         private readonly BindingSource listBoxSource;
 
@@ -22,12 +23,12 @@ namespace ToolConfigEditor
             };
 
             toolsListBox.DataSource = listBoxSource;
-            toolsListBox.DisplayMember = "Name";
-            keywordTextBox.DataBindings.Add("Text", listBoxSource, "ShortName", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            nameTextBox.DataBindings.Add("Text", listBoxSource, "Name", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            portTextBox.DataBindings.Add("Text", listBoxSource, "Port", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "RemoteServerUrl", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            exePathTextBox.DataBindings.Add("Text", listBoxSource, "ExePath", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            toolsListBox.DisplayMember = "name";
+            keywordTextBox.DataBindings.Add("Text", listBoxSource, "shortName", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            nameTextBox.DataBindings.Add("Text", listBoxSource, "name", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            portTextBox.DataBindings.Add("Text", listBoxSource, "port", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "remoteServerUrl", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            exePathTextBox.DataBindings.Add("Text", listBoxSource, "exePath", false, DataSourceUpdateMode.OnPropertyChanged, "");
         }
 
         /// <summary>
@@ -74,8 +75,78 @@ namespace ToolConfigEditor
             {
                 loadedProject = new ToolConfigProject();
             }
+            else
+            {
+                this.filename = filename;
+            }
 
             return loadedProject;
+        }
+
+        /// <summary>
+        /// OnClick-handler for the SaveAs-menu-item.
+        /// Save the project at the existing location.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveMenuItemOnClick(object sender, EventArgs e)
+        {
+            SaveProject(false);
+        }
+
+        /// <summary>
+        /// OnClick-handler for the SaveAs-menu-item.
+        /// Open file dialog and save the project at the selected location.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveAsMenuItemOnClick(object sender, EventArgs e)
+        {
+            SaveProject(true);
+        }
+
+        /// <summary>
+        /// Save the current project.
+        /// </summary>
+        /// <param name="saveAs">True if a Save-Dialog should be opened to select where to save to, otherwise false</param>
+        private void SaveProject(bool saveAs)
+        {
+            try
+            {
+                string saveFilename = filename;
+
+                if (saveFilename == null)
+                    saveAs = true;
+
+                if (saveAs)
+                {
+                    SaveFileDialog saveFileDialog = new();
+                    saveFileDialog.Filter = "Tool Configuration (*.json)|*.json";
+                    var dialogResult = saveFileDialog.ShowDialog();
+                    if (dialogResult == DialogResult.OK)
+                        saveFilename = saveFileDialog.FileName;
+                }
+
+                if (string.IsNullOrEmpty(saveFilename))
+                    return;
+
+                StreamWriter sw = new StreamWriter(saveFilename);
+                sw.Write(JsonSerializer.Serialize(project));
+                sw.Close();
+
+                //project.SaveProject(saveFilename);
+                //StatusBarTextBox.Text = $"Saved project to {saveFilename}";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+        }
+
+        private void NewMenuItemOnClick(object sender, EventArgs e)
+        {
+            project = new ToolConfigProject();
+            listBoxSource.DataSource = project;
         }
     }
 }

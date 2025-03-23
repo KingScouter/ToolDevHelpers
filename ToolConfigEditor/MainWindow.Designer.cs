@@ -297,6 +297,7 @@
             newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
             newToolStripMenuItem.Size = new Size(146, 22);
             newToolStripMenuItem.Text = "&New";
+            newToolStripMenuItem.Click += NewMenuItemOnClick;
             // 
             // openToolStripMenuItem
             // 
@@ -321,12 +322,14 @@
             saveToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
             saveToolStripMenuItem.Size = new Size(146, 22);
             saveToolStripMenuItem.Text = "&Save";
+            saveToolStripMenuItem.Click += SaveMenuItemOnClick;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             saveAsToolStripMenuItem.Size = new Size(146, 22);
             saveAsToolStripMenuItem.Text = "Save &As";
+            saveAsToolStripMenuItem.Click += SaveAsMenuItemOnClick;
             // 
             // toolStripSeparator1
             // 
