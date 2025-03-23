@@ -27,6 +27,7 @@ namespace ToolConfigEditor
             keywordTextBox.DataBindings.Add("Text", listBoxSource, "shortName", false, DataSourceUpdateMode.OnPropertyChanged, "");
             nameTextBox.DataBindings.Add("Text", listBoxSource, "name", false, DataSourceUpdateMode.OnPropertyChanged, "");
             portTextBox.DataBindings.Add("Text", listBoxSource, "port", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            useHttpsCheckBox.DataBindings.Add("Checked", listBoxSource, "useHttps", false, DataSourceUpdateMode.OnPropertyChanged, false);
             remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "remoteServerUrl", false, DataSourceUpdateMode.OnPropertyChanged, "");
             exePathTextBox.DataBindings.Add("Text", listBoxSource, "exePath", false, DataSourceUpdateMode.OnPropertyChanged, "");
         }

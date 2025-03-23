@@ -42,11 +42,11 @@
             portLabel = new Label();
             portTextBox = new TextBox();
             useHttpsLabel = new Label();
-            textBox12 = new TextBox();
             nameLabel = new Label();
             nameTextBox = new TextBox();
             keywordLabel = new Label();
             keywordTextBox = new TextBox();
+            useHttpsCheckBox = new CheckBox();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -128,11 +128,11 @@
             tableLayoutPanel2.Controls.Add(portLabel, 0, 3);
             tableLayoutPanel2.Controls.Add(portTextBox, 1, 3);
             tableLayoutPanel2.Controls.Add(useHttpsLabel, 0, 2);
-            tableLayoutPanel2.Controls.Add(textBox12, 1, 2);
             tableLayoutPanel2.Controls.Add(nameLabel, 0, 1);
             tableLayoutPanel2.Controls.Add(nameTextBox, 1, 1);
             tableLayoutPanel2.Controls.Add(keywordLabel, 0, 0);
             tableLayoutPanel2.Controls.Add(keywordTextBox, 1, 0);
+            tableLayoutPanel2.Controls.Add(useHttpsCheckBox, 1, 2);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
             tableLayoutPanel2.Location = new Point(20, 152);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -229,14 +229,6 @@
             useHttpsLabel.TabIndex = 4;
             useHttpsLabel.Text = "Use HTTPS";
             // 
-            // textBox12
-            // 
-            textBox12.Dock = DockStyle.Fill;
-            textBox12.Location = new Point(161, 103);
-            textBox12.Name = "textBox12";
-            textBox12.Size = new Size(289, 23);
-            textBox12.TabIndex = 5;
-            // 
             // nameLabel
             // 
             nameLabel.AutoSize = true;
@@ -272,6 +264,15 @@
             keywordTextBox.Name = "keywordTextBox";
             keywordTextBox.Size = new Size(289, 23);
             keywordTextBox.TabIndex = 1;
+            // 
+            // useHttpsCheckBox
+            // 
+            useHttpsCheckBox.AutoSize = true;
+            useHttpsCheckBox.Location = new Point(161, 103);
+            useHttpsCheckBox.Name = "useHttpsCheckBox";
+            useHttpsCheckBox.Size = new Size(15, 14);
+            useHttpsCheckBox.TabIndex = 14;
+            useHttpsCheckBox.UseVisualStyleBackColor = true;
             // 
             // menuStrip1
             // 
@@ -443,7 +444,6 @@
         private Label portLabel;
         private TextBox portTextBox;
         private Label useHttpsLabel;
-        private TextBox textBox12;
         private Label nameLabel;
         private TextBox nameTextBox;
         private Label keywordLabel;
@@ -467,5 +467,6 @@
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem selectAllToolStripMenuItem;
+        private CheckBox useHttpsCheckBox;
     }
 }
