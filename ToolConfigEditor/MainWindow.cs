@@ -1,5 +1,6 @@
 using CommonLib.Models;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace ToolConfigEditor
 {
@@ -8,9 +9,12 @@ namespace ToolConfigEditor
         private ToolConfigProject project = new();
         private readonly BindingSource listBoxSource;
 
-        public MainWindow()
+        public MainWindow(string? projectFile)
         {
             InitializeComponent();
+
+            if (!string.IsNullOrEmpty(projectFile))
+                project = LoadProject(projectFile);
 
             listBoxSource = new()
             {
@@ -53,18 +57,25 @@ namespace ToolConfigEditor
                 var dialogResult = openFileDialog.ShowDialog();
                 if (dialogResult == DialogResult.OK)
                 {
-                    var loadedProject = ToolConfigProject.ReadToolConfigProject(openFileDialog.FileName);
-                    if (loadedProject != null)
-                    {
-                        project = loadedProject;
-                        listBoxSource.DataSource = project.GetToolConfigs();
-                    }
+                    project = LoadProject(openFileDialog.FileName);
+                    listBoxSource.DataSource = project.GetToolConfigs();
                 }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine("Error while loading project: ", ex);
             }
+        }
+
+        private ToolConfigProject LoadProject(string filename)
+        {
+            var loadedProject = ToolConfigProject.ReadToolConfigProject(filename);
+            if (loadedProject == null)
+            {
+                loadedProject = new ToolConfigProject();
+            }
+
+            return loadedProject;
         }
     }
 }
