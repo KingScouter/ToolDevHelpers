@@ -9,10 +9,17 @@ namespace ToolConfigEditor
         private string filename = "";
         private ToolConfigProject project = new();
         private BindingSource listBoxSource;
+        private readonly System.Windows.Forms.Timer statusClearTimer;
 
         public MainWindow(string? projectFile)
         {
             InitializeComponent();
+
+            statusClearTimer = new()
+            {
+                Interval = 5000 // Set the interval to 5000 milliseconds (5 seconds)
+            };
+            statusClearTimer.Tick += StatusClearTimer_Tick;
 
             if (!string.IsNullOrEmpty(projectFile))
                 project = LoadProject(projectFile);
@@ -27,6 +34,9 @@ namespace ToolConfigEditor
             AddDataBindings();
         }
 
+        /// <summary>
+        /// Adds data bindings to the input-fields in the form.
+        /// </summary>
         private void AddDataBindings()
         {
             keywordTextBox.DataBindings.Add("Text", listBoxSource, "shortName", false, DataSourceUpdateMode.OnPropertyChanged, "");
@@ -37,6 +47,9 @@ namespace ToolConfigEditor
             exePathTextBox.DataBindings.Add("Text", listBoxSource, "exePath", false, DataSourceUpdateMode.OnPropertyChanged, "");
         }
 
+        /// <summary>
+        /// Removes the data bindings from the input-fields in the form.
+        /// </summary>
         private void RemoveBindings()
         {
             keywordTextBox.DataBindings.Clear();
@@ -70,6 +83,10 @@ namespace ToolConfigEditor
             SetFormEnabled(isEnabled);
         }
 
+        /// <summary>
+        /// Sets the enabled-state for the input-fields in the form.
+        /// </summary>
+        /// <param name="isEnabled">Flag if the input-fiels should be enabled or not.</param>
         private void SetFormEnabled(bool isEnabled)
         {
             keywordTextBox.Enabled = isEnabled;
@@ -80,6 +97,11 @@ namespace ToolConfigEditor
             exePathTextBox.Enabled = isEnabled;
         }
 
+        /// <summary>
+        /// OnClick-handler for the OpenMenuItem. Opens a file dialog and loads a project.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OpenMenuItemOnClick(object sender, EventArgs e)
         {
             try
@@ -101,6 +123,11 @@ namespace ToolConfigEditor
             }
         }
 
+        /// <summary>
+        /// Load a project from a file. If file cannot be found, creates a new project instead.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private ToolConfigProject LoadProject(string filename)
         {
             var loadedProject = ToolConfigProject.ReadToolConfigProject(filename);
@@ -178,6 +205,11 @@ namespace ToolConfigEditor
             }
         }
 
+        /// <summary>
+        /// OnClick-handler for the NewMenuItem. Creates a new project.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NewMenuItemOnClick(object sender, EventArgs e)
         {
             RemoveBindings();
@@ -192,9 +224,26 @@ namespace ToolConfigEditor
             AddDataBindings();
         }
 
+        /// <summary>
+        /// Sets the status bar text. Starts a timer to clear the text after a certain time.
+        /// </summary>
+        /// <param name="text"></param>
         private void SetStatusText(string text)
         {
             statusBarLabel.Text = text;
+            statusClearTimer.Stop();
+            statusClearTimer.Start();
+        }
+
+        /// <summary>
+        /// Clears the status bar after 5 seconds.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void StatusClearTimer_Tick(object? sender, EventArgs e)
+        {
+            statusBarLabel.Text = "";
+            statusClearTimer.Stop();
         }
     }
 }
