@@ -9,7 +9,7 @@ The plugin is developed and tested with `PowerToys` `v0.87.0`.
 0. [Install PowerToys](https://docs.microsoft.com/en-us/windows/powertoys/install)
 1. Exit PowerToys
 2. Download the `.zip` file applicable for your platform from the releases:
-   - [ToolDevHelpers_x64.zip](ToolDevHelpers_x64.zip)
+   - [ToolDevHelpers_Plugin_x64.zip](ToolDevHelpers_Plugin_x64.zip)
 3. Extract it to:
    - `%LocalAppData%\Microsoft\PowerToys\PowerToys Run\Plugins\ToolDevHelpers`
 4. Start PowerToys
@@ -17,7 +17,7 @@ The plugin is developed and tested with `PowerToys` `v0.87.0`.
 Alternatively you can use the provided Powershell-Script to install the Plugin:
 
 1. Download the `.zip` file applicable for your platform from the releases:
-   - [ToolDevHelpers_x64.zip](ToolDevHelpers_x64.zip)
+   - [ToolDevHelpers_Plugin_x64.zip](ToolDevHelpers_Plugin_x64.zip)
 2. Extract it
 3. Execute the install-script using the following command:
    - `powershell.exe -ExecutionPolicy Bypass .\install_plugin.ps1`
