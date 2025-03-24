@@ -8,7 +8,7 @@ namespace ToolConfigEditor
     {
         private string filename = "";
         private ToolConfigProject project = new();
-        private readonly BindingSource listBoxSource;
+        private BindingSource listBoxSource;
 
         public MainWindow(string? projectFile)
         {
@@ -24,12 +24,36 @@ namespace ToolConfigEditor
 
             toolsListBox.DataSource = listBoxSource;
             toolsListBox.DisplayMember = "name";
+            AddDataBindings();
+        }
+
+        private void AddDataBindings()
+        {
             keywordTextBox.DataBindings.Add("Text", listBoxSource, "shortName", false, DataSourceUpdateMode.OnPropertyChanged, "");
             nameTextBox.DataBindings.Add("Text", listBoxSource, "name", false, DataSourceUpdateMode.OnPropertyChanged, "");
             portTextBox.DataBindings.Add("Text", listBoxSource, "port", false, DataSourceUpdateMode.OnPropertyChanged, "");
             useHttpsCheckBox.DataBindings.Add("Checked", listBoxSource, "useHttps", false, DataSourceUpdateMode.OnPropertyChanged, false);
             remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "remoteServerUrl", false, DataSourceUpdateMode.OnPropertyChanged, "");
             exePathTextBox.DataBindings.Add("Text", listBoxSource, "exePath", false, DataSourceUpdateMode.OnPropertyChanged, "");
+        }
+
+        private void RemoveBindings()
+        {
+            keywordTextBox.DataBindings.Clear();
+            nameTextBox.DataBindings.Clear();
+            portTextBox.DataBindings.Clear();
+            useHttpsCheckBox.DataBindings.Clear();
+            remoteServerUrlTextBox.DataBindings.Clear();
+            exePathTextBox.DataBindings.Clear();
+
+            keywordTextBox.Text = "";
+            nameTextBox.Text = "";
+            portTextBox.Text = "";
+            useHttpsCheckBox.Checked = false;
+            remoteServerUrlTextBox.Text = "";
+            exePathTextBox.Text = "";
+
+            SetFormEnabled(false);
         }
 
         /// <summary>
@@ -43,10 +67,16 @@ namespace ToolConfigEditor
             int selectedItemIdx = toolsListBox.SelectedIndex;
             bool isEnabled = selectedItemIdx >= 0;
 
+            SetFormEnabled(isEnabled);
+        }
+
+        private void SetFormEnabled(bool isEnabled)
+        {
             keywordTextBox.Enabled = isEnabled;
             nameTextBox.Enabled = isEnabled;
             portTextBox.Enabled = isEnabled;
             remoteServerUrlTextBox.Enabled = isEnabled;
+            useHttpsCheckBox.Enabled = isEnabled;
             exePathTextBox.Enabled = isEnabled;
         }
 
@@ -61,10 +91,12 @@ namespace ToolConfigEditor
                 {
                     project = LoadProject(openFileDialog.FileName);
                     listBoxSource.DataSource = project.GetToolConfigs();
+                    SetStatusText($"Project {openFileDialog.FileName} loaded successfully");
                 }
             }
             catch (Exception ex)
             {
+                SetStatusText($"Error while loading project: {ex.Message}");
                 Debug.WriteLine("Error while loading project: ", ex);
             }
         }
@@ -129,14 +161,16 @@ namespace ToolConfigEditor
                 }
 
                 if (string.IsNullOrEmpty(saveFilename))
+                {
+                    SetStatusText("No file selected to save!");
                     return;
+                }
 
                 StreamWriter sw = new StreamWriter(saveFilename);
                 sw.Write(JsonSerializer.Serialize(project));
                 sw.Close();
 
-                //project.SaveProject(saveFilename);
-                //StatusBarTextBox.Text = $"Saved project to {saveFilename}";
+                SetStatusText($"Saved project to {saveFilename}");
             }
             catch (Exception ex)
             {
@@ -146,8 +180,21 @@ namespace ToolConfigEditor
 
         private void NewMenuItemOnClick(object sender, EventArgs e)
         {
+            RemoveBindings();
             project = new ToolConfigProject();
-            listBoxSource.DataSource = project;
+            listBoxSource = new()
+            {
+                DataSource = project.GetToolConfigs()
+            };
+
+            toolsListBox.DataSource = listBoxSource;
+            toolsListBox.DisplayMember = "name";
+            AddDataBindings();
+        }
+
+        private void SetStatusText(string text)
+        {
+            statusBarLabel.Text = text;
         }
     }
 }

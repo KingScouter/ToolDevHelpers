@@ -65,19 +65,27 @@
             pasteToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator4 = new ToolStripSeparator();
             selectAllToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip1 = new StatusStrip();
+            statusBarLabel = new ToolStripStatusLabel();
+            toolStripContainer1 = new ToolStripContainer();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
             splitContainer1.Panel2.SuspendLayout();
             splitContainer1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             menuStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
+            toolStripContainer1.BottomToolStripPanel.SuspendLayout();
+            toolStripContainer1.ContentPanel.SuspendLayout();
+            toolStripContainer1.TopToolStripPanel.SuspendLayout();
+            toolStripContainer1.SuspendLayout();
             SuspendLayout();
             // 
             // splitContainer1
             // 
             splitContainer1.Dock = DockStyle.Fill;
             splitContainer1.FixedPanel = FixedPanel.Panel1;
-            splitContainer1.Location = new Point(0, 24);
+            splitContainer1.Location = new Point(0, 0);
             splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -89,7 +97,7 @@
             splitContainer1.Panel2.Controls.Add(titleLabel);
             splitContainer1.Panel2.Controls.Add(tableLayoutPanel2);
             splitContainer1.Panel2.Padding = new Padding(20, 20, 20, 0);
-            splitContainer1.Size = new Size(752, 628);
+            splitContainer1.Size = new Size(752, 606);
             splitContainer1.SplitterDistance = 255;
             splitContainer1.TabIndex = 1;
             // 
@@ -99,7 +107,7 @@
             toolsListBox.FormattingEnabled = true;
             toolsListBox.Location = new Point(0, 0);
             toolsListBox.Name = "toolsListBox";
-            toolsListBox.Size = new Size(255, 628);
+            toolsListBox.Size = new Size(255, 606);
             toolsListBox.TabIndex = 0;
             toolsListBox.SelectedValueChanged += ToolsListBoxOnSelectedValueChanged;
             // 
@@ -134,7 +142,7 @@
             tableLayoutPanel2.Controls.Add(keywordTextBox, 1, 0);
             tableLayoutPanel2.Controls.Add(useHttpsCheckBox, 1, 2);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
-            tableLayoutPanel2.Location = new Point(20, 152);
+            tableLayoutPanel2.Location = new Point(20, 130);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 7;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
@@ -276,6 +284,7 @@
             // 
             // menuStrip1
             // 
+            menuStrip1.Dock = DockStyle.None;
             menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
@@ -407,13 +416,49 @@
             selectAllToolStripMenuItem.Size = new Size(144, 22);
             selectAllToolStripMenuItem.Text = "Select &All";
             // 
+            // statusStrip1
+            // 
+            statusStrip1.Dock = DockStyle.None;
+            statusStrip1.Items.AddRange(new ToolStripItem[] { statusBarLabel });
+            statusStrip1.Location = new Point(0, 0);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Size = new Size(752, 22);
+            statusStrip1.TabIndex = 3;
+            statusStrip1.Text = "statusStrip1";
+            // 
+            // statusBarLabel
+            // 
+            statusBarLabel.Name = "statusBarLabel";
+            statusBarLabel.Size = new Size(0, 17);
+            // 
+            // toolStripContainer1
+            // 
+            // 
+            // toolStripContainer1.BottomToolStripPanel
+            // 
+            toolStripContainer1.BottomToolStripPanel.Controls.Add(statusStrip1);
+            // 
+            // toolStripContainer1.ContentPanel
+            // 
+            toolStripContainer1.ContentPanel.Controls.Add(splitContainer1);
+            toolStripContainer1.ContentPanel.Size = new Size(752, 606);
+            toolStripContainer1.Dock = DockStyle.Fill;
+            toolStripContainer1.Location = new Point(0, 0);
+            toolStripContainer1.Name = "toolStripContainer1";
+            toolStripContainer1.Size = new Size(752, 652);
+            toolStripContainer1.TabIndex = 4;
+            toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // toolStripContainer1.TopToolStripPanel
+            // 
+            toolStripContainer1.TopToolStripPanel.Controls.Add(menuStrip1);
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(752, 652);
-            Controls.Add(splitContainer1);
-            Controls.Add(menuStrip1);
+            Controls.Add(toolStripContainer1);
             MainMenuStrip = menuStrip1;
             Name = "MainWindow";
             Text = "Form1";
@@ -426,8 +471,16 @@
             tableLayoutPanel2.PerformLayout();
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
+            toolStripContainer1.BottomToolStripPanel.PerformLayout();
+            toolStripContainer1.ContentPanel.ResumeLayout(false);
+            toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
+            toolStripContainer1.TopToolStripPanel.PerformLayout();
+            toolStripContainer1.ResumeLayout(false);
+            toolStripContainer1.PerformLayout();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
@@ -468,5 +521,8 @@
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem selectAllToolStripMenuItem;
         private CheckBox useHttpsCheckBox;
+        private StatusStrip statusStrip1;
+        private ToolStripContainer toolStripContainer1;
+        private ToolStripStatusLabel statusBarLabel;
     }
 }
