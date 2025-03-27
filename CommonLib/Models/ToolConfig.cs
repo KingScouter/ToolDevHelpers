@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace CommonLib.Models
 {
@@ -30,5 +31,28 @@ namespace CommonLib.Models
         public string[] additionalPages { get; set; } = [];
 
         private string shortNameInternal = "";
+
+        /// <summary>
+        /// Copy constructor for ToolConfig.
+        /// </summary>
+        /// <param name="config">Tool config to copy</param>
+        [SetsRequiredMembers]
+        public ToolConfig(ToolConfig config)
+        {
+            shortName = config.shortName;
+            name = config.name;
+            useHttps = config.useHttps;
+            port = config.port;
+            remoteServerUrl = config.remoteServerUrl;
+            exePath = config.exePath;
+            additionalPages = [.. config.additionalPages];
+        }
+
+        /// <summary>
+        /// Default constructor for ToolConfig
+        /// </summary>
+        public ToolConfig()
+        {
+        }
     }
 }

@@ -29,8 +29,13 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            splitContainer1 = new SplitContainer();
+            mainContentSplitContainer = new SplitContainer();
+            toolListToolStripContainer = new ToolStripContainer();
             toolsListBox = new ListBox();
+            toolListMenuStrip = new MenuStrip();
+            addToolMenuItem = new ToolStripMenuItem();
+            copyToolMenuItem = new ToolStripMenuItem();
+            deleteToolMenuItem = new ToolStripMenuItem();
             titleLabel = new Label();
             tableLayoutPanel2 = new TableLayoutPanel();
             additionalPagesLabel = new Label();
@@ -47,7 +52,7 @@
             keywordLabel = new Label();
             keywordTextBox = new TextBox();
             useHttpsCheckBox = new CheckBox();
-            menuStrip1 = new MenuStrip();
+            toolBarMenuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
             openToolStripMenuItem = new ToolStripMenuItem();
@@ -56,50 +61,63 @@
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             exitToolStripMenuItem = new ToolStripMenuItem();
-            editToolStripMenuItem = new ToolStripMenuItem();
-            undoToolStripMenuItem = new ToolStripMenuItem();
-            redoToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator3 = new ToolStripSeparator();
-            cutToolStripMenuItem = new ToolStripMenuItem();
-            copyToolStripMenuItem = new ToolStripMenuItem();
-            pasteToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator4 = new ToolStripSeparator();
-            selectAllToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             statusBarLabel = new ToolStripStatusLabel();
-            toolStripContainer1 = new ToolStripContainer();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
-            splitContainer1.Panel2.SuspendLayout();
-            splitContainer1.SuspendLayout();
+            mainContentToolStripContainer = new ToolStripContainer();
+            ((System.ComponentModel.ISupportInitialize)mainContentSplitContainer).BeginInit();
+            mainContentSplitContainer.Panel1.SuspendLayout();
+            mainContentSplitContainer.Panel2.SuspendLayout();
+            mainContentSplitContainer.SuspendLayout();
+            toolListToolStripContainer.ContentPanel.SuspendLayout();
+            toolListToolStripContainer.TopToolStripPanel.SuspendLayout();
+            toolListToolStripContainer.SuspendLayout();
+            toolListMenuStrip.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
-            menuStrip1.SuspendLayout();
+            toolBarMenuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
-            toolStripContainer1.BottomToolStripPanel.SuspendLayout();
-            toolStripContainer1.ContentPanel.SuspendLayout();
-            toolStripContainer1.TopToolStripPanel.SuspendLayout();
-            toolStripContainer1.SuspendLayout();
+            mainContentToolStripContainer.BottomToolStripPanel.SuspendLayout();
+            mainContentToolStripContainer.ContentPanel.SuspendLayout();
+            mainContentToolStripContainer.TopToolStripPanel.SuspendLayout();
+            mainContentToolStripContainer.SuspendLayout();
             SuspendLayout();
             // 
-            // splitContainer1
+            // mainContentSplitContainer
             // 
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.FixedPanel = FixedPanel.Panel1;
-            splitContainer1.Location = new Point(0, 0);
-            splitContainer1.Name = "splitContainer1";
+            mainContentSplitContainer.Dock = DockStyle.Fill;
+            mainContentSplitContainer.FixedPanel = FixedPanel.Panel1;
+            mainContentSplitContainer.Location = new Point(0, 0);
+            mainContentSplitContainer.Name = "mainContentSplitContainer";
             // 
-            // splitContainer1.Panel1
+            // mainContentSplitContainer.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(toolsListBox);
+            mainContentSplitContainer.Panel1.Controls.Add(toolListToolStripContainer);
             // 
-            // splitContainer1.Panel2
+            // mainContentSplitContainer.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(titleLabel);
-            splitContainer1.Panel2.Controls.Add(tableLayoutPanel2);
-            splitContainer1.Panel2.Padding = new Padding(20, 20, 20, 0);
-            splitContainer1.Size = new Size(752, 606);
-            splitContainer1.SplitterDistance = 255;
-            splitContainer1.TabIndex = 1;
+            mainContentSplitContainer.Panel2.Controls.Add(titleLabel);
+            mainContentSplitContainer.Panel2.Controls.Add(tableLayoutPanel2);
+            mainContentSplitContainer.Panel2.Padding = new Padding(20, 20, 20, 0);
+            mainContentSplitContainer.Size = new Size(752, 606);
+            mainContentSplitContainer.SplitterDistance = 255;
+            mainContentSplitContainer.TabIndex = 1;
+            // 
+            // toolListToolStripContainer
+            // 
+            // 
+            // toolListToolStripContainer.ContentPanel
+            // 
+            toolListToolStripContainer.ContentPanel.Controls.Add(toolsListBox);
+            toolListToolStripContainer.ContentPanel.Size = new Size(255, 582);
+            toolListToolStripContainer.Dock = DockStyle.Fill;
+            toolListToolStripContainer.Location = new Point(0, 0);
+            toolListToolStripContainer.Name = "toolListToolStripContainer";
+            toolListToolStripContainer.Size = new Size(255, 606);
+            toolListToolStripContainer.TabIndex = 5;
+            toolListToolStripContainer.Text = "toolStripContainer2";
+            // 
+            // toolListToolStripContainer.TopToolStripPanel
+            // 
+            toolListToolStripContainer.TopToolStripPanel.Controls.Add(toolListMenuStrip);
             // 
             // toolsListBox
             // 
@@ -107,9 +125,39 @@
             toolsListBox.FormattingEnabled = true;
             toolsListBox.Location = new Point(0, 0);
             toolsListBox.Name = "toolsListBox";
-            toolsListBox.Size = new Size(255, 606);
+            toolsListBox.Size = new Size(255, 582);
             toolsListBox.TabIndex = 0;
             toolsListBox.SelectedValueChanged += ToolsListBoxOnSelectedValueChanged;
+            // 
+            // toolListMenuStrip
+            // 
+            toolListMenuStrip.Dock = DockStyle.None;
+            toolListMenuStrip.Items.AddRange(new ToolStripItem[] { addToolMenuItem, copyToolMenuItem, deleteToolMenuItem });
+            toolListMenuStrip.Location = new Point(0, 0);
+            toolListMenuStrip.Name = "toolListMenuStrip";
+            toolListMenuStrip.Size = new Size(255, 24);
+            toolListMenuStrip.TabIndex = 0;
+            toolListMenuStrip.Text = "menuStrip2";
+            // 
+            // addToolMenuItem
+            // 
+            addToolMenuItem.Name = "addToolMenuItem";
+            addToolMenuItem.Size = new Size(41, 20);
+            addToolMenuItem.Text = "Add";
+            addToolMenuItem.Click += AddToolMenuItemOnClick;
+            // 
+            // copyToolMenuItem
+            // 
+            copyToolMenuItem.Name = "copyToolMenuItem";
+            copyToolMenuItem.Size = new Size(47, 20);
+            copyToolMenuItem.Text = "Copy";
+            copyToolMenuItem.Click += CopyToolMenuItemOnClick;
+            // 
+            // deleteToolMenuItem
+            // 
+            deleteToolMenuItem.Name = "deleteToolMenuItem";
+            deleteToolMenuItem.Size = new Size(52, 20);
+            deleteToolMenuItem.Text = "Delete";
             // 
             // titleLabel
             // 
@@ -282,15 +330,15 @@
             useHttpsCheckBox.TabIndex = 14;
             useHttpsCheckBox.UseVisualStyleBackColor = true;
             // 
-            // menuStrip1
+            // toolBarMenuStrip
             // 
-            menuStrip1.Dock = DockStyle.None;
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(752, 24);
-            menuStrip1.TabIndex = 2;
-            menuStrip1.Text = "menuStrip1";
+            toolBarMenuStrip.Dock = DockStyle.None;
+            toolBarMenuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem });
+            toolBarMenuStrip.Location = new Point(0, 0);
+            toolBarMenuStrip.Name = "toolBarMenuStrip";
+            toolBarMenuStrip.Size = new Size(752, 24);
+            toolBarMenuStrip.TabIndex = 2;
+            toolBarMenuStrip.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
@@ -352,70 +400,6 @@
             exitToolStripMenuItem.Size = new Size(146, 22);
             exitToolStripMenuItem.Text = "E&xit";
             // 
-            // editToolStripMenuItem
-            // 
-            editToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, redoToolStripMenuItem, toolStripSeparator3, cutToolStripMenuItem, copyToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, selectAllToolStripMenuItem });
-            editToolStripMenuItem.Name = "editToolStripMenuItem";
-            editToolStripMenuItem.Size = new Size(39, 20);
-            editToolStripMenuItem.Text = "&Edit";
-            // 
-            // undoToolStripMenuItem
-            // 
-            undoToolStripMenuItem.Name = "undoToolStripMenuItem";
-            undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
-            undoToolStripMenuItem.Size = new Size(144, 22);
-            undoToolStripMenuItem.Text = "&Undo";
-            // 
-            // redoToolStripMenuItem
-            // 
-            redoToolStripMenuItem.Name = "redoToolStripMenuItem";
-            redoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
-            redoToolStripMenuItem.Size = new Size(144, 22);
-            redoToolStripMenuItem.Text = "&Redo";
-            // 
-            // toolStripSeparator3
-            // 
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(141, 6);
-            // 
-            // cutToolStripMenuItem
-            // 
-            cutToolStripMenuItem.Image = (Image)resources.GetObject("cutToolStripMenuItem.Image");
-            cutToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            cutToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.X;
-            cutToolStripMenuItem.Size = new Size(144, 22);
-            cutToolStripMenuItem.Text = "Cu&t";
-            // 
-            // copyToolStripMenuItem
-            // 
-            copyToolStripMenuItem.Image = (Image)resources.GetObject("copyToolStripMenuItem.Image");
-            copyToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            copyToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
-            copyToolStripMenuItem.Size = new Size(144, 22);
-            copyToolStripMenuItem.Text = "&Copy";
-            // 
-            // pasteToolStripMenuItem
-            // 
-            pasteToolStripMenuItem.Image = (Image)resources.GetObject("pasteToolStripMenuItem.Image");
-            pasteToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            pasteToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
-            pasteToolStripMenuItem.Size = new Size(144, 22);
-            pasteToolStripMenuItem.Text = "&Paste";
-            // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(141, 6);
-            // 
-            // selectAllToolStripMenuItem
-            // 
-            selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            selectAllToolStripMenuItem.Size = new Size(144, 22);
-            selectAllToolStripMenuItem.Text = "Select &All";
-            // 
             // statusStrip1
             // 
             statusStrip1.Dock = DockStyle.None;
@@ -431,61 +415,68 @@
             statusBarLabel.Name = "statusBarLabel";
             statusBarLabel.Size = new Size(0, 17);
             // 
-            // toolStripContainer1
+            // mainContentToolStripContainer
             // 
             // 
-            // toolStripContainer1.BottomToolStripPanel
+            // mainContentToolStripContainer.BottomToolStripPanel
             // 
-            toolStripContainer1.BottomToolStripPanel.Controls.Add(statusStrip1);
+            mainContentToolStripContainer.BottomToolStripPanel.Controls.Add(statusStrip1);
             // 
-            // toolStripContainer1.ContentPanel
+            // mainContentToolStripContainer.ContentPanel
             // 
-            toolStripContainer1.ContentPanel.Controls.Add(splitContainer1);
-            toolStripContainer1.ContentPanel.Size = new Size(752, 606);
-            toolStripContainer1.Dock = DockStyle.Fill;
-            toolStripContainer1.Location = new Point(0, 0);
-            toolStripContainer1.Name = "toolStripContainer1";
-            toolStripContainer1.Size = new Size(752, 652);
-            toolStripContainer1.TabIndex = 4;
-            toolStripContainer1.Text = "toolStripContainer1";
+            mainContentToolStripContainer.ContentPanel.Controls.Add(mainContentSplitContainer);
+            mainContentToolStripContainer.ContentPanel.Size = new Size(752, 606);
+            mainContentToolStripContainer.Dock = DockStyle.Fill;
+            mainContentToolStripContainer.Location = new Point(0, 0);
+            mainContentToolStripContainer.Name = "mainContentToolStripContainer";
+            mainContentToolStripContainer.Size = new Size(752, 652);
+            mainContentToolStripContainer.TabIndex = 4;
+            mainContentToolStripContainer.Text = "toolStripContainer1";
             // 
-            // toolStripContainer1.TopToolStripPanel
+            // mainContentToolStripContainer.TopToolStripPanel
             // 
-            toolStripContainer1.TopToolStripPanel.Controls.Add(menuStrip1);
+            mainContentToolStripContainer.TopToolStripPanel.Controls.Add(toolBarMenuStrip);
             // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(752, 652);
-            Controls.Add(toolStripContainer1);
-            MainMenuStrip = menuStrip1;
+            Controls.Add(mainContentToolStripContainer);
+            MainMenuStrip = toolBarMenuStrip;
             Name = "MainWindow";
             Text = "Form1";
-            splitContainer1.Panel1.ResumeLayout(false);
-            splitContainer1.Panel2.ResumeLayout(false);
-            splitContainer1.Panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
-            splitContainer1.ResumeLayout(false);
+            mainContentSplitContainer.Panel1.ResumeLayout(false);
+            mainContentSplitContainer.Panel2.ResumeLayout(false);
+            mainContentSplitContainer.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)mainContentSplitContainer).EndInit();
+            mainContentSplitContainer.ResumeLayout(false);
+            toolListToolStripContainer.ContentPanel.ResumeLayout(false);
+            toolListToolStripContainer.TopToolStripPanel.ResumeLayout(false);
+            toolListToolStripContainer.TopToolStripPanel.PerformLayout();
+            toolListToolStripContainer.ResumeLayout(false);
+            toolListToolStripContainer.PerformLayout();
+            toolListMenuStrip.ResumeLayout(false);
+            toolListMenuStrip.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
+            toolBarMenuStrip.ResumeLayout(false);
+            toolBarMenuStrip.PerformLayout();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
-            toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
-            toolStripContainer1.BottomToolStripPanel.PerformLayout();
-            toolStripContainer1.ContentPanel.ResumeLayout(false);
-            toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
-            toolStripContainer1.TopToolStripPanel.PerformLayout();
-            toolStripContainer1.ResumeLayout(false);
-            toolStripContainer1.PerformLayout();
+            mainContentToolStripContainer.BottomToolStripPanel.ResumeLayout(false);
+            mainContentToolStripContainer.BottomToolStripPanel.PerformLayout();
+            mainContentToolStripContainer.ContentPanel.ResumeLayout(false);
+            mainContentToolStripContainer.TopToolStripPanel.ResumeLayout(false);
+            mainContentToolStripContainer.TopToolStripPanel.PerformLayout();
+            mainContentToolStripContainer.ResumeLayout(false);
+            mainContentToolStripContainer.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
 
-        private SplitContainer splitContainer1;
+        private SplitContainer mainContentSplitContainer;
         private ListBox toolsListBox;
         private TableLayoutPanel tableLayoutPanel2;
         private Label additionalPagesLabel;
@@ -502,7 +493,7 @@
         private Label keywordLabel;
         private TextBox keywordTextBox;
         private Label titleLabel;
-        private MenuStrip menuStrip1;
+        private MenuStrip toolBarMenuStrip;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem newToolStripMenuItem;
         private ToolStripMenuItem openToolStripMenuItem;
@@ -522,7 +513,12 @@
         private ToolStripMenuItem selectAllToolStripMenuItem;
         private CheckBox useHttpsCheckBox;
         private StatusStrip statusStrip1;
-        private ToolStripContainer toolStripContainer1;
+        private ToolStripContainer mainContentToolStripContainer;
         private ToolStripStatusLabel statusBarLabel;
+        private ToolStripContainer toolListToolStripContainer;
+        private MenuStrip toolListMenuStrip;
+        private ToolStripMenuItem addToolMenuItem;
+        private ToolStripMenuItem copyToolMenuItem;
+        private ToolStripMenuItem deleteToolMenuItem;
     }
 }

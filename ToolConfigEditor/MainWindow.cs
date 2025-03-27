@@ -81,6 +81,8 @@ namespace ToolConfigEditor
             bool isEnabled = selectedItemIdx >= 0;
 
             SetFormEnabled(isEnabled);
+            copyToolMenuItem.Enabled = isEnabled;
+            deleteToolMenuItem.Enabled = isEnabled;
         }
 
         /// <summary>
@@ -244,6 +246,51 @@ namespace ToolConfigEditor
         {
             statusBarLabel.Text = "";
             statusClearTimer.Stop();
+        }
+
+        /// <summary>
+        /// Add a new empty tool config to the project.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AddToolMenuItemOnClick(object sender, EventArgs e)
+        {
+            AddToolConfig(new ToolConfig()
+            {
+                shortName = "",
+                name = "",
+                exePath = ""
+            });
+
+            listBoxSource.MoveLast();
+            SetStatusText("Added new tool");
+        }
+
+        /// <summary>
+        /// Copy the selected tool config.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CopyToolMenuItemOnClick(object sender, EventArgs e)
+        {
+            if (listBoxSource.Current is ToolConfig selectedElem)
+            {
+                ToolConfig newConfig = new(selectedElem);
+                newConfig.shortName += "_copy";
+                newConfig.name += " (Copy)";
+                AddToolConfig(newConfig);
+                SetStatusText($"Copied tool {selectedElem.name}");
+            }
+        }
+
+        /// <summary>
+        /// Add a new tool config to the project and update the list-box.
+        /// </summary>
+        /// <param name="config">Tool config to add</param>
+        private void AddToolConfig(ToolConfig config)
+        {
+            project.AddToolConfig(config);
+            listBoxSource.DataSource = project.GetToolConfigs();
         }
     }
 }
