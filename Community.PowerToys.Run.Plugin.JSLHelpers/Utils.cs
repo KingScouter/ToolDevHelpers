@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using CommonLib.Models;
+using System.IO;
 using Wox.Infrastructure;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 

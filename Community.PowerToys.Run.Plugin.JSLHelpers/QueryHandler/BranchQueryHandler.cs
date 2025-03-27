@@ -1,4 +1,4 @@
-﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
+﻿using CommonLib.Models;
 using LazyCache;
 using System.Text;
 using System.Web;
@@ -12,7 +12,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {
     internal class BranchQueryHandler : BaseQueryHandler
     {
-        private readonly CachingService? _cache;
+        private readonly CachingService _cache;
 
         private static readonly string remoteCacheKey = "remoteCache";
         private static readonly string localCacheKey = "localCache";

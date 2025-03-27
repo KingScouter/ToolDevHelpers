@@ -1,11 +1,6 @@
-﻿using Community.PowerToys.Run.Plugin.JSLHelpers.Models;
-using System;
-using System.Collections.Generic;
+﻿using CommonLib.Models;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Wox.Plugin.Logger;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
@@ -29,12 +24,10 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
             try
             {
-                StreamReader sr = new(Config.ToolConfigFile);
-                string dataLine = sr.ReadToEnd();
-                sr.Close();
-                if (dataLine != null)
+                ToolConfigProject? project = ToolConfigProject.ReadToolConfigProject(Config.ToolConfigFile);
+                if (project != null)
                 {
-                    Config.ToolConfigProject = JsonSerializer.Deserialize<ToolConfigProject>(dataLine);
+                    Config.ToolConfigProject = project;
                     Log.Info($"Tool config project {Config.ToolConfigFile} loaded", GetType());
                 }
             }

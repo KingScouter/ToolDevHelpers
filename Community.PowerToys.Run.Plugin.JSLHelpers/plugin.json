@@ -10,5 +10,5 @@
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.JSLHelpers.dll",
   "IcoPathDark": "Images\\demo.dark.png",
   "IcoPathLight": "Images\\demo.light.png",
-  "DynamicLoading": false
+  "DynamicLoading": true
 }
