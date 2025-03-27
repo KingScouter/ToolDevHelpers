@@ -21,6 +21,8 @@ Alternatively you can use the provided Powershell-Script to install the Plugin:
 2. Extract it
 3. Execute the install-script using the following command:
    - `powershell.exe -ExecutionPolicy Bypass .\install_plugin.ps1`
+   - If you don't want to install the files in the plugin-directory directly, you can use the other install-script. This will let you install the files in any folder and will just create a SYMLINK in the plugin folder.
+     - `powershell.exe -ExecutionPolicy Bypass .\install_plugin_link.ps1`.
 
 ## Usage
 
@@ -120,8 +122,8 @@ For every tool you have the following settings available:
 
 ```json
 {
-  "toolConfigs": {
-    "ta": {
+  "toolConfigs": [
+    {
       "shortName": "ta",
       "name": "Test app",
       "useHttps": true,
@@ -130,6 +132,8 @@ For every tool you have the following settings available:
       "exePath": "testApp/start.exe",
       "additionalPages": ["#BASE#api", "#BASE_HOST#:#BASE_PORT#/test"]
     }
-  }
+  ]
 }
 ```
+
+> The tool-config file changed structure after v0.0.6. If you're using an old config-file, you can migrate it to the new format using the [migration script](migrate-json.ps1)<br> `migrate-json.ps1 old_config.json migrated_config.json`
