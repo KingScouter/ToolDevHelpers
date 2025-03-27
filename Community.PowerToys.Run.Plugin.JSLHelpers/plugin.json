@@ -4,7 +4,7 @@
   "IsGlobal": false,
   "Name": "Tool Dev Helpers",
   "Author": "dreiaugenfloh",
-  "Version": "0.0.4",
+  "Version": "0.0.7",
   "Language": "csharp",
   "Website": "https://github.com/KingScouter/ToolDevHelpers",
   "ExecuteFileName": "Community.PowerToys.Run.Plugin.JSLHelpers.dll",

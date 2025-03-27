@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Community.PowerToys.Run.Plugin.JSLHelpers\Community.PowerToys.Run.Plugin.JSLHelpers.csproj" />
+    <ProjectReference Include="..\Community.PowerToys.Run.Plugin.JSLHelpers\Community.PowerToys.Run.Plugin.ToolDevHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Platform)' == 'x64'">

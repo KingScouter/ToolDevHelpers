@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34607.119
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.PowerToys.Run.Plugin.JSLHelpers", "Community.PowerToys.Run.Plugin.JSLHelpers\Community.PowerToys.Run.Plugin.JSLHelpers.csproj", "{394D43B0-DD84-4590-87BF-7F650A0119F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.PowerToys.Run.Plugin.ToolDevHelpers", "Community.PowerToys.Run.Plugin.JSLHelpers\Community.PowerToys.Run.Plugin.ToolDevHelpers.csproj", "{394D43B0-DD84-4590-87BF-7F650A0119F5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.PowerToys.Run.Plugin.JSLHelpers.UnitTests", "Community.PowerToys.Run.Plugin.JSLHelpers.UnitTests\Community.PowerToys.Run.Plugin.JSLHelpers.UnitTests.csproj", "{4617AF76-31DB-429D-A794-213F1664B2CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.PowerToys.Run.Plugin.ToolDevHelpers.UnitTests", "Community.PowerToys.Run.Plugin.JSLHelpers.UnitTests\Community.PowerToys.Run.Plugin.ToolDevHelpers.UnitTests.csproj", "{4617AF76-31DB-429D-A794-213F1664B2CD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonLib", "CommonLib\CommonLib.csproj", "{6F1B6982-D169-40F8-B10C-9CF5E06833E5}"
 EndProject
