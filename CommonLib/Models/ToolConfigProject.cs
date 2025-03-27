@@ -6,7 +6,18 @@ namespace CommonLib.Models
     public class ToolConfigProject
     {
         [JsonInclude]
-        internal Dictionary<string, ToolConfig> toolConfigs = [];
+        internal ToolConfig[] toolConfigs { 
+            get 
+            {
+                return [.. toolConfigMap.Values];
+            }
+            set
+            {
+                toolConfigMap = value.ToDictionary(elem => elem.shortName);
+            }
+        }
+
+        internal Dictionary<string, ToolConfig> toolConfigMap = [];
 
         public static ToolConfigProject? ReadToolConfigProject(string filename)
         {
@@ -24,7 +35,7 @@ namespace CommonLib.Models
 
         public void AddToolConfig(ToolConfig config)
         {
-            toolConfigs.Add(config.shortName, config);
+            toolConfigMap.Add(config.shortName, config);
         }
 
         /// <summary>
@@ -35,7 +46,7 @@ namespace CommonLib.Models
         public ToolConfig? GetToolConfig(string shortName)
         {
             ToolConfig? config = null;
-            if (toolConfigs.TryGetValue(shortName.ToLower(), out config))
+            if (toolConfigMap.TryGetValue(shortName.ToLower(), out config))
                 return config;
 
             return null;
@@ -49,9 +60,9 @@ namespace CommonLib.Models
         public List<ToolConfig> GetToolConfigs(string? filterQuery = null)
         {
             if (string.IsNullOrWhiteSpace(filterQuery))
-                return [.. toolConfigs.Values];
+                return [.. toolConfigMap.Values];
 
-            return [.. toolConfigs.Values.Where(config => config.shortName.Contains(filterQuery))];
+            return [.. toolConfigMap.Values.Where(config => config.shortName.Contains(filterQuery))];
         }
     }
 }
