@@ -176,9 +176,9 @@
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 65F));
             tableLayoutPanel2.Controls.Add(additionalPagesLabel, 0, 6);
-            tableLayoutPanel2.Controls.Add(additionalPagesTextBox, 0, 6);
+            tableLayoutPanel2.Controls.Add(additionalPagesTextBox, 1, 6);
             tableLayoutPanel2.Controls.Add(exePathLabel, 0, 5);
-            tableLayoutPanel2.Controls.Add(exePathTextBox, 0, 5);
+            tableLayoutPanel2.Controls.Add(exePathTextBox, 1, 5);
             tableLayoutPanel2.Controls.Add(remoteServerUrlLabel, 0, 4);
             tableLayoutPanel2.Controls.Add(remoteServerUrlTextBox, 1, 4);
             tableLayoutPanel2.Controls.Add(portLabel, 0, 3);
@@ -505,7 +505,6 @@
         private ToolStripMenuItem editToolStripMenuItem;
         private ToolStripMenuItem undoToolStripMenuItem;
         private ToolStripMenuItem redoToolStripMenuItem;
-        private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem cutToolStripMenuItem;
         private ToolStripMenuItem copyToolStripMenuItem;
         private ToolStripMenuItem pasteToolStripMenuItem;

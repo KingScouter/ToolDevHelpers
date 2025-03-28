@@ -39,12 +39,12 @@ namespace ToolConfigEditor
         /// </summary>
         private void AddDataBindings()
         {
-            keywordTextBox.DataBindings.Add("Text", listBoxSource, "shortName", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            nameTextBox.DataBindings.Add("Text", listBoxSource, "name", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            portTextBox.DataBindings.Add("Text", listBoxSource, "port", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            useHttpsCheckBox.DataBindings.Add("Checked", listBoxSource, "useHttps", false, DataSourceUpdateMode.OnPropertyChanged, false);
-            remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "remoteServerUrl", false, DataSourceUpdateMode.OnPropertyChanged, "");
-            exePathTextBox.DataBindings.Add("Text", listBoxSource, "exePath", false, DataSourceUpdateMode.OnPropertyChanged, "");
+            keywordTextBox.DataBindings.Add("Text", listBoxSource, "shortName", false, DataSourceUpdateMode.OnValidation, "");
+            nameTextBox.DataBindings.Add("Text", listBoxSource, "name", false, DataSourceUpdateMode.OnValidation, "");
+            portTextBox.DataBindings.Add("Text", listBoxSource, "port", false, DataSourceUpdateMode.OnValidation, "");
+            useHttpsCheckBox.DataBindings.Add("Checked", listBoxSource, "useHttps", false, DataSourceUpdateMode.OnValidation, false);
+            remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "remoteServerUrl", false, DataSourceUpdateMode.OnValidation, "");
+            exePathTextBox.DataBindings.Add("Text", listBoxSource, "exePath", false, DataSourceUpdateMode.OnValidation, "");
         }
 
         /// <summary>
