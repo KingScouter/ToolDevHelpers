@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             mainContentSplitContainer = new SplitContainer();
             toolListToolStripContainer = new ToolStripContainer();
@@ -52,6 +53,8 @@
             keywordLabel = new Label();
             keywordTextBox = new TextBox();
             useHttpsCheckBox = new CheckBox();
+            editListBox1 = new EditListBox();
+            toolConfigBindingSource = new BindingSource(components);
             toolBarMenuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -73,6 +76,7 @@
             toolListToolStripContainer.SuspendLayout();
             toolListMenuStrip.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)toolConfigBindingSource).BeginInit();
             toolBarMenuStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             mainContentToolStripContainer.BottomToolStripPanel.SuspendLayout();
@@ -165,9 +169,9 @@
             titleLabel.Font = new Font("Segoe UI", 27.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             titleLabel.Location = new Point(20, 20);
             titleLabel.Name = "titleLabel";
-            titleLabel.Size = new Size(321, 50);
+            titleLabel.Size = new Size(327, 50);
             titleLabel.TabIndex = 1;
-            titleLabel.Text = "Tool configuration";
+            titleLabel.Text = "Tool Configuration";
             // 
             // tableLayoutPanel2
             // 
@@ -189,10 +193,11 @@
             tableLayoutPanel2.Controls.Add(keywordLabel, 0, 0);
             tableLayoutPanel2.Controls.Add(keywordTextBox, 1, 0);
             tableLayoutPanel2.Controls.Add(useHttpsCheckBox, 1, 2);
+            tableLayoutPanel2.Controls.Add(editListBox1, 1, 7);
             tableLayoutPanel2.Dock = DockStyle.Bottom;
             tableLayoutPanel2.Location = new Point(20, 130);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 7;
+            tableLayoutPanel2.RowCount = 8;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
@@ -200,6 +205,7 @@
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel2.Size = new Size(453, 476);
             tableLayoutPanel2.TabIndex = 0;
             // 
@@ -209,7 +215,7 @@
             additionalPagesLabel.Dock = DockStyle.Fill;
             additionalPagesLabel.Location = new Point(3, 300);
             additionalPagesLabel.Name = "additionalPagesLabel";
-            additionalPagesLabel.Size = new Size(152, 176);
+            additionalPagesLabel.Size = new Size(152, 50);
             additionalPagesLabel.TabIndex = 12;
             additionalPagesLabel.Text = "Additional Pages";
             // 
@@ -330,6 +336,21 @@
             useHttpsCheckBox.TabIndex = 14;
             useHttpsCheckBox.UseVisualStyleBackColor = true;
             // 
+            // editListBox1
+            // 
+            editListBox1.AutoSize = true;
+            editListBox1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+            editListBox1.Dock = DockStyle.Fill;
+            editListBox1.Location = new Point(161, 353);
+            editListBox1.MinimumSize = new Size(200, 100);
+            editListBox1.Name = "editListBox1";
+            editListBox1.Size = new Size(289, 120);
+            editListBox1.TabIndex = 15;
+            // 
+            // toolConfigBindingSource
+            // 
+            toolConfigBindingSource.DataSource = typeof(CommonLib.Models.ToolConfig);
+            // 
             // toolBarMenuStrip
             // 
             toolBarMenuStrip.Dock = DockStyle.None;
@@ -445,7 +466,7 @@
             Controls.Add(mainContentToolStripContainer);
             MainMenuStrip = toolBarMenuStrip;
             Name = "MainWindow";
-            Text = "Form1";
+            Text = "Tool Config Editor";
             mainContentSplitContainer.Panel1.ResumeLayout(false);
             mainContentSplitContainer.Panel2.ResumeLayout(false);
             mainContentSplitContainer.Panel2.PerformLayout();
@@ -460,6 +481,7 @@
             toolListMenuStrip.PerformLayout();
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)toolConfigBindingSource).EndInit();
             toolBarMenuStrip.ResumeLayout(false);
             toolBarMenuStrip.PerformLayout();
             statusStrip1.ResumeLayout(false);
@@ -519,5 +541,7 @@
         private ToolStripMenuItem addToolMenuItem;
         private ToolStripMenuItem copyToolMenuItem;
         private ToolStripMenuItem deleteToolMenuItem;
+        private EditListBox editListBox1;
+        private BindingSource toolConfigBindingSource;
     }
 }

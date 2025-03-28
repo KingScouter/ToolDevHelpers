@@ -45,6 +45,7 @@ namespace ToolConfigEditor
             useHttpsCheckBox.DataBindings.Add("Checked", listBoxSource, "useHttps", false, DataSourceUpdateMode.OnValidation, false);
             remoteServerUrlTextBox.DataBindings.Add("Text", listBoxSource, "remoteServerUrl", false, DataSourceUpdateMode.OnValidation, "");
             exePathTextBox.DataBindings.Add("Text", listBoxSource, "exePath", false, DataSourceUpdateMode.OnValidation, "");
+            editListBox1.DataBindings.Add("ListValues", listBoxSource, "additionalPages", false, DataSourceUpdateMode.OnValidation);
         }
 
         /// <summary>
