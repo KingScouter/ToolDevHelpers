@@ -123,7 +123,7 @@ namespace ToolConfigEditor
             catch (Exception ex)
             {
                 SetStatusText($"Error while loading project: {ex.Message}");
-                Debug.WriteLine("Error while loading project: ", ex);
+                Debug.WriteLine($"Error while loading project: {ex.Message}");
             }
         }
 
