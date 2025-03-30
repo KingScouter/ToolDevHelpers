@@ -31,6 +31,7 @@ namespace ToolConfigEditor
 
             toolsListBox.DataSource = listBoxSource;
             toolsListBox.DisplayMember = "name";
+            toolsListBox.ValueMember = "shortName";
             AddDataBindings();
         }
 
@@ -279,8 +280,10 @@ namespace ToolConfigEditor
                 ToolConfig newConfig = new(selectedElem);
                 newConfig.shortName += "_copy";
                 newConfig.name += " (Copy)";
-                AddToolConfig(newConfig);
-                SetStatusText($"Copied tool {selectedElem.name}");
+                if (AddToolConfig(newConfig))
+                    SetStatusText($"Copied tool {selectedElem.name}");
+                else
+                    SetStatusText($"Tool \"{selectedElem.shortName}\" already exists!");
             }
         }
 
@@ -288,9 +291,33 @@ namespace ToolConfigEditor
         /// Add a new tool config to the project and update the list-box.
         /// </summary>
         /// <param name="config">Tool config to add</param>
-        private void AddToolConfig(ToolConfig config)
+        /// <returns>True if the tool got added successfully, otherwise false.</returns>
+        private bool AddToolConfig(ToolConfig config)
         {
-            project.AddToolConfig(config);
+            var isAdded = project.AddToolConfig(config);
+            if (isAdded)
+                listBoxSource.DataSource = project.GetToolConfigs();
+            return isAdded;
+        }
+
+        /// <summary>
+        /// OnClick-handler for the DeleteToolMenuItem.
+        /// Removes the currently selected tool from the project.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void DeleteToolMenuItemOnClick(object sender, EventArgs e)
+        {
+            ToolConfig? currentEntry = listBoxSource.Current as ToolConfig;
+            if (currentEntry == null)
+            {
+                Debug.WriteLine("Remove not possible, nothing selected!");
+                return;
+            }
+
+            SetStatusText($"Tool \"{currentEntry.name}\" removed");
+            Debug.WriteLine("Remove entry: " + currentEntry.name);
+            project.RemoveToolConfig(currentEntry.shortName);
             listBoxSource.DataSource = project.GetToolConfigs();
         }
     }

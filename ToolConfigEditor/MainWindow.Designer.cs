@@ -162,6 +162,7 @@
             deleteToolMenuItem.Name = "deleteToolMenuItem";
             deleteToolMenuItem.Size = new Size(52, 20);
             deleteToolMenuItem.Text = "Delete";
+            deleteToolMenuItem.Click += DeleteToolMenuItemOnClick;
             // 
             // titleLabel
             // 

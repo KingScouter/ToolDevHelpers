@@ -85,6 +85,7 @@
             addEntryButton.TabIndex = 0;
             addEntryButton.Text = "+";
             addEntryButton.UseVisualStyleBackColor = true;
+            addEntryButton.Click += AddEntryButtonOnClick;
             // 
             // removeEntryButton
             // 
@@ -96,6 +97,7 @@
             removeEntryButton.TabIndex = 1;
             removeEntryButton.Text = "-";
             removeEntryButton.UseVisualStyleBackColor = true;
+            removeEntryButton.Click += RemoveEntryButtonOnClick;
             // 
             // entryListBox
             // 
@@ -104,7 +106,7 @@
             entryListBox.FormattingEnabled = true;
             entryListBox.Location = new Point(3, 43);
             entryListBox.Name = "entryListBox";
-            entryListBox.Size = new Size(194, 326);
+            entryListBox.Size = new Size(194, 54);
             entryListBox.TabIndex = 2;
             // 
             // EditListBox

@@ -33,9 +33,18 @@ namespace CommonLib.Models
             return null;
         }
 
-        public void AddToolConfig(ToolConfig config)
+        /// <summary>
+        /// Add a new tool-config to the project.
+        /// </summary>
+        /// <param name="config">Tool-config to add</param>
+        /// <returns>True if the tool-config was added successfully, otherwise false.</returns>
+        public bool AddToolConfig(ToolConfig config)
         {
+            if (toolConfigMap.ContainsKey(config.shortName))
+                return false;
+
             toolConfigMap.Add(config.shortName, config);
+            return true;
         }
 
         /// <summary>
@@ -50,6 +59,15 @@ namespace CommonLib.Models
                 return config;
 
             return null;
+        }
+
+        /// <summary>
+        /// Remove a tool from the project.
+        /// </summary>
+        /// <param name="shortName">Shortname of the tool to remove</param>
+        public void RemoveToolConfig(string shortName)
+        {
+            toolConfigMap.Remove(shortName.ToLower());
         }
 
         /// <summary>
