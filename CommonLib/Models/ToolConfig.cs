@@ -6,6 +6,7 @@ namespace CommonLib.Models
     public class ToolConfig
     {
         [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public required string shortName
         {
             get
@@ -18,16 +19,22 @@ namespace CommonLib.Models
             }
         }
         [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public required string name { get; set; }
         [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public bool useHttps { get; set; } = false;
         [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public uint port { get; set; } = 0;
         [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public string? remoteServerUrl { get; set; } = null;
         [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public required string exePath { get; set; }
         [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public string[] additionalPages { get; set; } = [];
 
         private string shortNameInternal = "";
