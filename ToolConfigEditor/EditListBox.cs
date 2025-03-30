@@ -58,7 +58,11 @@ namespace ToolConfigEditor
         private void AddEntryButtonOnClick(object sender, EventArgs e)
         {
             Debug.WriteLine("Add new entry: " + newEntryTextBox.Text);
+            if (string.IsNullOrWhiteSpace(newEntryTextBox.Text) || _values.Contains(newEntryTextBox.Text))
+                return;
 
+            _values.Add(newEntryTextBox.Text);
+            UpdateListSource();
         }
 
         /// <summary>
@@ -89,6 +93,24 @@ namespace ToolConfigEditor
         {
             listBoxSource.ResetBindings(true);
             NotifyPropertyChanged(nameof(ListValues));
+            entryListBox.ClearSelected();
+        }
+
+        /// <summary>
+        /// Handler if the selection changes in the EntryListBox.
+        /// Fills the text-box with the currently selected entry.
+        /// Clears the text-box if nothing is selected.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void EntryListBoxOnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            Debug.WriteLine($"Selected index changed: ${e}");
+            int selectedItemIdx = entryListBox.SelectedIndex;
+            if (selectedItemIdx >= 0)
+                newEntryTextBox.Text = entryListBox.SelectedItem!.ToString();
+            else
+                newEntryTextBox.Text = "";
         }
     }
 }

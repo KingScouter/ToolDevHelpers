@@ -108,6 +108,7 @@
             entryListBox.Name = "entryListBox";
             entryListBox.Size = new Size(194, 54);
             entryListBox.TabIndex = 2;
+            entryListBox.SelectedIndexChanged += EntryListBoxOnSelectedIndexChanged;
             // 
             // EditListBox
             // 
