@@ -20,36 +20,53 @@ namespace ToolConfigEditor
             }
             set
             {
-                if (value == null)
-                    _values = [];
-                else
-                    _values = [.. value];
+                _values.Clear();
+                if (value != null)
+                    _values.AddRange(value);
 
-                listBoxSource.DataSource = _values;
                 UpdateListSource();
             }
         }
 
         BindingSource listBoxSource = [];
 
-
+        /// <summary>
+        /// Constructor for EditListBox. Initializes the BindingSource with the value list.
+        /// </summary>
         public EditListBox()
         {
             InitializeComponent();
+            listBoxSource.DataSource = _values;
             entryListBox.DataSource = listBoxSource;
         }
 
-        private void NotifyPropertyChanged([CallerMemberName] string PropertyName = null)
+        /// <summary>
+        /// Invokes a PropertyChanged event
+        /// </summary>
+        /// <param name="PropertyName"></param>
+        private void NotifyPropertyChanged([CallerMemberName] string? PropertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(PropertyName));
         }
 
+        /// <summary>
+        /// OnClick-handler for the AddEntryButton.
+        /// Adds a new entry to the list of values.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void AddEntryButtonOnClick(object sender, EventArgs e)
         {
             Debug.WriteLine("Add new entry: " + newEntryTextBox.Text);
 
         }
 
+        /// <summary>
+        /// OnClick-handler for the RemoveEntryButton.
+        /// Removes the currently selected entry from the list.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void RemoveEntryButtonOnClick(object sender, EventArgs e)
         {
             string? currentEntry = listBoxSource.Current?.ToString();
@@ -65,6 +82,9 @@ namespace ToolConfigEditor
 
         }
 
+        /// <summary>
+        /// Update the BindingSource data.
+        /// </summary>
         private void UpdateListSource()
         {
             listBoxSource.ResetBindings(true);
