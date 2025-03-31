@@ -36,6 +36,30 @@ namespace ToolConfigEditor
         }
 
         /// <summary>
+        /// OnValidating-handler for the KeywordTextBox.
+        /// Checks that the value is unique in the list of tool-configs,
+        /// otherwise resets the value.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void KeywordTextBoxOnValidating(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (sender is TextBox control && toolsListBox.SelectedItem is ToolConfig selectedConfig)
+            {
+                var newValue = control.Text;
+                var oldValue = selectedConfig.shortName;
+
+                if (!project.HasToolConfigKey(newValue) || newValue == oldValue)
+                    return;
+
+                SetStatusText($"Tool with shortname \"{newValue}\" already exists!");
+                e.Cancel = true;
+                control.Text = oldValue;
+            }
+            //Debug.WriteLine(sender.ToString(), e.ToString());
+        }
+
+        /// <summary>
         /// Adds data bindings to the input-fields in the form.
         /// </summary>
         private void AddDataBindings()
@@ -262,7 +286,7 @@ namespace ToolConfigEditor
                 shortName = "",
                 name = "",
                 exePath = ""
-            });
+            }, true);
 
             listBoxSource.MoveLast();
             SetStatusText("Added new tool");
@@ -280,7 +304,7 @@ namespace ToolConfigEditor
                 ToolConfig newConfig = new(selectedElem);
                 newConfig.shortName += "_copy";
                 newConfig.name += " (Copy)";
-                if (AddToolConfig(newConfig))
+                if (AddToolConfig(newConfig, false))
                     SetStatusText($"Copied tool {selectedElem.name}");
                 else
                     SetStatusText($"Tool \"{selectedElem.shortName}\" already exists!");
@@ -291,10 +315,12 @@ namespace ToolConfigEditor
         /// Add a new tool config to the project and update the list-box.
         /// </summary>
         /// <param name="config">Tool config to add</param>
+        /// <param name="generateName">Flag if a shortname and name should be automatically get generated for the
+        /// new config.</param>
         /// <returns>True if the tool got added successfully, otherwise false.</returns>
-        private bool AddToolConfig(ToolConfig config)
+        private bool AddToolConfig(ToolConfig config, bool generateName)
         {
-            var isAdded = project.AddToolConfig(config);
+            var isAdded = project.AddToolConfig(config, generateName);
             if (isAdded)
                 listBoxSource.DataSource = project.GetToolConfigs();
             return isAdded;

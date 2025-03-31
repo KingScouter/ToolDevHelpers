@@ -1,23 +1,25 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace CommonLib.Models
 {
     public class ToolConfigProject
     {
         [JsonInclude]
-        internal ToolConfig[] toolConfigs { 
-            get 
+        internal ToolConfig[] toolConfigs
+        {
+            get
             {
-                return [.. toolConfigMap.Values];
+                return [.. toolConfigMap.configs];
             }
             set
             {
-                toolConfigMap = value.ToDictionary(elem => elem.shortName);
+                toolConfigMap.configs = [.. value];
             }
         }
 
-        internal Dictionary<string, ToolConfig> toolConfigMap = [];
+        ToolConfigMap toolConfigMap = new();
 
         public static ToolConfigProject? ReadToolConfigProject(string filename)
         {
@@ -37,13 +39,39 @@ namespace CommonLib.Models
         /// Add a new tool-config to the project.
         /// </summary>
         /// <param name="config">Tool-config to add</param>
+        /// <param name="generateName">Flag if a shortname and name should be automatically get generated for the
+        /// new config.</param>
         /// <returns>True if the tool-config was added successfully, otherwise false.</returns>
-        public bool AddToolConfig(ToolConfig config)
+        public bool AddToolConfig(ToolConfig config, bool generateName = false)
         {
-            if (toolConfigMap.ContainsKey(config.shortName))
+            if (toolConfigMap.HasKey(config.shortName) && !generateName)
                 return false;
 
-            toolConfigMap.Add(config.shortName, config);
+            if (generateName)
+            {
+                string pattern = @"new_(\d)+";
+                Regex r = new(pattern, RegexOptions.IgnoreCase);
+
+                int maxIdx = 0;
+
+                if (toolConfigMap.configs.Count > 0)
+                {
+                    maxIdx = toolConfigMap.configs.Select((config) =>
+                    {
+                        Match m = r.Match(config.shortName);
+                        if (m.Success)
+                            return int.Parse(m.Groups[1].Value);
+
+                        return 0;
+                    }).Max();
+                    maxIdx++;
+                }
+
+                config.shortName = $"new_{maxIdx}";
+                config.name = $"New {maxIdx}";
+            }
+
+            toolConfigMap.Add(config);
             return true;
         }
 
@@ -54,11 +82,8 @@ namespace CommonLib.Models
         /// <returns>Tool configuration (or null if the tool could not be found)</returns>
         public ToolConfig? GetToolConfig(string shortName)
         {
-            ToolConfig? config = null;
-            if (toolConfigMap.TryGetValue(shortName.ToLower(), out config))
-                return config;
-
-            return null;
+            ToolConfig? config = toolConfigMap.Get(shortName.ToLower());
+            return config;
         }
 
         /// <summary>
@@ -78,9 +103,19 @@ namespace CommonLib.Models
         public List<ToolConfig> GetToolConfigs(string? filterQuery = null)
         {
             if (string.IsNullOrWhiteSpace(filterQuery))
-                return [.. toolConfigMap.Values];
+                return [.. toolConfigMap.configs];
 
-            return [.. toolConfigMap.Values.Where(config => config.shortName.Contains(filterQuery))];
+            return [.. toolConfigMap.configs.Where(config => config.shortName.Contains(filterQuery))];
+        }
+
+        /// <summary>
+        /// Checks if a given key exists in the list of tool configs.
+        /// </summary>
+        /// <param name="key">Key to check for</param>
+        /// <returns>True if the key exists in the list, otherwise false</returns>
+        public bool HasToolConfigKey(string key)
+        {
+            return toolConfigMap.HasKey(key);
         }
     }
 }

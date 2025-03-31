@@ -327,6 +327,7 @@
             keywordTextBox.Name = "keywordTextBox";
             keywordTextBox.Size = new Size(289, 23);
             keywordTextBox.TabIndex = 1;
+            keywordTextBox.Validating += KeywordTextBoxOnValidating;
             // 
             // useHttpsCheckBox
             // 
