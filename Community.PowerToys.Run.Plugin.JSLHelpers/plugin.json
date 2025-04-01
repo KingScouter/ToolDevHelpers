@@ -7,7 +7,7 @@
   "Version": "0.0.7",
   "Language": "csharp",
   "Website": "https://github.com/KingScouter/ToolDevHelpers",
-  "ExecuteFileName": "Community.PowerToys.Run.Plugin.JSLHelpers.dll",
+  "ExecuteFileName": "Community.PowerToys.Run.Plugin.ToolDevHelpers.dll",
   "IcoPathDark": "Images\\demo.dark.png",
   "IcoPathLight": "Images\\demo.light.png",
   "DynamicLoading": true
