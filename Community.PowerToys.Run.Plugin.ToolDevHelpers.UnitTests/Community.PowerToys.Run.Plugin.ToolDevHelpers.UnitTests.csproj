@@ -7,15 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
-    <PackageReference Include="NLog" Version="5.0.4" />
-    <PackageReference Include="System.IO.Abstractions" Version="17.2.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="MSTest.TestAdapter" />
+    <PackageReference Include="MSTest.TestFramework" />
+    <PackageReference Include="NLog" />
+    <PackageReference Include="System.IO.Abstractions" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Community.PowerToys.Run.Plugin.JSLHelpers\Community.PowerToys.Run.Plugin.ToolDevHelpers.csproj" />
+    <ProjectReference Include="..\Community.PowerToys.Run.Plugin.ToolDevHelpers\Community.PowerToys.Run.Plugin.ToolDevHelpers.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Platform)' == 'x64'">

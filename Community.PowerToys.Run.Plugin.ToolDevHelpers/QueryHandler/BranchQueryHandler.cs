@@ -39,9 +39,9 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         {
             var modeQuery = query.FirstOrDefault("");
 
-            if (string.Equals(modeQuery, "bl", StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(modeQuery, "bl", StringComparison.OrdinalIgnoreCase))
                 return HandleQueryIntern(query.Skip(1), config, true);
-            if (string.Equals(modeQuery, "br", StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(modeQuery, "br", StringComparison.OrdinalIgnoreCase))
                 return HandleQueryIntern(query.Skip(1), config, false);
 
             return null;
