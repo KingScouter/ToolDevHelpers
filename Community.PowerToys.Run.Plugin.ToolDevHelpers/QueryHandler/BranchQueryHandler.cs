@@ -10,7 +10,7 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {
-    internal class BranchQueryHandler : BaseQueryHandler
+    internal sealed class BranchQueryHandler : BaseQueryHandler
     {
         private readonly CachingService _cache;
 
@@ -151,7 +151,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
                 ];
             }
 
-            string searchString = query.FirstOrDefault("").ToLower();
+            string searchString = query.FirstOrDefault("").ToLowerInvariant();
 
             List<string> branches;
             string cacheKey = checkLocal ? localCacheKey : remoteCacheKey;
@@ -177,7 +177,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             cacheLoading[cacheKey] = false;
 
             if (!string.IsNullOrWhiteSpace(searchString))
-                branches = branches.FindAll(x => x.ToLower().Contains(searchString));
+                branches = branches.FindAll(x => x.Contains(searchString, StringComparison.InvariantCultureIgnoreCase));
 
             if (branches == null)
             {
@@ -286,7 +286,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             if (splitted.Length == 2)
             {
                 var branchRef = splitted[1];
-                if (branchRef.StartsWith(refStart))
+                if (branchRef.StartsWith(refStart, StringComparison.InvariantCultureIgnoreCase))
                 {
                     var simpleBranch = branchRef.Substring(refStart.Length);
                     return simpleBranch;
@@ -340,7 +340,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             StringBuilder sb = new();
             sb.Append(jenkinsUrl);
 
-            if (!jenkinsUrl.EndsWith("job/") && !jenkinsUrl.EndsWith("job"))
+            if (!jenkinsUrl.EndsWith("job/", StringComparison.InvariantCultureIgnoreCase) && !jenkinsUrl.EndsWith("job", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (!jenkinsUrl.EndsWith('/'))
                     sb.Append('/');
@@ -377,37 +377,37 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         /// </summary>
         /// <param name="gitUrl"></param>
         /// <returns></returns>
-        private string ParseGitUrl(string gitUrl)
+        private static string ParseGitUrl(string gitUrl)
         {
             if (string.IsNullOrEmpty(gitUrl))
                 return "";
 
             // Parse HTTPS URL
-            if (gitUrl.StartsWith("https"))
+            if (!gitUrl.StartsWith("https", StringComparison.InvariantCultureIgnoreCase))
             {
-                return gitUrl[..^".git".Length];
-            }
-
-            // Parse SSH URL
-            if (gitUrl.StartsWith("git"))
-            {
-                string[] urlParts = gitUrl.Split(':');
-                if (urlParts.Length != 2)
-                    return "";
-
-                string repoUrl = urlParts[1];
-
-                string url = new UriBuilder
+                // Parse SSH URL
+                if (gitUrl.StartsWith("git", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    Scheme = "https",
-                    Host = "github.com",
-                    Path = repoUrl[..^".git".Length]
-                }.ToString();
+                    string[] urlParts = gitUrl.Split(':');
+                    if (urlParts.Length != 2)
+                        return "";
 
-                return url;
+                    string repoUrl = urlParts[1];
+
+                    string url = new UriBuilder
+                    {
+                        Scheme = "https",
+                        Host = "github.com",
+                        Path = repoUrl[..^".git".Length]
+                    }.ToString();
+
+                    return url;
+                }
+
+                return "";
             }
 
-            return "";
+            return gitUrl[..^".git".Length];
         }
     }
 }

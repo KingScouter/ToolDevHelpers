@@ -38,7 +38,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
 
         // General plugin members
         private PluginInitContext? Context { get; set; }
-        private string? IconPath { get; set; } = null;
+        private string? IconPath { get; set; }
         private bool Disposed { get; set; }
         /// <summary>
         /// ID of the plugin.
@@ -144,7 +144,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             return queryHandlers.SelectMany(elem => elem.GetQueryOptions()).ToList();
         }
 
-        
+
 
         /// <summary>
         /// Initialize the plugin with the given <see cref="PluginInitContext"/>.
@@ -179,7 +179,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             return [];
         }
 
-        
+
 
         /// <summary>
         /// Creates setting panel.

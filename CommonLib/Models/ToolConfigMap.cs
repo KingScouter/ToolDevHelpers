@@ -2,7 +2,7 @@
 {
     public class ToolConfigMap
     {
-        public List<ToolConfig> configs = [];
+        public List<ToolConfig> Configs { get; set; } = [];
 
         /// <summary>
         /// Checks if a given key exists in the list.
@@ -11,7 +11,7 @@
         /// <returns>True if the key exists in the list, otherwise false</returns>
         public bool HasKey(string key)
         {
-            return configs.Any(elem => elem.shortName == key);
+            return Configs.Any(elem => elem.shortName == key);
         }
 
         /// <summary>
@@ -21,7 +21,7 @@
         /// <returns>Retrieved config, or false if the key could not be found.</returns>
         public ToolConfig? Get(string key)
         {
-            return configs.Find(elem => elem.shortName == key);
+            return Configs.Find(elem => elem.shortName == key);
         }
 
         /// <summary>
@@ -34,7 +34,7 @@
             if (HasKey(config.shortName))
                 return false;
 
-            configs.Add(config);
+            Configs.Add(config);
             return true;
         }
 
@@ -45,10 +45,10 @@
         /// <returns>True if the config got removed successfully, otherwise false (e.g. key not found)</returns>
         public bool Remove(string key)
         {
-            int idx = configs.FindIndex(elem => elem.shortName == key);
+            int idx = Configs.FindIndex(elem => elem.shortName == key);
             if (idx >= 0)
             {
-                configs.RemoveAt(idx);
+                Configs.RemoveAt(idx);
                 return true;
             }
             return false;

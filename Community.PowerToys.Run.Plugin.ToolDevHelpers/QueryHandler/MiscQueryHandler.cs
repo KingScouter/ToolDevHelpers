@@ -3,7 +3,7 @@ using Wox.Plugin;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {
-    internal class MiscQueryHandler(AppConfigManager appConfigManager) : BaseQueryHandler
+    internal sealed class MiscQueryHandler(AppConfigManager appConfigManager) : BaseQueryHandler
     {
         /// <summary>
         /// Handle the query to for general options
@@ -15,7 +15,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         {
             string modeQuery = query.FirstOrDefault("");
 
-            if (string.Equals(modeQuery, "reload", StringComparison.CurrentCultureIgnoreCase))
+            if (string.Equals(modeQuery, "reload", StringComparison.OrdinalIgnoreCase))
             {
                 return [
                     new Result()

@@ -5,7 +5,7 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
-    internal class Utils
+    internal sealed class Utils
     {
         /// <summary>
         /// Open a given URL in the default webbrowser

@@ -2,7 +2,7 @@ using CommandLine;
 
 namespace ToolConfigEditor
 {
-    internal class Options
+    internal sealed class Options
     {
         [Option('p', "project", Required = false, HelpText = "Project to open")]
         public string ProjectFile { get; set; } = "";

@@ -3,10 +3,11 @@ using Wox.Plugin;
 using System.Windows.Input;
 using System.IO;
 using CommonLib.Models;
+using System.Globalization;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {
-    internal class ToolQueryHandler : BaseQueryHandler
+    internal sealed class ToolQueryHandler : BaseQueryHandler
     {
         /// <summary>
         /// Handle the query to select a tool
@@ -18,7 +19,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         {
             var modeQuery = query.FirstOrDefault("");
 
-            if (!string.Equals(modeQuery, "t", StringComparison.CurrentCultureIgnoreCase))
+            if (!string.Equals(modeQuery, "t", StringComparison.OrdinalIgnoreCase))
                 return null;
 
             // No project configured => Skip
@@ -166,8 +167,8 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
                 var pageUrl = page
                     .Replace("#BASE#", url)
                     .Replace("#BASE_HOST#", toolHost)
-                    .Replace("#BASE_PORT#", toolConfig.port.ToString());
-                if (!pageUrl.StartsWith("http") && !pageUrl.StartsWith("https"))
+                    .Replace("#BASE_PORT#", toolConfig.port.ToString(CultureInfo.InvariantCulture));
+                if (!pageUrl.StartsWith("http", StringComparison.InvariantCultureIgnoreCase) && !pageUrl.StartsWith("https", StringComparison.InvariantCultureIgnoreCase))
                     pageUrl = $"{urlPrefix}://{pageUrl}";
                 Log.Info($"Open additional page {pageUrl}", GetType());
                 Utils.OpenPageInBrowser(pageUrl);

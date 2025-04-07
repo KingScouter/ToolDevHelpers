@@ -15,7 +15,7 @@ namespace CommonLib.Models
             }
             set
             {
-                shortNameInternal = value.ToLower();
+                shortNameInternal = value.ToLowerInvariant();
             }
         }
         [JsonInclude]

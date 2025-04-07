@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
@@ -11,11 +12,11 @@ namespace CommonLib.Models
         {
             get
             {
-                return [.. toolConfigMap.configs];
+                return [.. toolConfigMap.Configs];
             }
             set
             {
-                toolConfigMap.configs = [.. value];
+                toolConfigMap.Configs = [.. value];
             }
         }
 
@@ -54,16 +55,16 @@ namespace CommonLib.Models
 
                 int maxIdx = 0;
 
-                if (toolConfigMap.configs.Count > 0)
+                if (toolConfigMap.Configs.Count > 0)
                 {
-                    maxIdx = toolConfigMap.configs.Select((config) =>
+                    maxIdx = toolConfigMap.Configs.Max((config) =>
                     {
                         Match m = r.Match(config.shortName);
                         if (m.Success)
-                            return int.Parse(m.Groups[1].Value);
+                            return int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
 
                         return 0;
-                    }).Max();
+                    });
                     maxIdx++;
                 }
 
@@ -82,7 +83,7 @@ namespace CommonLib.Models
         /// <returns>Tool configuration (or null if the tool could not be found)</returns>
         public ToolConfig? GetToolConfig(string shortName)
         {
-            ToolConfig? config = toolConfigMap.Get(shortName.ToLower());
+            ToolConfig? config = toolConfigMap.Get(shortName.ToLowerInvariant());
             return config;
         }
 
@@ -92,7 +93,7 @@ namespace CommonLib.Models
         /// <param name="shortName">Shortname of the tool to remove</param>
         public void RemoveToolConfig(string shortName)
         {
-            toolConfigMap.Remove(shortName.ToLower());
+            toolConfigMap.Remove(shortName.ToLowerInvariant());
         }
 
         /// <summary>
@@ -103,9 +104,9 @@ namespace CommonLib.Models
         public List<ToolConfig> GetToolConfigs(string? filterQuery = null)
         {
             if (string.IsNullOrWhiteSpace(filterQuery))
-                return [.. toolConfigMap.configs];
+                return [.. toolConfigMap.Configs];
 
-            return [.. toolConfigMap.configs.Where(config => config.shortName.Contains(filterQuery))];
+            return [.. toolConfigMap.Configs.Where(config => config.shortName.Contains(filterQuery))];
         }
 
         /// <summary>

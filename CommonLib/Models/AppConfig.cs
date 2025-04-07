@@ -8,7 +8,7 @@
         public string FolderPath { get; set; } = "";
         public string DownloadScriptPath { get; set; } = "";
         public string ToolConfigFile { get; set; } = "";
-        public ToolConfigProject? ToolConfigProject = null;
+        public ToolConfigProject? ToolConfigProject { get; set; }
         public PowershellVersion ShellType { get; set; } = PowershellVersion.Legacy;
     }
 }

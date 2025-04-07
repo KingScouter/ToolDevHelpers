@@ -5,7 +5,7 @@ using Wox.Plugin.Logger;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers
 {
-    internal class AppConfigManager
+    internal sealed class AppConfigManager
     {
         public AppConfig Config { get; set; } = new();
 
