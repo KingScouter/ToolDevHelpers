@@ -17,6 +17,7 @@ public partial class ToolDevHelpersCmdPalCommandsProvider : CommandProvider
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
         _commands = [
             new CommandItem(new ToolDevHelpersCmdPalPage()) { Title = DisplayName },
+            new CommandItem(new ShowMessageCommand()) { Title = "Send a message" },
         ];
     }
 
