@@ -15,10 +15,13 @@ public partial class ToolDevHelpersCmdPalCommandsProvider : CommandProvider
     {
         DisplayName = "ToolDevHelpers";
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
+        Settings = ExtensionSettings.Instance.Settings;
+
         _commands = [
             new CommandItem(new ToolDevHelpersCmdPalPage()) { Title = DisplayName },
             new CommandItem(new ShowMessageCommand()) { Title = "Send a message" },
         ];
+
     }
 
     public override ICommandItem[] TopLevelCommands()
