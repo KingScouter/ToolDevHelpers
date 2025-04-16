@@ -4,6 +4,7 @@
 
 using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
+using ToolDevHelpersCmdPal.Pages;
 
 namespace ToolDevHelpersCmdPal;
 
@@ -18,7 +19,8 @@ public partial class ToolDevHelpersCmdPalCommandsProvider : CommandProvider
         Settings = ExtensionSettings.Instance.Settings;
 
         _commands = [
-            new CommandItem(new ToolDevHelpersCmdPalPage()) { Title = DisplayName },
+            new CommandItem(new MainCommandsListPage()) { Title = "Tool Dev Helpers" },
+            new CommandItem(new ToolDevHelpersCmdPalPage()) { Title = "ToolDevHelpers Test Pages" },
             new CommandItem(new ShowMessageCommand()) { Title = "Send a message" },
         ];
 
