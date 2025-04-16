@@ -22,6 +22,7 @@ internal sealed partial class ToolDevHelpersCmdPalPage : ListPage
         Icon = IconHelpers.FromRelativePath("Assets\\StoreLogo.png");
         Title = "ToolDevHelpers";
         Name = "Open";
+        ShowDetails = true;
 
         _items = [.. GetDefaultItems()];
     }
@@ -33,21 +34,36 @@ internal sealed partial class ToolDevHelpersCmdPalPage : ListPage
         var showMessageCommand = new ShowMessageCommand();
 
         AnonymousCommand updateCommand = new(action: () => { Title += " Hello"; }) { Result = CommandResult.KeepOpen() };
+        AnonymousCommand fooCommand = new(action: () => { 
+            ShowDetails = !ShowDetails;
+            this.OnPropertyChanged("ShowDetails");
+        }) { Result = CommandResult.KeepOpen() };
+        IDetails details = new Details()
+        {
+            Title = "This is the title",
+            Body = """
+            # This is a test
+            ## This is also a test
+            This is nice
+            """
+        };
 
         return [
-            new ListItem(new SampleContentPage()) { Title = "Sample content page" },
-            new ListItem(new MarkdownPage()) { Title = "Markdown page" },
-            new ListItem(new CommandResultsPage()) { Title = "Command results page" },
-            new IncrementingListItem(this) { Subtitle = $"Item 0" },
-            new ListItem(updateCommand),
-            new ListItem(showMessageCommand),
+            new ListItem(fooCommand) { Title = "Toggle ShowDetails ", Details = details },
+            new ListItem(new SampleContentPage()) { Title = "Sample content page", Details = details },
+            new ListItem(new MarkdownPage()) { Title = "Markdown page", Details = details },
+            new ListItem(new CommandResultsPage()) { Title = "Command results page", Details = details },
+            new IncrementingListItem(this) { Subtitle = $"Item 0", Details = details },
+            new ListItem(updateCommand) { Details = details },
+            new ListItem(showMessageCommand) { Details = details },
             new ListItem(command)
             {
                 Title = "Open the Command Palette documentation",
+                Details = details
             },
-            new ListItem(testCommand) { Title = "Open Github" },
-            new ListItem(new NoOpCommand()) { Title = "TODO: Implement your extension here" },
-            new ListItem(new MySecondPage()) { Title = "My second page", Subtitle = "A second page of commands" },
+            new ListItem(testCommand) { Title = "Open Github", Details = details },
+            new ListItem(new NoOpCommand()) { Title = "TODO: Implement your extension here", Details = details},
+            new ListItem(new MySecondPage()) { Title = "My second page", Subtitle = "A second page of commands", Details = details },
         ];
     }
 
