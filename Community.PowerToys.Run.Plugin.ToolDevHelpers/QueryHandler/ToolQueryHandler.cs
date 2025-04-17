@@ -137,7 +137,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
                 return false;
             }
 
-            Utils.ExecutePowershellCommand(pathToExe, version, null, toolConfig.name);
+            ProcessUtils.ExecutePowershellCommand(pathToExe, version, null, toolConfig.name);
 
             return true;
         }

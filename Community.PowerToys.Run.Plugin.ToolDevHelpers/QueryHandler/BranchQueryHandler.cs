@@ -234,12 +234,12 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             if (!string.IsNullOrWhiteSpace(repoUrl))
             {
                 string getBranchesCmd = $"git ls-remote {repoUrl}";
-                branchesOutput = await Utils.ExecuteCmdCommandAsync(getBranchesCmd);
+                branchesOutput = await ProcessUtils.ExecuteCmdCommandAsync(getBranchesCmd);
             }
             else
             {
                 string getBranchesCmd = $"git ls-remote";
-                branchesOutput = await Utils.ExecuteCmdCommandAsync(getBranchesCmd, sourceFolder);
+                branchesOutput = await ProcessUtils.ExecuteCmdCommandAsync(getBranchesCmd, sourceFolder);
             }
 
             List<string> branchNames = [];
@@ -261,7 +261,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         private static async Task<IEnumerable<string>> GetLocalBranches(string sourceFolder)
         {
             string getBranchesCmd = "git branch --list -r";
-            IEnumerable<string> branchesOutput = await Utils.ExecuteCmdCommandAsync(getBranchesCmd, sourceFolder);
+            IEnumerable<string> branchesOutput = await ProcessUtils.ExecuteCmdCommandAsync(getBranchesCmd, sourceFolder);
 
             List<string> branchNames = [];
             foreach (string branch in branchesOutput)
@@ -326,7 +326,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
             if (string.IsNullOrEmpty(scriptPath) || !System.IO.Path.Exists(scriptPath))
                 return;
 
-            Utils.ExecutePowershellCommand($"{scriptPath} {branch}", version, title: "Download Tools");
+            ProcessUtils.ExecutePowershellCommand($"{scriptPath} {branch}", version, title: "Download Tools");
         }
 
         /// <summary>

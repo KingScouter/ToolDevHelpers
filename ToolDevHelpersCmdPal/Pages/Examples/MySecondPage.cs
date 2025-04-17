@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ToolDevHelpersCmdPal.Pages
+namespace ToolDevHelpersCmdPal.Pages.Examples
 {
     internal class MySecondPage : ListPage
     {
