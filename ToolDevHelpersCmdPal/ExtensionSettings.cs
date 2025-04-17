@@ -9,6 +9,17 @@ namespace ToolDevHelpersCmdPal
     {
         internal static ExtensionSettings Instance = new();
 
+        private string sourceFolder = "";
+
+        public string SourceFolder => sourceFolder;
+
+        private readonly TextSetting sourceFolderSettingSource = new(
+            "sourceFolder",
+            "Source Folder",
+            "Local source folder",
+            "");
+
+
         private bool enableTest;
 
         public bool EnableTest => enableTest;
@@ -35,6 +46,7 @@ namespace ToolDevHelpersCmdPal
         {
             FilePath = SettingsJsonPath();
             Settings.Add(enableTestSettingSource);
+            Settings.Add(sourceFolderSettingSource);
 
             LoadSettings();
 

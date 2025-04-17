@@ -24,8 +24,10 @@ namespace ToolDevHelpersCmdPal.Pages
         public IListItem[] GetDefaultItems()
         {
             return [
-                new ListItem(new AnonymousCommand(action: () => { Title = "Branches"; }) { Result = CommandResult.KeepOpen() }) { Title = "Branches" },
-                new ListItem(new AnonymousCommand(action: () => { Title = "Tools"; }) { Result = CommandResult.KeepOpen() }) { Title = "Tools" },
+                new ListItem(new BranchListPage()) { Title = "Branches" },
+                new ListItem(new AnonymousCommand(action: () => { 
+                    Title = "Tools";
+                }) { Result = CommandResult.KeepOpen() }) { Title = "Tools" },
                 new ListItem(new AnonymousCommand(action: () => { Title = "Reload tool config"; }) { Result = CommandResult.KeepOpen() }) { Title = "Reload tool config" }
             ];
         }

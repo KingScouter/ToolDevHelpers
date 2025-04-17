@@ -10,6 +10,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using ToolDevHelpersCmdPal.Pages;
+using ToolDevHelpersCmdPal.Pages.Examples;
 
 namespace ToolDevHelpersCmdPal;
 
