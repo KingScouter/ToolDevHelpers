@@ -9,31 +9,13 @@ namespace ToolDevHelpersCmdPal
     {
         internal static ExtensionSettings Instance = new();
 
-        private string sourceFolder = "";
+        public string? SourceFolder => _sourceFolderSettingSource.Value;
 
-        public string SourceFolder => sourceFolder;
-
-        private readonly TextSetting sourceFolderSettingSource = new(
+        private readonly TextSetting _sourceFolderSettingSource = new(
             "sourceFolder",
             "Source Folder",
             "Local source folder",
             "");
-
-
-        private bool enableTest;
-
-        public bool EnableTest => enableTest;
-
-        private string testStringSetting = "";
-
-        public string TestStringSetting => testStringSetting;
-
-        private readonly ToggleSetting enableTestSettingSource = new(
-            "enableTest",
-            "Enable Test",
-            "This enables the test",
-            true
-        );
 
         internal static string SettingsJsonPath()
         {
@@ -45,15 +27,11 @@ namespace ToolDevHelpersCmdPal
         public ExtensionSettings()
         {
             FilePath = SettingsJsonPath();
-            Settings.Add(enableTestSettingSource);
-            Settings.Add(sourceFolderSettingSource);
+            Settings.Add(_sourceFolderSettingSource);
 
             LoadSettings();
 
-            Settings.SettingsChanged += (s, a) =>
-            {
-                SaveSettings();
-            };
+            Settings.SettingsChanged += (s, a) => SaveSettings();
         }
     }
 }
