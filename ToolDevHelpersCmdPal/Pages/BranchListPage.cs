@@ -4,6 +4,7 @@ using Microsoft.CommandPalette.Extensions.Toolkit;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ToolDevHelpersCmdPal.Pages
@@ -11,6 +12,7 @@ namespace ToolDevHelpersCmdPal.Pages
     internal sealed partial class BranchListPage : ListPage
     {
         private List<IListItem> items;
+        private readonly Lock _resultsLock = new();
 
         private ListItem fetchListItem;
 
@@ -24,7 +26,7 @@ namespace ToolDevHelpersCmdPal.Pages
             {
                 _ = GetBranches();
             })
-            { Name = "Fetch branches", Icon = new IconInfo("\uE72C") });
+            { Name = "Fetch branches", Icon = new IconInfo("\uE72C"), Result = CommandResult.KeepOpen() });
 
             EmptyContent = new CommandItem(new AnonymousCommand(() =>
             {
@@ -34,26 +36,56 @@ namespace ToolDevHelpersCmdPal.Pages
             { Title = "No branches found or no source folder configured" };
         }
 
+        /// <summary>
+        /// Get the items to display. On initial call, fetch the branches from the local source folder.
+        /// </summary>
+        /// <returns>List of branches</returns>
         public override IListItem[] GetItems()
         {
-            return items.ToArray();
+            if (string.IsNullOrEmpty(ExtensionSettings.Instance.SourceFolder))
+            {
+                EmptyContent = new CommandItem(new NoOpCommand())
+                { Title = "No source folder configured" };
+                UpdateItems([]);
+                return [];
+            }
+
+
+            IListItem[] localItems = [];
+
+            lock (_resultsLock)
+            {
+                if (items.Count == 0)
+                    _ = GetBranches();
+
+                return items.ToArray();
+            }
         }
 
+        /// <summary>
+        /// Update the fetched items thread-safe and raise the event for changed items.
+        /// </summary>
+        /// <param name="newItems">List of new items to update</param>
+        private void UpdateItems(List<IListItem> newItems)
+        {
+            ExtensionHost.LogMessage($"GORT: UpdateItems 1: {newItems.Count}");
+            lock (_resultsLock)
+            {
+                items = newItems;
+            }
+
+            RaiseItemsChanged(items.Count);
+        }
+
+        /// <summary>
+        /// Fetch the branches from the configured source folder.
+        /// </summary>
+        /// <returns>Async task</returns>
         private async Task GetBranches()
         {
             var localUrl = ExtensionSettings.Instance.SourceFolder;
             if (string.IsNullOrEmpty(localUrl))
-            {
-                items = [];
-                EmptyContent = new CommandItem(new AnonymousCommand(() =>
-                {
-                    _ = GetBranches();
-                })
-                {  Result = CommandResult.KeepOpen() })
-                { Title = "No source folder configured" };
-                RaiseItemsChanged(0);
                 return;
-            }
 
             IsLoading = true;
             var branches = await BranchManager.GetLocalBranches(localUrl);
@@ -66,39 +98,31 @@ namespace ToolDevHelpersCmdPal.Pages
                     _ = GetBranches();
                 })
                 { Result = CommandResult.KeepOpen() })
-                { Title = "No branches found configured" };
-                items = [];
+                { Title = "No branches found!" };
+                UpdateItems([]);
             } else
             {
-                items = [.. branchItems, fetchListItem];
+                UpdateItems([.. branchItems, fetchListItem]);
             }
 
-            RaiseItemsChanged(items.Count);
             IsLoading = false;
         }
 
+        /// <summary>
+        /// Convert a list of branches into a list of BranchListItems
+        /// </summary>
+        /// <param name="branches">List of branches to convert</param>
+        /// <returns>Converted list of BranchListItems</returns>
         private static List<IListItem> BranchesToList(IEnumerable<string> branches)
         {
             List<IListItem> branchItems = [];
 
             foreach (var branch in branches)
             {
-                var cmd = new NoOpCommand() { Name = branch };
-                branchItems.Add(new ListItem(cmd));
+                branchItems.Add(new BranchListItem(branch));
             }
 
             return branchItems;
         }
-    }
-
-    internal sealed partial class ShowMessageCommand
-    {
-        public static void ShowDialog(string title, string msg)
-        {
-            _ = MessageBox(0, msg, title, 0x00001000);
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
     }
 }
