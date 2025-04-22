@@ -97,6 +97,11 @@ internal sealed partial class ShowMessageCommand : InvokableCommand
         return CommandResult.KeepOpen();
     }
 
+    public static void ShowDialog(string title, string msg)
+    {
+        _ = MessageBox(0, msg, title, 0x00001000);
+    }
+
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
 }
