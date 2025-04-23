@@ -1,6 +1,6 @@
 ﻿namespace CommonLib.Models
 {
-    public class AppConfig
+    public class AppConfig : IAppConfig
     {
         public string GitRepoUrl { get; set; } = "";
         public string SourceFolder { get; set; } = "";
