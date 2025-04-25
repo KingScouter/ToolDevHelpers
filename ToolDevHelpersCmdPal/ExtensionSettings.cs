@@ -1,9 +1,7 @@
 ﻿using Microsoft.CommandPalette.Extensions.Toolkit;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using CommonLib.Models;
-using System.Globalization;
 
 namespace ToolDevHelpersCmdPal
 {
@@ -26,7 +24,7 @@ namespace ToolDevHelpersCmdPal
 
         public ToolConfigProject? ToolConfigProject => throw new NotImplementedException();
 
-        public PowershellVersion ShellType => ConvertPowershellVersion(_shellTypeSettingSource.Key);
+        public PowershellVersion ShellType => ConvertPowershellVersion(_shellTypeSettingSource.Value);
 
         // Setting sources
         private readonly TextSetting _sourceFolderSettingSource = new(
@@ -70,8 +68,8 @@ namespace ToolDevHelpersCmdPal
             "Powershell Version",
             "Which Powershell Version do you want to use?",
             [
-                new("Legacy (powershell)", $"{PowershellVersion.Legacy}"),
-                new("Powershell 7 (pwsh)", $"{PowershellVersion.LTS}")
+                new("Legacy (powershell)", $"{(int)PowershellVersion.Legacy}"),
+                new("Powershell 7 (pwsh)", $"{(int)PowershellVersion.LTS}")
             ]);
         
 
@@ -109,8 +107,10 @@ namespace ToolDevHelpersCmdPal
             if (string.IsNullOrEmpty(setting))
                 return PowershellVersion.Legacy;
 
-            
-            return (PowershellVersion)int.Parse(setting, CultureInfo.InvariantCulture);
+            if (!int.TryParse(setting, out int shellTypeValue))
+                return PowershellVersion.Legacy;
+
+            return (PowershellVersion)shellTypeValue;
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using CommonLib.Models;
+using CommonLib.Utils;
 using LazyCache;
-using System.Text;
-using System.Web;
 using System.Windows.Input;
 using Wox.Infrastructure;
 using Wox.Plugin;
@@ -229,19 +228,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         private void OpenJenkins(string branch, string jenkinsUrl)
         {
             Log.Info($"Open Jenkins: {branch}", GetType());
-            StringBuilder sb = new();
-            sb.Append(jenkinsUrl);
+            string? jobUrl = UrlUtils.BuildJenkinsUrl(branch, jenkinsUrl);
+            if (string.IsNullOrEmpty(jobUrl))
+                return;
 
-            if (!jenkinsUrl.EndsWith("job/", StringComparison.InvariantCultureIgnoreCase) && !jenkinsUrl.EndsWith("job", StringComparison.InvariantCultureIgnoreCase))
-            {
-                if (!jenkinsUrl.EndsWith('/'))
-                    sb.Append('/');
-                sb.Append("job/");
-            }
-
-            sb.Append(HttpUtility.UrlEncode(branch));
-
-            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, sb.ToString());
+            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, jobUrl);
         }
 
         /// <summary>
@@ -252,54 +243,11 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
         private void OpenGithub(string branch, string gitRepoUrl)
         {
             Log.Info($"Open Github: {branch}", GetType());
-            string repoBaseUrl = ParseGitUrl(gitRepoUrl);
-            if (string.IsNullOrEmpty(repoBaseUrl))
+            string? gitUrl = UrlUtils.BuildGithubUrl(branch, gitRepoUrl);
+            if (string.IsNullOrEmpty(gitUrl))
                 return;
 
-            string url = $"{repoBaseUrl}/tree/{branch}";
-
-            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, url);
-        }
-
-        /// <summary>
-        /// Parse the GIT remote URL to the base Github-URL.
-        /// Example: 
-        ///   git@github.com:User/Repo.git => https://github.com/User/Repo
-        ///   https://github.com/User/Repo.git => https://github.com/User/Repo
-        /// </summary>
-        /// <param name="gitUrl"></param>
-        /// <returns></returns>
-        private static string ParseGitUrl(string gitUrl)
-        {
-            if (string.IsNullOrEmpty(gitUrl))
-                return "";
-
-            // Parse HTTPS URL
-            if (!gitUrl.StartsWith("https", StringComparison.InvariantCultureIgnoreCase))
-            {
-                // Parse SSH URL
-                if (gitUrl.StartsWith("git", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    string[] urlParts = gitUrl.Split(':');
-                    if (urlParts.Length != 2)
-                        return "";
-
-                    string repoUrl = urlParts[1];
-
-                    string url = new UriBuilder
-                    {
-                        Scheme = "https",
-                        Host = "github.com",
-                        Path = repoUrl[..^".git".Length]
-                    }.ToString();
-
-                    return url;
-                }
-
-                return "";
-            }
-
-            return gitUrl[..^".git".Length];
+            Helper.OpenCommandInShell(BrowserInfo.Path, BrowserInfo.ArgumentsPattern, gitUrl);
         }
     }
 }

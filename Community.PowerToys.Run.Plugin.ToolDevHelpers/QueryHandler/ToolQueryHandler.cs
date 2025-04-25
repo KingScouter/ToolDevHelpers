@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.IO;
 using CommonLib.Models;
 using System.Globalization;
+using CommonLib.Utils;
 
 namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
 {

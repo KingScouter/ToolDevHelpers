@@ -1,6 +1,8 @@
-﻿using Microsoft.CommandPalette.Extensions;
+﻿using CommonLib.Utils;
+using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
-using Windows.System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ToolDevHelpersCmdPal.Pages
 {
@@ -13,26 +15,44 @@ namespace ToolDevHelpersCmdPal.Pages
 
         public BranchListItem(string branchName) : base(new NoOpCommand())
         {
-            var openBrowserCommand = new OpenUrlCommand("https://github.com") { Name = "Open in Browser" };
-            Command = openBrowserCommand;
+            List<ICommand> moreCommands = [];
 
-
-            var downloadBranchCommand = new AnonymousCommand(() =>
+            // Create "Download tools" command
+            string? scriptPath = ExtensionSettings.Instance.DownloadScriptPath;
+            if (!string.IsNullOrEmpty(scriptPath) && System.IO.Path.Exists(scriptPath))
             {
-                // Not implemented yet
-            })
-            { Name = "Download branch", Result = CommandResult.ShowToast(new ToastArgs() { Message = $"Download branch: {branchName}", Result = CommandResult.KeepOpen() }) };
+                var downloadBranchCommand = new AnonymousCommand(() =>
+                {
+                    //ExtensionHost.LogMessage($"Start download with {scriptPath} and branch {branchName} and shelltype {ExtensionSettings.Instance.ShellType}");
+                    ProcessUtils.ExecutePowershellCommand($"{scriptPath} {branchName}", ExtensionSettings.Instance.ShellType, title: "Download Tools");
+                })
+                { Name = "Download branch", Result = CommandResult.Hide()};
+                moreCommands.Add(downloadBranchCommand);
+            }
 
-            var openJenkinsCommand = new AnonymousCommand(() =>
+            // Create "Open Jenkins" command
+            string? jenkinsUrl = UrlUtils.BuildJenkinsUrl(branchName, ExtensionSettings.Instance.JenkinsUrl);
+            if (!string.IsNullOrEmpty(jenkinsUrl))
             {
-                // Not implemented yet
-            })
-            { Name = "Open Jenkins", Result = CommandResult.ShowToast(new ToastArgs() { Message = $"Open Jenkins: {branchName}", Result = CommandResult.KeepOpen() }) };
+                var openJenkinsCommand = new OpenUrlCommand(jenkinsUrl)
+                { Name = "Open Jenkins", Result = CommandResult.Hide() };
+                moreCommands.Add(openJenkinsCommand);
+            }
 
-            MoreCommands = [
-                new CommandContextItem(downloadBranchCommand) { RequestedShortcut = KeyChordHelpers.FromModifiers(false, false, true, false, (int)VirtualKey.Enter, 0)},
-                new CommandContextItem(openJenkinsCommand) { RequestedShortcut = KeyChordHelpers.FromModifiers(false, true, false, false, (int)VirtualKey.Enter, 0)},
-            ];
+            // Create "Open Github" command
+            string? gitUrl = UrlUtils.BuildGithubUrl(branchName, ExtensionSettings.Instance.GitRepoUrl);
+            if (!string.IsNullOrEmpty(gitUrl))
+            {
+                var openGithubCommand = new OpenUrlCommand(gitUrl)
+                { Name = "Open GitHub", Result = CommandResult.Hide() };
+                moreCommands.Add(openGithubCommand);
+            }
+
+            if (moreCommands.Count > 0)
+            {
+                Command = moreCommands.First();
+                MoreCommands = moreCommands.Skip(1).Select(x => new CommandContextItem(x)).ToArray();
+            }
 
             Title = branchName;
         }
