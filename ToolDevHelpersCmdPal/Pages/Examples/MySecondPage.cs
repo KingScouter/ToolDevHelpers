@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ToolDevHelpersCmdPal.Pages.Examples
 {
-    internal class MySecondPage : ListPage
+    internal sealed partial class MySecondPage : ListPage
     {
         public MySecondPage()
         {

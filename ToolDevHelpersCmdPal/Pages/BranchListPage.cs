@@ -50,9 +50,6 @@ namespace ToolDevHelpersCmdPal.Pages
                 return [];
             }
 
-
-            IListItem[] localItems = [];
-
             lock (_resultsLock)
             {
                 if (items.Count == 0)
@@ -68,7 +65,6 @@ namespace ToolDevHelpersCmdPal.Pages
         /// <param name="newItems">List of new items to update</param>
         private void UpdateItems(List<IListItem> newItems)
         {
-            ExtensionHost.LogMessage($"GORT: UpdateItems 1: {newItems.Count}");
             lock (_resultsLock)
             {
                 items = newItems;
