@@ -34,22 +34,7 @@ namespace Community.PowerToys.Run.Plugin.JSLHelpers
             catch (FileNotFoundException)
             {
                 Log.Info("Project file not found => Create sample project in place", GetType());
-                // Write sample project
-                ToolConfigProject sampleProject = new();
-                sampleProject.AddToolConfig(new ToolConfig()
-                {
-                    shortName = "test",
-                    name = "Test tool name",
-                    useHttps = true,
-                    port = 1234,
-                    remoteServerUrl = "www.google.at",
-                    exePath = "testTool/tool.exe",
-                    additionalPages = ["#BASE#api", "#BASE_HOST#:#BASE_PORT#/test"]
-                });
-
-                StreamWriter sw = new(Config.ToolConfigFile);
-                sw.Write(JsonSerializer.Serialize(sampleProject));
-                sw.Close();
+                ToolConfigProject.SaveTemplateProject(Config.ToolConfigFile);
             }
             catch (JsonException ex)
             {

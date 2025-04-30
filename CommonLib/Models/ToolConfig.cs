@@ -1,8 +1,18 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace CommonLib.Models
 {
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ToolConfig))]
+    [JsonSerializable(typeof(bool))]
+    [JsonSerializable(typeof(uint))]
+    [JsonSerializable(typeof(string))]
+    internal partial class ToolConfigSourceGenerationContext : JsonSerializerContext
+    {
+    }
+
     public class ToolConfig
     {
         [JsonInclude]
@@ -60,6 +70,22 @@ namespace CommonLib.Models
         /// </summary>
         public ToolConfig()
         {
+        }
+
+        public static string SerializeJson(ToolConfig config)
+        {
+            var jsonString = JsonSerializer.Serialize(config, ToolConfigSourceGenerationContext.Default.ToolConfig);
+            return jsonString;
+        }
+
+        public static ToolConfig? DeserializeJson(string json)
+        {
+            try
+            {
+                var config = JsonSerializer.Deserialize(json, ToolConfigSourceGenerationContext.Default.ToolConfig);
+                return config;
+            }
+            catch { return null; }
         }
     }
 }

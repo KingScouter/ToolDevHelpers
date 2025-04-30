@@ -5,6 +5,13 @@ using System.Text.RegularExpressions;
 
 namespace CommonLib.Models
 {
+    [JsonSourceGenerationOptions(WriteIndented = true)]
+    [JsonSerializable(typeof(ToolConfigProject))]
+    [JsonSerializable(typeof(ToolConfig))]
+    internal partial class ToolConfigProjectSourceGenerationContext : JsonSerializerContext
+    {
+    }
+
     public class ToolConfigProject
     {
         [JsonInclude]
@@ -29,11 +36,58 @@ namespace CommonLib.Models
             sr.Close();
             if (dataLine != null)
             {
-                ToolConfigProject? project = JsonSerializer.Deserialize<ToolConfigProject>(dataLine);
+                ToolConfigProject? project = ToolConfigProject.DeserializeJson(dataLine);
                 return project;
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Save a template project in a given file
+        /// </summary>
+        /// <param name="filename">File to save the project into</param>
+        public static void SaveTemplateProject(string filename)
+        {
+            ToolConfigProject sampleProject = new();
+            sampleProject.AddToolConfig(new ToolConfig()
+            {
+                shortName = "test",
+                name = "Test tool name",
+                useHttps = true,
+                port = 1234,
+                remoteServerUrl = "www.google.at",
+                exePath = "testTool/tool.exe",
+                additionalPages = ["#BASE#api", "#BASE_HOST#:#BASE_PORT#/test"]
+            });
+
+            StreamWriter sw = new(filename);
+            sw.Write(ToolConfigProject.SerializeJson(sampleProject));
+            sw.Close();
+        }
+
+        /// <summary>
+        /// Serialize a project to JSON
+        /// </summary>
+        /// <param name="project">Project to serialize</param>
+        /// <returns>JSON string</returns>
+        public static string SerializeJson(ToolConfigProject project)
+        {
+            return JsonSerializer.Serialize(project, ToolConfigProjectSourceGenerationContext.Default.ToolConfigProject);
+        }
+
+        /// <summary>
+        /// Deserialize a JSON string into a ToolConfigProject
+        /// </summary>
+        /// <param name="json">JSON string to project</param>
+        /// <returns>Deserialized project</returns>
+        public static ToolConfigProject? DeserializeJson(string json)
+        {
+            try
+            {
+                var project = JsonSerializer.Deserialize(json, ToolConfigProjectSourceGenerationContext.Default.ToolConfigProject);
+                return project;
+            } catch { return null; }
         }
 
         /// <summary>

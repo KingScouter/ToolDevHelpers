@@ -1,10 +1,9 @@
-﻿using Microsoft.CommandPalette.Extensions;
+﻿using CommonLib.Models;
+using Microsoft.CommandPalette.Extensions;
 using Microsoft.CommandPalette.Extensions.Toolkit;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace ToolDevHelpersCmdPal.Pages
 {
@@ -25,16 +24,26 @@ namespace ToolDevHelpersCmdPal.Pages
         {
             return [
                 new ListItem(new BranchListPage()) { Title = "Branches" },
-                new ListItem(new AnonymousCommand(action: () => { 
-                    Title = "Tools";
-                }) { Result = CommandResult.KeepOpen() }) { Title = "Tools" },
-                new ListItem(new AnonymousCommand(action: () => { Title = "Reload tool config"; }) { Result = CommandResult.KeepOpen() }) { Title = "Reload tool config" }
+                new ListItem(new ToolListPage()) { Title = "Tools" },
+                new ListItem(new AnonymousCommand(action: () => { SomeTests(); }) { Result = CommandResult.KeepOpen() }) { Title = "Reload tool config" }
             ];
         }
 
         public override IListItem[] GetItems()
         {
             return items.ToArray();
+        }
+
+        private void SomeTests()
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                ExtensionHost.LogMessage($"Exception in tests: {ex.Message}");
+            }
         }
     }
 }
