@@ -6,7 +6,7 @@ using CommonLib.Models;
 using System.Globalization;
 using CommonLib.Utils;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
+namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
 {
     internal sealed class ToolQueryHandler : BaseQueryHandler
     {

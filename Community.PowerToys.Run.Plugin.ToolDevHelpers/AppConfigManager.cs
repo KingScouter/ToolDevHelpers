@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.Json;
 using Wox.Plugin.Logger;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers
+namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
 {
     internal sealed class AppConfigManager
     {

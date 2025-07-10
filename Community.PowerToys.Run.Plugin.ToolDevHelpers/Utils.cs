@@ -3,7 +3,7 @@ using System.IO;
 using Wox.Infrastructure;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers
+namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
 {
     internal sealed class Utils
     {

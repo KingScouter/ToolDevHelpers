@@ -7,7 +7,7 @@ using Wox.Plugin;
 using Wox.Plugin.Logger;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler
+namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
 {
     internal sealed class BranchQueryHandler : BaseQueryHandler
     {

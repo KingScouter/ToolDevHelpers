@@ -1,13 +1,13 @@
 using System.Windows.Controls;
 using CommonLib.Models;
-using Community.PowerToys.Run.Plugin.JSLHelpers.QueryHandler;
+using Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler;
 using ManagedCommon;
 using Microsoft.PowerToys.Settings.UI.Library;
 using Wox.Plugin;
 using Wox.Plugin.Logger;
 using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
-namespace Community.PowerToys.Run.Plugin.JSLHelpers
+namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
 {
 
     enum OperationMode
