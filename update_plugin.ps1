@@ -1,6 +1,5 @@
 param (
-    [bool]
-    $UseDebug=$false
+    [switch]$UseDebug
 )
 
 $folderSubPath = "Release";

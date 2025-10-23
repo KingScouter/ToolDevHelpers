@@ -31,7 +31,7 @@ jobs:
 
       - name: Build
         run: |
-          dotnet build /p:Platform=x64 -c Release --no-restore
+          dotnet build /p:Platform=x64 -c Release --no-restore Community.PowerToys.Run.Plugin.ToolDevHelpers
 
       - name: Copy install script
         shell: pwsh
