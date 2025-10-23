@@ -8,7 +8,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
     public class ProjectQueryHandler : BaseQueryHandler
     {
         private AppConfigManager AppConfigManager { get; set; }
-        private ProjectConfigFile? Config { get => AppConfigManager.Config.ProjectConfigFile; }
+        private ProjectConfiguration? Config { get => AppConfigManager.Config.ProjectConfiguration; }
 
         private readonly BaseProjectQueryHandler[] queryHandlers;
         
@@ -49,7 +49,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
         {
             var projectQuery = query.FirstOrDefault("");
 
-            var project = config.ProjectConfigFile?.ProjectConfigMap.Get(projectQuery);
+            var project = config.ProjectConfiguration?.ProjectConfigMap.Get(projectQuery);
             if (project == null)
             {
                 return null;

@@ -22,7 +22,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
                     {
                         QueryTextDisplay = "Reload",
                         Title = "Reload config project",
-                        SubTitle = $"{appConfigManager.Config.ProjectConfigPath}",
+                        SubTitle = $"{appConfigManager.Config.ProjectConfigFile}",
                         Action = _ => {
                             appConfigManager.HandleConfigFile();
                             return true;

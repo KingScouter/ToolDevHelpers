@@ -65,11 +65,11 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
                 return [
                     new()
                     {
-                        Key = nameof (appConfig.ProjectConfigPath),
+                        Key = nameof (appConfig.ProjectConfigFile),
                         DisplayLabel = "Project config file",
                         DisplayDescription = "Config file with the configuration of all projects. If the file doesn't exist, a sample project will be added at that path.",
                         PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                        TextValue = appConfig.ProjectConfigPath
+                        TextValue = appConfig.ProjectConfigFile
                     },
                     new()
                     {
@@ -157,11 +157,11 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
             Log.Info("UpdateSettings", GetType());
 
             appConfig.ShellType = (PowershellVersion)GetEnumSettingOrDefault(settings, nameof(appConfig.ShellType));
-            string newConfigFile = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ProjectConfigPath))?.TextValue ?? "";
+            string newConfigFile = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ProjectConfigFile))?.TextValue ?? "";
 
-            if (newConfigFile != appConfig.ProjectConfigPath)
+            if (newConfigFile != appConfig.ProjectConfigFile)
             {
-                appConfig.ProjectConfigPath = newConfigFile;
+                appConfig.ProjectConfigFile = newConfigFile;
                 appConfigManager.HandleConfigFile();
             }
         }

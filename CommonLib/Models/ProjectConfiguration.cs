@@ -6,13 +6,13 @@ using System.Text.RegularExpressions;
 namespace CommonLib.Models
 {
   [JsonSourceGenerationOptions(WriteIndented = true)]
-  [JsonSerializable(typeof(ProjectConfigFile))]
+  [JsonSerializable(typeof(ProjectConfiguration))]
   [JsonSerializable(typeof(ProjectConfig))]
-  internal partial class ProjectConfigFileSourceGenerationContext : JsonSerializerContext
+  internal partial class ProjectConfigurationSourceGenerationContext : JsonSerializerContext
   {
   }
     
-  public class ProjectConfigFile
+  public class ProjectConfiguration
   {
     [JsonInclude]
     internal ProjectConfig[] projects
@@ -37,34 +37,34 @@ namespace CommonLib.Models
     /// </summary>
     /// <param name="project">Project to serialize</param>
     /// <returns>JSON string</returns>
-    public static string SerializeJson(ProjectConfigFile project)
+    public static string SerializeJson(ProjectConfiguration project)
     {
-        return JsonSerializer.Serialize(project, ProjectConfigFileSourceGenerationContext.Default.ProjectConfigFile);
+        return JsonSerializer.Serialize(project, ProjectConfigurationSourceGenerationContext.Default.ProjectConfiguration);
     }
 
     /// <summary>
-    /// Deserialize a JSON string into a ProjectConfigFile
+    /// Deserialize a JSON string into a ProjectConfiguration
     /// </summary>
     /// <param name="json">JSON string to project</param>
     /// <returns>Deserialized project</returns>
-    public static ProjectConfigFile? DeserializeJson(string json)
+    public static ProjectConfiguration? DeserializeJson(string json)
     {
         try
         {
-            var project = JsonSerializer.Deserialize(json, ProjectConfigFileSourceGenerationContext.Default.ProjectConfigFile);
+            var project = JsonSerializer.Deserialize(json, ProjectConfigurationSourceGenerationContext.Default.ProjectConfiguration);
             return project;
         } catch { return null; }
     }
         
 
-    public static ProjectConfigFile? ReadProjectConfigFile(string filename)
+    public static ProjectConfiguration? ReadProjectConfiguration(string filename)
     {
         StreamReader sr = new(filename);
         string dataLine = sr.ReadToEnd();
         sr.Close();
         if (dataLine != null)
         {
-            ProjectConfigFile? project = ProjectConfigFile.DeserializeJson(dataLine);
+            ProjectConfiguration? project = ProjectConfiguration.DeserializeJson(dataLine);
             return project;
         }
 
@@ -77,7 +77,7 @@ namespace CommonLib.Models
     /// <param name="filename">File to save the project into</param>
     public static void SaveTemplateProject(string filename)
     {
-      ProjectConfigFile sampleProject = new();
+      ProjectConfiguration sampleProject = new();
       sampleProject.AddConfig(new ProjectConfig()
       {
         key = "test",
@@ -91,7 +91,7 @@ namespace CommonLib.Models
       });
 
       StreamWriter sw = new(filename);
-      sw.Write(ProjectConfigFile.SerializeJson(sampleProject));
+      sw.Write(ProjectConfiguration.SerializeJson(sampleProject));
       sw.Close();
     }
     

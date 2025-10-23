@@ -15,26 +15,26 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
         /// <param name="appConfig">App configuration</param>
         public void HandleConfigFile()
         {
-            if (string.IsNullOrWhiteSpace(Config.ProjectConfigPath))
+            if (string.IsNullOrWhiteSpace(Config.ProjectConfigFile))
             {
                 Log.Info("Project file not set => Skip project configuration", GetType());
-                Config.ProjectConfigFile = null;
+                Config.ProjectConfiguration = null;
                 return;
             }
 
             try
             {
-                ProjectConfigFile? project = ProjectConfigFile.ReadProjectConfigFile(Config.ProjectConfigPath);
+                ProjectConfiguration? project = ProjectConfiguration.ReadProjectConfiguration(Config.ProjectConfigFile);
                 if (project != null)
                 {
-                    Config.ProjectConfigFile = project;
-                    Log.Info($"Project config {Config.ProjectConfigPath} loaded", GetType());
+                    Config.ProjectConfiguration = project;
+                    Log.Info($"Project config {Config.ProjectConfigFile} loaded", GetType());
                 }
             }
             catch (FileNotFoundException)
             {
                 Log.Info("Project file not found => Create sample project in place", GetType());
-                ProjectConfigFile.SaveTemplateProject(Config.ProjectConfigPath);
+                ProjectConfiguration.SaveTemplateProject(Config.ProjectConfigFile);
             }
             catch (JsonException ex)
             {

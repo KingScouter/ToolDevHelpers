@@ -2,8 +2,8 @@
 {
     public interface IAppConfig
     {
-        public string? ProjectConfigPath { get; }
-        public ProjectConfigFile? ProjectConfigFile { get; }
+        public string? ProjectConfigFile { get; }
+        public ProjectConfiguration? ProjectConfiguration { get; }
         public PowershellVersion ShellType { get; }
     }
 }
