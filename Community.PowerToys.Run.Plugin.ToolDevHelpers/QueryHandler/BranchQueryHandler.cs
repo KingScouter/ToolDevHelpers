@@ -9,7 +9,7 @@ using BrowserInfo = Wox.Plugin.Common.DefaultBrowserInfo;
 
 namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
 {
-    internal sealed class BranchQueryHandler : BaseQueryHandler
+    internal sealed class BranchQueryHandler : BaseProjectQueryHandler
     {
         private readonly CachingService _cache;
 
@@ -34,14 +34,14 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
         /// <param name="query">Search query</param>
         /// <param name="config">App configuration</param>
         /// <returns>List of query results (branches). Null if the query wasn't handled</returns>
-        public List<Result>? HandleQuery(IEnumerable<string> query, AppConfig config)
+        public List<Result>? HandleQuery(IEnumerable<string> query, AppConfig config, ProjectConfig projectConfig)
         {
             var modeQuery = query.FirstOrDefault("");
 
             if (string.Equals(modeQuery, "bl", StringComparison.OrdinalIgnoreCase))
-                return HandleQueryIntern(query.Skip(1), config, true);
+                return HandleQueryIntern(query.Skip(1), config, projectConfig, true);
             if (string.Equals(modeQuery, "br", StringComparison.OrdinalIgnoreCase))
-                return HandleQueryIntern(query.Skip(1), config, false);
+                return HandleQueryIntern(query.Skip(1), config, projectConfig, false);
 
             return null;
         }
@@ -53,7 +53,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
         /// <param name="config">App configuration</param>
         /// <param name="pluginName">Plugin name</param>
         /// <returns>Context menu results. Null if the context-menu wasn't handled</returns>
-        public List<ContextMenuResult>? LoadContextMenus(Result selectedResult, AppConfig config, string pluginName)
+        public List<ContextMenuResult>? LoadContextMenus(Result selectedResult, AppConfig config, ProjectConfig projectConfig, string pluginName)
         {
             if (selectedResult?.ContextData is (string branch, OperationMode mode) && mode == OperationMode.Branch)
             {
@@ -66,7 +66,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
                         Glyph = "\xE774",
                         AcceleratorKey = Key.Enter,
                         Action = _ => {
-                            OpenJenkins(branch, config.JenkinsUrl);
+                            OpenJenkins(branch, projectConfig.jenkinsUrl);
                             return true;
                         }
                     },
@@ -79,7 +79,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
                         AcceleratorKey = Key.Enter,
                         AcceleratorModifiers = ModifierKeys.Shift,
                         Action = _ => {
-                            DownloadTools(branch, config.DownloadScriptPath, config.ShellType);
+                            DownloadTools(branch, projectConfig.downloadScriptPath, config.ShellType);
                             return true;
                         }
                     },
@@ -92,7 +92,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
                         AcceleratorKey = Key.Enter,
                         AcceleratorModifiers = ModifierKeys.Control,
                         Action = _ => {
-                            OpenGithub(branch, config.GitRepoUrl);
+                            OpenGithub(branch, projectConfig.gitRepoUrl);
                             return true;
                         }
                     }
@@ -127,9 +127,9 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
         /// <param name="config">App configuration</param>
         /// <param name="checkLocal">Flag if the local branches from the source-folder should be checked (=true) or the remote branches (=false)</param>
         /// <returns>List of query results (branches)</returns>
-        private List<Result>? HandleQueryIntern(IEnumerable<string> query, AppConfig config, bool checkLocal)
+        private List<Result>? HandleQueryIntern(IEnumerable<string> query, AppConfig config, ProjectConfig projectConfig, bool checkLocal)
         {
-            if (checkLocal && string.IsNullOrWhiteSpace(config.SourceFolder))
+            if (checkLocal && string.IsNullOrWhiteSpace(projectConfig.localSourceFolder))
             {
                 return [
                     new Result
@@ -139,7 +139,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
                     }
                 ];
             }
-            else if (!checkLocal && string.IsNullOrWhiteSpace(config.SourceFolder) && string.IsNullOrWhiteSpace(config.GitRepoUrl))
+            else if (!checkLocal && string.IsNullOrWhiteSpace(projectConfig.localSourceFolder) && string.IsNullOrWhiteSpace(projectConfig.gitRepoUrl))
             {
                 return [
                     new Result
@@ -171,7 +171,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
                 }
 
 
-                branches = _cache.GetOrAdd(cacheKey, () => GetBranchesQuery(config.GitRepoUrl, config.SourceFolder, checkLocal));
+                branches = _cache.GetOrAdd(cacheKey, () => GetBranchesQuery(projectConfig.gitRepoUrl, projectConfig.localSourceFolder, checkLocal));
             }
             cacheLoading[cacheKey] = false;
 

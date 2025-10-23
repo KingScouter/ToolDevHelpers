@@ -8,7 +8,7 @@ using CommonLib.Utils;
 
 namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
 {
-    internal sealed class ToolQueryHandler : BaseQueryHandler
+    internal sealed class ToolQueryHandler : BaseProjectQueryHandler
     {
         /// <summary>
         /// Handle the query to select a tool
@@ -16,25 +16,26 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
         /// <param name="query">Search query</param>
         /// <param name="config">App configuration</param>
         /// <returns>List of query results (tools). Null if the query wasn't handled</returns>
-        public List<Result>? HandleQuery(IEnumerable<string> query, AppConfig config)
+        public List<Result>? HandleQuery(IEnumerable<string> query, AppConfig config, ProjectConfig project)
         {
             var modeQuery = query.FirstOrDefault("");
 
             if (!string.Equals(modeQuery, "t", StringComparison.OrdinalIgnoreCase))
                 return null;
 
-            // No project configured => Skip
-            if (config.ToolConfigProject == null)
+            var selectedToolQuery = query.Skip(1).FirstOrDefault("");
+            List<ToolConfig> configs = project.ToolConfigMap.Configs;
+
+            if (configs.Count <= 0)
+            {
                 return [
                     new Result
                     {
-                        Title = "Function (tool) not available",
-                        SubTitle ="Tool configuration project not configured!"
+                        Title = "No tool configured",
+                        SubTitle ="No tool in project configured!"
                     }
                 ];
-
-            var selectedToolQuery = query.Skip(1).FirstOrDefault("");
-            List<ToolConfig> configs = config.ToolConfigProject.GetToolConfigs(selectedToolQuery);
+            }
 
             return [.. configs.Select(x =>
             {
@@ -57,7 +58,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
         /// <param name="config">App configuration</param>
         /// <param name="pluginName">Plugin name</param>
         /// <returns>List of context-menu results. Null if the context-menu wasn't handled</returns>
-        public List<ContextMenuResult>? LoadContextMenus(Result selectedResult, AppConfig config, string pluginName)
+        public List<ContextMenuResult>? LoadContextMenus(Result selectedResult, AppConfig config, ProjectConfig projectConfig, string pluginName)
         {
             if (selectedResult?.ContextData is (ToolConfig toolConfig, OperationMode toolMode) && toolMode == OperationMode.Tool)
             {
@@ -68,7 +69,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers.QueryHandler
                     FontFamily = "Segoe Fluent Icons,Segoe MDL2 Assets",
                     Glyph = "\xe756",
                     AcceleratorKey = Key.Enter,
-                    Action = _ => StartTool(toolConfig, config.FolderPath, config.ShellType)
+                    Action = _ => StartTool(toolConfig, projectConfig.toolFolderPath, config.ShellType)
                 };
 
                 ContextMenuResult openLocallyOption = new()

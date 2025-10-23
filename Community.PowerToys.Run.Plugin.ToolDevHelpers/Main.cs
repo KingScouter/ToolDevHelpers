@@ -23,13 +23,13 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
     {
         private readonly AppConfigManager appConfigManager = new();
 
+        //private readonly BaseQueryHandler[] queryHandlers;
         private readonly BaseQueryHandler[] queryHandlers;
 
         public Main()
         {
             queryHandlers = [
-                new BranchQueryHandler(),
-                new ToolQueryHandler(),
+                new ProjectQueryHandler(appConfigManager),
                 new MiscQueryHandler(appConfigManager)
             ];
         }
@@ -65,51 +65,11 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
                 return [
                     new()
                     {
-                        Key = nameof(appConfig.GitRepoUrl),
-                        DisplayLabel = "GIT Repository URL",
-                        DisplayDescription = "URL for the GIT repository",
+                        Key = nameof (appConfig.ProjectConfigPath),
+                        DisplayLabel = "Project config file",
+                        DisplayDescription = "Config file with the configuration of all projects. If the file doesn't exist, a sample project will be added at that path.",
                         PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                        TextValue = appConfig.GitRepoUrl
-                    },
-                    new()
-                    {
-                        Key = nameof(appConfig.SourceFolder),
-                        DisplayLabel = "Local source folder",
-                        DisplayDescription = "Local cloned source folder",
-                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                        TextValue = appConfig.SourceFolder
-                    },
-                    new()
-                    {
-                        Key = nameof(appConfig.JenkinsUrl),
-                        DisplayLabel = "Jenkins Multibranch-Pipeline URL",
-                        DisplayDescription = "URL of the Multibranch-Pipeline on Jenkins",
-                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                        TextValue = appConfig.JenkinsUrl
-                    },
-                    new()
-                    {
-                        Key = nameof(appConfig.FolderPath),
-                        DisplayLabel = "Tool folder",
-                        DisplayDescription = "Folder to store the tools",
-                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                        TextValue = appConfig.FolderPath
-                    },
-                    new()
-                    {
-                        Key = nameof (appConfig.DownloadScriptPath),
-                        DisplayLabel = "Download Script",
-                        DisplayDescription = "Path to the download script",
-                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                        TextValue = appConfig.DownloadScriptPath
-                    },
-                    new()
-                    {
-                        Key = nameof (appConfig.ToolConfigFile),
-                        DisplayLabel = "Tool config file",
-                        DisplayDescription = "Config file with the configuration of all tools. If the file doesn't exist, a sample project will be added at that path.",
-                        PluginOptionType = PluginAdditionalOption.AdditionalOptionType.Textbox,
-                        TextValue = appConfig.ToolConfigFile
+                        TextValue = appConfig.ProjectConfigPath
                     },
                     new()
                     {
@@ -196,17 +156,12 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
         {
             Log.Info("UpdateSettings", GetType());
 
-            appConfig.GitRepoUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.GitRepoUrl))?.TextValue ?? "";
-            appConfig.SourceFolder = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.SourceFolder))?.TextValue ?? "";
-            appConfig.JenkinsUrl = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.JenkinsUrl))?.TextValue ?? "";
-            appConfig.FolderPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.FolderPath))?.TextValue ?? "";
-            appConfig.DownloadScriptPath = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.DownloadScriptPath))?.TextValue ?? "";
             appConfig.ShellType = (PowershellVersion)GetEnumSettingOrDefault(settings, nameof(appConfig.ShellType));
-            string newConfigFile = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ToolConfigFile))?.TextValue ?? "";
+            string newConfigFile = settings.AdditionalOptions.SingleOrDefault(x => x.Key == nameof(appConfig.ProjectConfigPath))?.TextValue ?? "";
 
-            if (newConfigFile != appConfig.ToolConfigFile)
+            if (newConfigFile != appConfig.ProjectConfigPath)
             {
-                appConfig.ToolConfigFile = newConfigFile;
+                appConfig.ProjectConfigPath = newConfigFile;
                 appConfigManager.HandleConfigFile();
             }
         }

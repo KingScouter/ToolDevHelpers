@@ -5,36 +5,36 @@ using Wox.Plugin.Logger;
 
 namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
 {
-    internal sealed class AppConfigManager
+    public sealed class AppConfigManager
     {
         public AppConfig Config { get; set; } = new();
 
         /// <summary>
-        /// Handle a new tool config-file
+        /// Handle a new project config-file
         /// </summary>
         /// <param name="appConfig">App configuration</param>
         public void HandleConfigFile()
         {
-            if (string.IsNullOrWhiteSpace(Config.ToolConfigFile))
+            if (string.IsNullOrWhiteSpace(Config.ProjectConfigPath))
             {
-                Log.Info("Project file not set => Skip tool configuration", GetType());
-                Config.ToolConfigProject = null;
+                Log.Info("Project file not set => Skip project configuration", GetType());
+                Config.ProjectConfigFile = null;
                 return;
             }
 
             try
             {
-                ToolConfigProject? project = ToolConfigProject.ReadToolConfigProject(Config.ToolConfigFile);
+                ProjectConfigFile? project = ProjectConfigFile.ReadProjectConfigFile(Config.ProjectConfigPath);
                 if (project != null)
                 {
-                    Config.ToolConfigProject = project;
-                    Log.Info($"Tool config project {Config.ToolConfigFile} loaded", GetType());
+                    Config.ProjectConfigFile = project;
+                    Log.Info($"Project config {Config.ProjectConfigPath} loaded", GetType());
                 }
             }
             catch (FileNotFoundException)
             {
                 Log.Info("Project file not found => Create sample project in place", GetType());
-                ToolConfigProject.SaveTemplateProject(Config.ToolConfigFile);
+                ProjectConfigFile.SaveTemplateProject(Config.ProjectConfigPath);
             }
             catch (JsonException ex)
             {
@@ -42,7 +42,7 @@ namespace Community.PowerToys.Run.Plugin.ToolDevHelpers
             }
             catch (Exception ex)
             {
-                Log.Info($"Unknown exception occured during loading of tool config project: {ex.Message}", GetType());
+                Log.Info($"Unknown exception occured during loading of project config: {ex.Message}", GetType());
             }
         }
     }
