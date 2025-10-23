@@ -1,4 +1,15 @@
-$pluginFolder = ".\Community.PowerToys.Run.Plugin.ToolDevHelpers\bin\x64\Release\net9.0-windows10.0.22621.0\"
+param (
+    [bool]
+    $UseDebug=$false
+)
+
+$folderSubPath = "Release";
+if ($UseDebug -ne $false) {
+  Write-Host "Using debug build"
+  $folderSubPath = "Debug"
+}
+
+$pluginFolder = ".\Community.PowerToys.Run.Plugin.ToolDevHelpers\bin\x64\$folderSubPath\net9.0-windows10.0.22621.0\"
 $powerToysPluginFolder = "$($env:LOCALAPPDATA)\Microsoft\PowerToys\PowerToys Run\Plugins\ToolDevHelpers"
 
 Write-Output "Stop PowerToys"
