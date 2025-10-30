@@ -2,7 +2,7 @@
 {
     public class ProjectConfigMap
     {
-        public List<ProjectConfig> Configs { get; set; } = [];
+        public List<BaseProjectConfig> Configs { get; set; } = [];
 
         /// <summary>
         /// Checks if a given key exists in the list.
@@ -19,7 +19,7 @@
         /// </summary>
         /// <param name="key">Key of the config to retrieve</param>
         /// <returns>Retrieved config, or false if the key could not be found.</returns>
-        public ProjectConfig? Get(string key)
+        public BaseProjectConfig? Get(string key)
         {
             return Configs.Find(elem => elem.key == key);
         }
@@ -29,7 +29,7 @@
         /// </summary>
         /// <param name="config">Config to add</param>
         /// <returns>True if the config got added successfully, otherwise false (e.g. config already exists)</returns>
-        public bool Add(ProjectConfig config)
+        public bool Add(BaseProjectConfig config)
         {
             if (HasKey(config.key))
                 return false;

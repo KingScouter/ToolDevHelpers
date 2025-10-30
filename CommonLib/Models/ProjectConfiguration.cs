@@ -15,7 +15,7 @@ namespace CommonLib.Models
   public class ProjectConfiguration
   {
     [JsonInclude]
-    internal ProjectConfig[] projects
+    internal BaseProjectConfig[] projects
     {
         get
         {

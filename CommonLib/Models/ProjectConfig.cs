@@ -13,7 +13,7 @@ namespace CommonLib.Models
     internal partial class ProjectConfigSourceGenerationContext : JsonSerializerContext
     {
     }
-    public class ProjectConfig
+    public class ProjectConfig : BaseProjectConfig
     {
         [JsonInclude]
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
@@ -36,6 +36,10 @@ namespace CommonLib.Models
         [JsonInclude]
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
         public string downloadScriptPath { get; set; } = "";
+
+        [JsonInclude]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        public bool useScriptTools { get; set; } = false;
 
         [JsonInclude]
         internal ToolConfig[] toolConfigs
